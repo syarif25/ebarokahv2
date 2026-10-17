@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: Ebarokah-V2
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_HOST=ebarokah_db
+    networks:
+      - ebarokah_ebarokahnet
+
+networks:
+  ebarokah_ebarokahnet:
+    external: true
