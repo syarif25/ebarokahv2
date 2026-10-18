@@ -192,7 +192,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label" style="font-size: 13px; font-weight: 500;">Tahun Anggaran <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="tahun" id="tahun" required value="2026" style="border: 1px solid #00a15d; border-radius: 8px; font-weight: 600;">
+                            <input type="text" class="form-control" name="tahun" id="tahun" required value="2026" readonly style="background-color: #f8f9fa; cursor: not-allowed; font-weight: 600; color: #495057; border: 1px solid #00a15d; border-radius: 8px;">
                         </div>
                     </div>
                 </div>
