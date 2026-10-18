@@ -703,9 +703,9 @@ class PdfBarokahService
         $b1  = self::getNamaBulanIndo(date('n'));
         $thn = date('Y');
 
-        $pdf->Ln(40);
-        $pdf->SetFont('arial', 'i', 5);
-        $pdf->Cell(292, -40, 'dicetak pada: ' . $tgl . ' ' . $b1 . ' ' . $thn, 0, 0, 'R');
+        $pdf->Ln(9);
+        $pdf->SetFont('arial', 'i', 7);
+        $pdf->Cell(329, 5, 'dicetak pada: ' . $tgl . ' ' . $b1 . ' ' . $thn, 0, 0, 'R');
 
         return $pdf->Output('S');
     }
