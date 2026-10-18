@@ -681,22 +681,22 @@ class PdfBarokahService
 
         // Baris TOTAL
         $pdf->SetFont('arial', 'B', 6);
-        $pdf->Cell(79, 7, 'TOTAL', 1, 0, 'C');
-        $pdf->Cell(12, 7, self::formatRupiah($totals['total_mengajar'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(10, 7, self::formatRupiah($totals['total_dty'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(12, 7, self::formatRupiah($totals['total_jafung'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(17, 7, self::formatRupiah($totals['total_kehadiran'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(17, 7, self::formatRupiah($totals['total_hadir_15'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(17, 7, self::formatRupiah($totals['total_hadir_10'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(24, 7, self::formatRupiah($totals['total_piket'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(12, 7, self::formatRupiah($totals['total_tunkel'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(12, 7, self::formatRupiah($totals['total_tunjanak'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(15, 7, self::formatRupiah($totals['total_kehormatan'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(15, 7, self::formatRupiah($totals['total_walkes'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(15, 7, self::formatRupiah($totals['total_tambahan'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(15, 7, self::formatRupiah($totals['total_jumlah'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(15, 7, self::formatRupiah($totals['total_potongan'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(20, 7, self::formatRupiah($totals['grand_total'] ?? 0), 1, 0, 'R');
+        $pdf->Cell(101, 7, 'TOTAL', 1, 0, 'C');
+        $pdf->Cell(12, 7, self::formatRupiah($totals['total_mengajar'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(10, 7, self::formatRupiah($totals['total_dty'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(12, 7, self::formatRupiah($totals['total_jafung'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(17, 7, self::formatRupiah($totals['total_kehadiran'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(17, 7, self::formatRupiah($totals['total_hadir_15'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(17, 7, self::formatRupiah($totals['total_hadir_10'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(24, 7, self::formatRupiah($totals['total_piket'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(12, 7, self::formatRupiah($totals['total_tunkel'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(12, 7, self::formatRupiah($totals['total_tunjanak'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(15, 7, self::formatRupiah($totals['total_kehormatan'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(15, 7, self::formatRupiah($totals['total_walkes'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(15, 7, self::formatRupiah($totals['total_tambahan'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(15, 7, self::formatRupiah($totals['total_jumlah'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(15, 7, self::formatRupiah($totals['total_potongan'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(20, 7, self::formatRupiah($totals['grand_total'] ?? 0), 1, 0, 'C');
 
         // Tanggal Cetak
         $tgl = date('d');
