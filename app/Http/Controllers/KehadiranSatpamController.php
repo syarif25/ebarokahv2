@@ -293,7 +293,8 @@ class KehadiranSatpamController extends Controller
                 u.gelar_depan,
                 u.nama_lengkap,
                 u.gelar_belakang,
-                COALESCE(t.nominal_transport, 0) AS nominal_transport
+                COALESCE(t.nominal_transport, 0) AS nominal_transport,
+                (SELECT COALESCE(SUM(nominal_potongan), 0) FROM potongan_satpam WHERE id_satpam = ks.id_satpam AND (max_periode_potongan >= CURDATE() OR max_periode_potongan IS NULL OR max_periode_potongan = '0000-00-00')) AS nominal_potongan
             FROM kehadiran_satpam ks
             LEFT JOIN satpam s     ON s.id_satpam    = ks.id_satpam
             LEFT JOIN umana  u     ON u.nik          = s.nik
@@ -309,6 +310,7 @@ class KehadiranSatpamController extends Controller
         $sum_barokah   = 0;
         $sum_dini      = 0;
         $sum_danru     = 0;
+        $sum_potongan  = 0;
         $sum_grand     = 0;
 
         foreach ($isilist as $row) {
@@ -319,6 +321,7 @@ class KehadiranSatpamController extends Controller
             $sum_barokah   += $calc['jumlah_barokah'];
             $sum_dini      += $calc['jumlah_konsumsi'];
             $sum_danru     += $calc['nominal_danru'];
+            $sum_potongan  += $calc['nominal_potongan'];
             $sum_grand     += $calc['diterima'];
         }
 
@@ -327,6 +330,7 @@ class KehadiranSatpamController extends Controller
             'total_barokah'   => $sum_barokah,
             'total_dinihari'  => $sum_dini,
             'total_danru'     => $sum_danru,
+            'total_potongan'  => $sum_potongan,
             'grand_total'     => $sum_grand,
         ];
 
@@ -362,12 +366,18 @@ class KehadiranSatpamController extends Controller
                     'jumlah_dinihari' => $dini,
                 ]);
 
-            $row = DB::table('kehadiran_satpam as ks')
-                ->join('satpam as s', 's.id_satpam', '=', 'ks.id_satpam')
-                ->leftJoin('transport as t', 't.id_transport', '=', 's.id_transport')
-                ->where('ks.id_kehadiran_satpam', $idRow)
-                ->select('ks.*', 's.is_danru', 't.nominal_transport')
-                ->first();
+            $sqlRow = "
+                SELECT 
+                    ks.*, 
+                    s.is_danru, 
+                    t.nominal_transport,
+                    (SELECT COALESCE(SUM(nominal_potongan), 0) FROM potongan_satpam WHERE id_satpam = ks.id_satpam AND (max_periode_potongan >= CURDATE() OR max_periode_potongan IS NULL OR max_periode_potongan = '0000-00-00')) AS nominal_potongan
+                FROM kehadiran_satpam ks
+                JOIN satpam s ON s.id_satpam = ks.id_satpam
+                LEFT JOIN transport t ON t.id_transport = s.id_transport
+                WHERE ks.id_kehadiran_satpam = ?
+            ";
+            $row = DB::selectOne($sqlRow, [$idRow]);
 
             $tarif = HitungSatpamService::getTarif();
             $calc = HitungSatpamService::calculateRow($row, $tarif);
@@ -386,6 +396,7 @@ class KehadiranSatpamController extends Controller
                     'jumlah_barokah'   => $calc['jumlah_barokah'],
                     'jumlah_konsumsi'  => $calc['jumlah_konsumsi'],
                     'nominal_danru'    => $calc['nominal_danru'],
+                    'potongan'         => $calc['nominal_potongan'],
                     'subtotal'         => $calc['diterima'],
                 ],
                 'totals' => $totals,
@@ -395,6 +406,67 @@ class KehadiranSatpamController extends Controller
             return response()->json(['status' => false, 'message' => 'Gagal mengupdate baris: ' . $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Ambil opsi jenis potongan (JSON)
+     */
+    public function getPotonganOptions()
+    {
+        $data = DB::table('potongan')->select('id_potongan', 'nama_potongan')->orderBy('nama_potongan', 'asc')->get();
+        return response()->json($data);
+    }
+
+    /**
+     * Ambil rincian potongan per satpam (JSON)
+     */
+    public function detailPotongan($id_satpam)
+    {
+        $data = DB::table('potongan_satpam as ps')
+            ->leftJoin('potongan as p', 'p.id_potongan', '=', 'ps.jenis_potongan')
+            ->where('ps.id_satpam', $id_satpam)
+            ->select('ps.*', 'p.nama_potongan')
+            ->get();
+
+        return response()->json($data);
+    }
+
+    /**
+     * Simpan rincian potongan per satpam
+     */
+    public function savePotongan(Request $request)
+    {
+        $id_satpam = $request->input('id_satpam');
+        $potongan_data = $request->input('potongan', []);
+
+        if ($potongan_data && is_array($potongan_data)) {
+            foreach ($potongan_data as $pot) {
+                $jenis = $pot['jenis_potongan'] ?? '';
+                $nominal = isset($pot['nominal_potongan']) ? (int)str_replace(['.', ','], '', $pot['nominal_potongan']) : 0;
+                $min_periode = !empty($pot['min_periode_potongan']) ? $pot['min_periode_potongan'] : null;
+                $max_periode = !empty($pot['max_periode_potongan']) ? $pot['max_periode_potongan'] : null;
+                $id_potongan_satpam = $pot['id_potongan_satpam'] ?? '';
+
+                if (empty($jenis)) continue;
+
+                $data = [
+                    'id_satpam'            => $id_satpam,
+                    'jenis_potongan'       => $jenis,
+                    'nominal_potongan'     => $nominal,
+                    'min_periode_potongan' => $min_periode,
+                    'max_periode_potongan' => $max_periode
+                ];
+
+                if (!empty($id_potongan_satpam)) {
+                    DB::table('potongan_satpam')->where('id_potongan_satpam', $id_potongan_satpam)->update($data);
+                } else {
+                    DB::table('potongan_satpam')->insert($data);
+                }
+            }
+        }
+
+        return response()->json(['status' => true, 'message' => 'Data Potongan berhasil disimpan.']);
+    }
+
 
     /**
      * Kirim Koreksi (Status: Sudah -> Terkirim)

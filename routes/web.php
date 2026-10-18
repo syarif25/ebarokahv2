@@ -211,6 +211,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/Laporan_satpam/cetak/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'cetak']);
     Route::get('/kehadiran-satpam/{id}/rincian', [App\Http\Controllers\KehadiranSatpamController::class, 'rincian']);
     Route::get('/Laporan_satpam/rincian/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'rincian']);
+    Route::get('/kehadiran-satpam/getPotonganOptions', [App\Http\Controllers\KehadiranSatpamController::class, 'getPotonganOptions']);
+    Route::get('/Validasi_satpam/get_potongan_options', [App\Http\Controllers\KehadiranSatpamController::class, 'getPotonganOptions']);
+    Route::get('/kehadiran-satpam/detailPotongan/{id_satpam}', [App\Http\Controllers\KehadiranSatpamController::class, 'detailPotongan']);
+    Route::get('/Validasi_satpam/detail_potongan/{id_satpam}', [App\Http\Controllers\KehadiranSatpamController::class, 'detailPotongan']);
+    Route::post('/kehadiran-satpam/savePotongan', [App\Http\Controllers\KehadiranSatpamController::class, 'savePotongan']);
+    Route::post('/Validasi_satpam/save_potongan', [App\Http\Controllers\KehadiranSatpamController::class, 'savePotongan']);
     Route::get('/laporan/satpam', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
 
     // Validasi Barokah

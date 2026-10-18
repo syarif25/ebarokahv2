@@ -42,7 +42,7 @@ class HitungSatpamService
         $nTrans  = (int)($row->nominal_transport ?? 0);
         $isDanru = (isset($row->is_danru) && (string)$row->is_danru === '1');
         $nDanru  = $isDanru ? $tarif['honorDanru'] : 0;
-        $pot     = (int)($row->potongan ?? 0);
+        $pot     = (int)($row->nominal_potongan ?? $row->potongan ?? 0);
 
         $jTrans = $jHari * $nTrans;
         $jBar   = $jShift * $tarif['rank'];
@@ -61,8 +61,8 @@ class HitungSatpamService
             'jumlah_konsumsi'  => $jKons,
             'is_danru'         => $isDanru,
             'nominal_danru'    => $nDanru,
-            'potongan'         => $pot,
-            'diterima'         => max(0, $diter),
+            'nominal_potongan' => $pot,
+            'diterima'         => $diter,
         ];
     }
 
@@ -78,7 +78,8 @@ class HitungSatpamService
                 COALESCE(SUM(ks.jumlah_hari * COALESCE(t.nominal_transport, 0)), 0) AS total_transport,
                 COALESCE(SUM(ks.jumlah_shift * ?), 0)                                AS total_barokah,
                 COALESCE(SUM(ks.jumlah_dinihari * ?), 0)                             AS total_dinihari,
-                COALESCE(SUM(CASE WHEN s.is_danru = '1' THEN ? ELSE 0 END), 0)      AS total_danru
+                COALESCE(SUM(CASE WHEN s.is_danru = '1' THEN ? ELSE 0 END), 0)      AS total_danru,
+                COALESCE(SUM((SELECT COALESCE(SUM(nominal_potongan), 0) FROM potongan_satpam WHERE id_satpam = ks.id_satpam AND (max_periode_potongan >= CURDATE() OR max_periode_potongan IS NULL OR max_periode_potongan = '0000-00-00'))), 0) AS total_potongan
             FROM kehadiran_satpam ks
             JOIN satpam s ON s.id_satpam = ks.id_satpam
             LEFT JOIN transport t ON t.id_transport = s.id_transport
@@ -92,13 +93,14 @@ class HitungSatpamService
             $idKehadiranLembaga
         ]);
 
-        $grand = (int)$res->total_transport + (int)$res->total_barokah + (int)$res->total_dinihari + (int)$res->total_danru;
+        $grand = ((int)$res->total_transport) + ((int)$res->total_barokah) + ((int)$res->total_dinihari) + ((int)$res->total_danru) - ((int)$res->total_potongan);
 
         return [
             'total_transport' => (int)$res->total_transport,
             'total_barokah'   => (int)$res->total_barokah,
             'total_dinihari'  => (int)$res->total_dinihari,
             'total_danru'     => (int)$res->total_danru,
+            'total_potongan'  => (int)$res->total_potongan,
             'grand_total'     => $grand,
         ];
     }
@@ -110,15 +112,22 @@ class HitungSatpamService
     {
         $tarif = self::getTarif();
 
-        $rows = DB::table('kehadiran_satpam as ks')
-            ->join('satpam as s', 's.id_satpam', '=', 'ks.id_satpam')
-            ->leftJoin('transport as t', 't.id_transport', '=', 's.id_transport')
-            ->where('ks.id_kehadiran_lembaga', $idKehadiranLembaga)
-            ->select('ks.*', 's.is_danru', 't.nominal_transport')
-            ->orderBy('ks.id_kehadiran_satpam', 'asc')
-            ->get();
+        $sql = "
+            SELECT 
+                ks.*, 
+                s.is_danru, 
+                t.nominal_transport,
+                (SELECT COALESCE(SUM(nominal_potongan), 0) FROM potongan_satpam WHERE id_satpam = ks.id_satpam AND (max_periode_potongan >= CURDATE() OR max_periode_potongan IS NULL OR max_periode_potongan = '0000-00-00')) AS nominal_potongan
+            FROM kehadiran_satpam ks
+            JOIN satpam s ON s.id_satpam = ks.id_satpam
+            LEFT JOIN transport t ON t.id_transport = s.id_transport
+            WHERE ks.id_kehadiran_lembaga = ?
+            ORDER BY ks.id_kehadiran_satpam ASC
+        ";
 
-        if ($rows->isEmpty()) {
+        $rows = DB::select($sql, [$idKehadiranLembaga]);
+
+        if (empty($rows)) {
             throw new \Exception('Data kehadiran satpam tidak ditemukan.');
         }
 
@@ -145,7 +154,7 @@ class HitungSatpamService
                 'konsumsi'             => $calc['konsumsi'],
                 'jumlah_konsumsi'      => $calc['jumlah_konsumsi'],
                 'nominal_danru'        => $calc['nominal_danru'],
-                'potongan'             => $calc['potongan'],
+                'potongan'             => $calc['nominal_potongan'],
                 'diterima'             => $calc['diterima'],
                 'status'               => 'selesai',
                 'tgl_input'            => now(),
