@@ -743,4 +743,180 @@ class PdfBarokahService
 
         return $pdf->Output('S');
     }
+
+    /**
+     * Cetak Rekap Barokah Satpam (Landscape Legal)
+     */
+    public static function cetakRekapSatpam($periode, $isilist, $honorDanru = 100000)
+    {
+        $pdf = new FPDF('L', 'mm', 'LEGAL');
+        $pdf->SetMargins(10, 10, 10);
+        $pdf->SetAutoPageBreak(true, 15);
+        $pdf->AddPage();
+
+        // KOP SURAT
+        $logoPath = public_path('images/p2s2.png');
+        if (file_exists($logoPath)) {
+            $pdf->Image($logoPath, 10, 9, 30);
+        }
+        $pdf->Cell(31, 0, '', 0, 0, 'L', false);
+        $pdf->SetFont('arial', 'B', 15);
+        $pdf->Cell(0, 1, 'KANTOR BENDAHARA', 0, 1, 'L', false);
+
+        $pdf->Ln(4);
+        $pdf->SetFont('arial', 'B', 13);
+        $pdf->Cell(31, 0, '', 0, 0, 'L', false);
+        $pdf->Cell(150, 1, "PONDOK PESANTREN SALAFIYAH SYAFI'IYAH", 0, 1, 'L', false);
+
+        $pdf->Ln(4);
+        $pdf->SetFont('arial', '', 11);
+        $pdf->Cell(31, 0, '', 0, 0, 'L', false);
+        $pdf->Cell(150, 1, 'SUKOREJO SITUBONDO JAWA TIMUR', 0, 1, 'L', false);
+
+        $pdf->Ln(4);
+        $pdf->SetFont('arial', '', 8);
+        $pdf->Cell(40, 0, 'Po Box 2 telp 0388-452666 Fax. 452707 - eMail : sentral@salafiyah.net - Situbondo, 68374', 0, 0, 'L', false);
+
+        $pdf->Line(9, 23, 340, 23);
+        $pdf->Line(9, 27, 340, 27);
+
+        $pdf->Ln(8);
+        $pdf->SetFont('arial', 'B', 12);
+        $pdf->Cell(0, 5, 'RINCIAN BAROKAH SATPAM', 0, 1, 'C');
+        $pdf->SetFont('arial', '', 11);
+        $pdf->Cell(0, 5, 'Bulan : ' . ($periode->bulan ?? '') . ' ' . ($periode->tahun ?? ''), 0, 1, 'C');
+
+        $pdf->Ln(5);
+
+        // Header Table
+        $pdf->SetFont('arial', 'B', 8);
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        $pdf->Cell(8, 10, 'No', 1, 0, 'C');
+        $pdf->Cell(90, 10, 'Nama Satpam', 1, 0, 'C');
+
+        $x_group = $pdf->GetX();
+        $pdf->Cell(45, 5, 'Kehadiran 1 (Siang)', 1, 0, 'C');
+        $pdf->Cell(60, 5, 'Kehadiran 2 (Shift)', 1, 0, 'C');
+        $pdf->Cell(45, 5, 'Kehadiran 3 (Dinihari)', 1, 0, 'C');
+
+        $pdf->Cell(35, 10, 'Danru', 1, 0, 'C');
+        $pdf->Cell(40, 10, 'Total Diterima', 1, 0, 'C');
+
+        $pdf->SetXY($x_group, $y + 5);
+        // Group 1
+        $pdf->Cell(10, 5, 'H', 1, 0, 'C');
+        $pdf->Cell(15, 5, 'Trns', 1, 0, 'C');
+        $pdf->Cell(20, 5, 'Jml', 1, 0, 'C');
+        // Group 2
+        $pdf->Cell(10, 5, 'S', 1, 0, 'C');
+        $pdf->Cell(20, 5, 'Rank', 1, 0, 'C');
+        $pdf->Cell(30, 5, 'Jml', 1, 0, 'C');
+        // Group 3
+        $pdf->Cell(10, 5, 'D', 1, 0, 'C');
+        $pdf->Cell(15, 5, 'Kons', 1, 0, 'C');
+        $pdf->Cell(20, 5, 'Jml', 1, 0, 'C');
+
+        $pdf->SetXY($x, $y + 10);
+
+        // ISI DATA
+        $pdf->SetFont('arial', '', 8);
+        $no = 1;
+        $rank = 17500;
+        $konsumsi = 5000;
+
+        $grand_transport = 0;
+        $grand_barokah   = 0;
+        $grand_dinihari  = 0;
+        $grand_danru     = 0;
+        $grand_total     = 0;
+
+        foreach ($isilist as $row) {
+            $nominal_transport = (int)($row->nominal_transport ?? 0);
+            $jHari  = (int)($row->jumlah_hari ?? 0);
+            $jShift = (int)($row->jumlah_shift ?? 0);
+            $jDini  = (int)($row->jumlah_dinihari ?? 0);
+
+            $jumlah_transport = $jHari * $nominal_transport;
+            $jumlah_barokah   = $jShift * $rank;
+            $jumlah_konsumsi  = $jDini * $konsumsi;
+
+            $isDanru = (isset($row->is_danru) && (string)$row->is_danru === '1');
+            $nominalDanruRow = $isDanru ? $honorDanru : 0;
+
+            $diterima = $jumlah_transport + $jumlah_barokah + $jumlah_konsumsi + $nominalDanruRow;
+
+            $grand_transport += $jumlah_transport;
+            $grand_barokah   += $jumlah_barokah;
+            $grand_dinihari  += $jumlah_konsumsi;
+            $grand_danru     += $nominalDanruRow;
+            $grand_total     += $diterima;
+
+            $namaLengkap = trim(($row->gelar_depan ?? '') . ' ' . ($row->nama_lengkap ?? '') . ' ' . ($row->gelar_belakang ?? ''));
+
+            $pdf->Cell(8, 7, $no++, 1, 0, 'C');
+            $pdf->Cell(90, 7, $namaLengkap, 1, 0, 'L');
+
+            // Kehadiran 1
+            $pdf->Cell(10, 7, $jHari, 1, 0, 'C');
+            $pdf->Cell(15, 7, number_format($nominal_transport, 0, ',', '.'), 1, 0, 'R');
+            $pdf->Cell(20, 7, number_format($jumlah_transport, 0, ',', '.'), 1, 0, 'R');
+
+            // Kehadiran 2
+            $pdf->Cell(10, 7, $jShift, 1, 0, 'C');
+            $pdf->Cell(20, 7, number_format($rank, 0, ',', '.'), 1, 0, 'R');
+            $pdf->Cell(30, 7, number_format($jumlah_barokah, 0, ',', '.'), 1, 0, 'R');
+
+            // Kehadiran 3
+            $pdf->Cell(10, 7, $jDini, 1, 0, 'C');
+            $pdf->Cell(15, 7, number_format($konsumsi, 0, ',', '.'), 1, 0, 'R');
+            $pdf->Cell(20, 7, number_format($jumlah_konsumsi, 0, ',', '.'), 1, 0, 'R');
+
+            // Danru
+            $pdf->Cell(35, 7, number_format($nominalDanruRow, 0, ',', '.'), 1, 0, 'R');
+
+            // Total
+            $pdf->SetFont('arial', 'B', 8);
+            $pdf->Cell(40, 7, number_format($diterima, 0, ',', '.'), 1, 1, 'R');
+            $pdf->SetFont('arial', '', 8);
+        }
+
+        // FOOTER TOTAL
+        $pdf->SetFont('arial', 'B', 8);
+        $pdf->Cell(98, 7, 'TOTAL', 1, 0, 'C');
+
+        // Kehadiran 1
+        $pdf->Cell(10, 7, '', 1, 0, 'C');
+        $pdf->Cell(15, 7, '', 1, 0, 'R');
+        $pdf->Cell(20, 7, number_format($grand_transport, 0, ',', '.'), 1, 0, 'R');
+
+        // Kehadiran 2
+        $pdf->Cell(10, 7, '', 1, 0, 'C');
+        $pdf->Cell(20, 7, '', 1, 0, 'R');
+        $pdf->Cell(30, 7, number_format($grand_barokah, 0, ',', '.'), 1, 0, 'R');
+
+        // Kehadiran 3
+        $pdf->Cell(10, 7, '', 1, 0, 'C');
+        $pdf->Cell(15, 7, '', 1, 0, 'R');
+        $pdf->Cell(20, 7, number_format($grand_dinihari, 0, ',', '.'), 1, 0, 'R');
+
+        // Danru
+        $pdf->Cell(35, 7, number_format($grand_danru, 0, ',', '.'), 1, 0, 'R');
+
+        // Grand Total
+        $pdf->Cell(40, 7, number_format($grand_total, 0, ',', '.'), 1, 1, 'R');
+
+        // TTD
+        $pdf->Ln(10);
+        $pdf->SetFont('arial', '', 9);
+        $pdf->Cell(310, 5, 'Situbondo, ' . date('d') . ' ' . self::getNamaBulanIndo(date('n')) . ' ' . date('Y'), 0, 1, 'R');
+        $pdf->Cell(310, 5, 'Bendahara,', 0, 1, 'R');
+        $pdf->Ln(20);
+        $pdf->SetFont('arial', 'B', 9);
+        $pdf->Cell(310, 5, '( ..................................... )', 0, 1, 'R');
+
+        return $pdf->Output('S');
+    }
 }
+

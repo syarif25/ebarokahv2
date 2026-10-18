@@ -58,14 +58,15 @@
                     <li><a href="{{ url('/manajemen-satpam/potongan-satpam') }}">Potongan Barokah</a></li>
                 </ul>
             </li>
-            <li><a class="has-arrow " href="javascript:void()" aria-expanded="false">
+            <li class="{{ Request::is('kehadiran*') ? 'mm-active' : '' }}">
+                <a class="has-arrow {{ Request::is('kehadiran*') ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ Request::is('kehadiran*') ? 'true' : 'false' }}">
                     <i class="fas fa-user-check"></i>
                     <span class="nav-text">Kehadiran</span>
                 </a>
-                <ul aria-expanded="false">
-                    <li><a href="{{ url('/kehadiran_struktural') }}">Struktural</a></li>
-                    <li><a href="{{ url('/kehadiran_pengajar') }}">Pengajar</a></li>
-                    <li><a href="#">Satpam</a></li>
+                <ul aria-expanded="{{ Request::is('kehadiran*') ? 'true' : 'false' }}" class="{{ Request::is('kehadiran*') ? 'mm-show' : '' }}">
+                    <li class="{{ Request::is('kehadiran_struktural*') || Request::is('kehadiran-struktural*') ? 'mm-active' : '' }}"><a href="{{ url('/kehadiran_struktural') }}">Struktural</a></li>
+                    <li class="{{ Request::is('kehadiran_pengajar*') || Request::is('kehadiran-pengajar*') ? 'mm-active' : '' }}"><a href="{{ url('/kehadiran_pengajar') }}">Pengajar</a></li>
+                    <li class="{{ Request::is('kehadiran_satpam*') || Request::is('kehadiran-satpam*') ? 'mm-active' : '' }}"><a href="{{ url('/kehadiran-satpam') }}">Satpam</a></li>
                 </ul>
             </li>
 

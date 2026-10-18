@@ -184,6 +184,35 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kehadiran_pengajar/cetak_potongan/{id}/{id_kehadiran?}', [App\Http\Controllers\KehadiranPengajarController::class, 'cetakPotongan']);
     Route::get('/kehadiran_pengajar/cekValidasiUmana/{nik}', [App\Http\Controllers\KehadiranStrukturalController::class, 'cekValidasiUmana']);
 
+    // Kehadiran Satpam
+    Route::get('/kehadiran-satpam', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
+    Route::get('/kehadiran_satpam', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
+    Route::get('/kehadiran_satpam/data_list', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
+    Route::post('/kehadiran_satpam/data_list', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
+    Route::post('/kehadiran-satpam/blanko', [App\Http\Controllers\KehadiranSatpamController::class, 'storeBlanko']);
+    Route::post('/kehadiran_satpam/blanko_add', [App\Http\Controllers\KehadiranSatpamController::class, 'storeBlanko']);
+    Route::get('/kehadiran-satpam/{id}/rekap', [App\Http\Controllers\KehadiranSatpamController::class, 'rekap']);
+    Route::get('/kehadiran_satpam/add_kehadiran/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'rekap']);
+    Route::post('/kehadiran-satpam/rekap', [App\Http\Controllers\KehadiranSatpamController::class, 'saveRekap']);
+    Route::post('/kehadiran_satpam/ajax_add_kehadiran', [App\Http\Controllers\KehadiranSatpamController::class, 'saveRekap']);
+    Route::get('/kehadiran-satpam/{id}/koreksi', [App\Http\Controllers\KehadiranSatpamController::class, 'koreksi']);
+    Route::get('/validasi_satpam/koreksi_satpam/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'koreksi']);
+    Route::post('/kehadiran-satpam/update-row', [App\Http\Controllers\KehadiranSatpamController::class, 'updateRow']);
+    Route::post('/validasi_satpam/update_row', [App\Http\Controllers\KehadiranSatpamController::class, 'updateRow']);
+    Route::post('/kehadiran-satpam/kirim', [App\Http\Controllers\KehadiranSatpamController::class, 'kirim']);
+    Route::post('/validasi_satpam/update_kirim', [App\Http\Controllers\KehadiranSatpamController::class, 'kirim']);
+    Route::post('/kehadiran-satpam/validasi', [App\Http\Controllers\KehadiranSatpamController::class, 'validasi']);
+    Route::post('/validasi_satpam/save_data', [App\Http\Controllers\KehadiranSatpamController::class, 'validasi']);
+    Route::post('/kehadiran-satpam/reset', [App\Http\Controllers\KehadiranSatpamController::class, 'reset']);
+    Route::post('/kehadiran_satpam/reset_json', [App\Http\Controllers\KehadiranSatpamController::class, 'reset']);
+    Route::get('/kehadiran-satpam/riwayat/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'riwayat']);
+    Route::get('/kehadiran-satpam/{id}/cetak', [App\Http\Controllers\KehadiranSatpamController::class, 'cetak']);
+    Route::get('/validasi_satpam/cetak/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'cetak']);
+    Route::get('/Laporan_satpam/cetak/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'cetak']);
+    Route::get('/kehadiran-satpam/{id}/rincian', [App\Http\Controllers\KehadiranSatpamController::class, 'rincian']);
+    Route::get('/Laporan_satpam/rincian/{id}', [App\Http\Controllers\KehadiranSatpamController::class, 'rincian']);
+    Route::get('/laporan/satpam', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
+
     // Validasi Barokah
     Route::get('/validasi', [App\Http\Controllers\ValidasiController::class, 'index']);
     Route::get('/Validasi', [App\Http\Controllers\ValidasiController::class, 'index']);
