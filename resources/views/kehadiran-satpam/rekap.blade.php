@@ -95,13 +95,23 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card rekap-card">
-                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title text-dark font-weight-bold mb-0">
-                        <i class="fas fa-shield-alt text-success me-2"></i>{{ $periode->lembaga->nama_lembaga ?? 'Satpam' }}
-                    </h5>
-                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-                        Total Personil: <strong>{{ count($satpam) }} Orang</strong>
-                    </span>
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title text-dark font-weight-bold mb-0 me-3">
+                            <i class="fas fa-shield-alt text-success me-2"></i>{{ $periode->lembaga->nama_lembaga ?? 'Satpam' }}
+                        </h5>
+                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
+                            Total Personil: <strong>{{ count($satpam) }} Orang</strong>
+                        </span>
+                    </div>
+                    <div class="search-box" style="min-width: 260px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0" style="border-color: #00a15d; border-radius: 20px 0 0 20px; color: #00a15d;">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" id="search_nama_satpam" class="form-control border-start-0" placeholder="Cari nama satpam..." style="border-color: #00a15d; border-radius: 0 20px 20px 0; font-size: 13px; padding-left: 0;">
+                        </div>
+                    </div>
                 </div>
 
                 <form id="formRekap" enctype="multipart/form-data">
@@ -138,13 +148,10 @@
                                                 <input type="hidden" name="id_satpam[]" value="{{ $key->id_satpam }}">
                                             </td>
                                             <td>
-                                                <div class="fw-bold text-dark">{{ $namaLengkap }}</div>
-                                                <small class="text-muted">
-                                                    NIK: {{ $key->nik }} 
-                                                    @if($key->is_danru == '1')
-                                                        <span class="badge bg-info text-white ms-1">Danru</span>
-                                                    @endif
-                                                </small>
+                                                <div class="fw-bold text-dark d-inline-block">{{ $namaLengkap }}</div>
+                                                @if($key->is_danru == '1')
+                                                    <span class="badge bg-info text-white ms-1">Danru</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 <input type="number" min="0" max="31" name="jumlah_hari[]" 
@@ -216,6 +223,19 @@
 @push('scripts')
 <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 <script>
+    // Live search filter nama satpam
+    $('#search_nama_satpam').on('keyup change', function() {
+        var query = $(this).val().toLowerCase().trim();
+        $('#tabel_rek tbody tr').each(function() {
+            var nama = $(this).find('td:nth-child(2)').text().toLowerCase();
+            if (nama.indexOf(query) !== -1 || query === '') {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
     function cekInputFile() {
         // Optional live status indicator
     }
