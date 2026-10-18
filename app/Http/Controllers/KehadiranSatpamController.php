@@ -112,12 +112,13 @@ class KehadiranSatpamController extends Controller
         DB::beginTransaction();
         try {
             $kehadiran = KehadiranLembaga::create([
-                'id_lembaga' => $idLembaga,
-                'kategori'   => 'Satpam',
-                'bulan'      => $bulan,
-                'tahun'      => $tahun,
-                'status'     => 'Belum',
-                'file'       => '',
+                'id_lembaga'   => $idLembaga,
+                'kategori'     => 'Satpam',
+                'bulan'        => $bulan,
+                'tahun'        => $tahun,
+                'status'       => 'Belum',
+                'jumlah_total' => 0,
+                'file'         => '',
             ]);
 
             // Catat log riwayat
