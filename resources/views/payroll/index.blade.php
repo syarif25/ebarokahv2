@@ -317,12 +317,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-    <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
 
     <script>
+    // Polyfill if Swal.fire is missing
+    if (typeof Swal !== 'undefined' && !Swal.fire) {
+        Swal.fire = function() {
+            return Swal.apply(this, arguments);
+        };
+    }
+
+    function openModal(modalId) {
+        var el = document.getElementById(modalId);
+        if (!el) return;
+        try {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                var modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+                modal.show();
+                return;
+            }
+        } catch (e) {
+            console.warn('Bootstrap modal open fallback:', e);
+        }
+        if ($.fn && $.fn.modal) {
+            $('#' + modalId).modal('show');
+        }
+    }
+
+    function closeModal(modalId) {
+        var el = document.getElementById(modalId);
+        if (!el) return;
+        try {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                var modal = bootstrap.Modal.getInstance(el);
+                if (modal) {
+                    modal.hide();
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn('Bootstrap modal hide fallback:', e);
+        }
+        if ($.fn && $.fn.modal) {
+            $('#' + modalId).modal('hide');
+        }
+    }
+
     var table;
     var table_item = null;
     var currentWaLembagaId = null;
+    var currentTransferItems = [];
 
     $(function () {
         table = $('#tabel_payroll').DataTable({
@@ -406,72 +450,85 @@
         });
 
         // Event handler klik Lihat Rincian / Sudah Transfer
-        $(document).on('click', '.btn-rincian', function () {
+        $(document).on('click', '.btn-rincian', function (e) {
+            e.preventDefault();
             var id = $(this).data('id');
             var mode = $(this).data('mode'); // 'transfer' or 'selesai'
             bukaDetailTransfer(id, mode);
         });
 
         // Event handler klik Log WA
-        $(document).on('click', '.btn-log-wa', function () {
+        $(document).on('click', '.btn-log-wa', function (e) {
+            e.preventDefault();
             var id = $(this).data('id');
             showWaLog(id);
         });
     });
 
     function initTableItem() {
-        if ($.fn.DataTable.isDataTable('#tabel2')) {
+        if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabel2')) {
             $('#tabel2').DataTable().destroy();
         }
 
         var namaLembaga = $('#detail_nama_lembaga').text().trim() || 'Payroll';
         var periode = $('#detail_periode').text().trim() || '';
 
-        table_item = $('#tabel2').DataTable({
-            paging: false,
-            searching: false,
-            ordering: false,
-            info: true,
-            destroy: true,
-            deferRender: true,
-            dom: '<"d-flex align-items-center mb-2"B>rt<"d-flex align-items-center justify-content-between mt-3 text-muted fs-12"i>',
-            buttons: [
-                {
-                    extend: 'copyHtml5',
-                    text: 'Copy',
-                    title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' - ' + periode
-                },
-                {
-                    extend: 'excelHtml5',
-                    text: 'Excel',
-                    filename: 'Payroll_' + namaLembaga.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + periode.replace(/[^a-zA-Z0-9_-]/g, '_'),
-                    title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
-                },
-                {
-                    extend: 'csvHtml5',
-                    text: 'CSV',
-                    filename: 'Payroll_' + namaLembaga.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + periode.replace(/[^a-zA-Z0-9_-]/g, '_'),
-                    title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    text: 'PDF',
-                    orientation: 'landscape',
-                    pageSize: 'A4',
-                    filename: 'Payroll_' + namaLembaga.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + periode.replace(/[^a-zA-Z0-9_-]/g, '_'),
-                    title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
+        try {
+            var dtConfig = {
+                paging: false,
+                searching: false,
+                ordering: false,
+                info: true,
+                destroy: true,
+                deferRender: true,
+                language: {
+                    info: 'Menampilkan _TOTAL_ data penerima transfer',
+                    infoEmpty: 'Tidak ada data'
                 }
-            ],
-            language: {
-                info: 'Menampilkan _TOTAL_ data penerima transfer',
-                infoEmpty: 'Tidak ada data'
+            };
+
+            if ($.fn.DataTable.Buttons) {
+                dtConfig.dom = '<"d-flex align-items-center mb-2"B>rt<"d-flex align-items-center justify-content-between mt-3 text-muted fs-12"i>';
+                dtConfig.buttons = [
+                    {
+                        extend: 'copyHtml5',
+                        text: 'Copy',
+                        title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' - ' + periode
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: 'Excel',
+                        filename: 'Payroll_' + namaLembaga.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + periode.replace(/[^a-zA-Z0-9_-]/g, '_'),
+                        title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
+                    },
+                    {
+                        extend: 'csvHtml5',
+                        text: 'CSV',
+                        filename: 'Payroll_' + namaLembaga.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + periode.replace(/[^a-zA-Z0-9_-]/g, '_'),
+                        title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: 'PDF',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        filename: 'Payroll_' + namaLembaga.replace(/[^a-zA-Z0-9_-]/g, '_') + '_' + periode.replace(/[^a-zA-Z0-9_-]/g, '_'),
+                        title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Print',
+                        title: 'Form Detail Nominal Transfer - ' + namaLembaga + ' (' + periode + ')'
+                    }
+                ];
+            } else {
+                dtConfig.dom = 'rt<"d-flex align-items-center justify-content-between mt-3 text-muted fs-12"i>';
             }
-        });
+
+            table_item = $('#tabel2').DataTable(dtConfig);
+        } catch (err) {
+            console.error('Error init DataTable tabel2:', err);
+        }
     }
 
     function bukaDetailTransfer(id, mode) {
@@ -481,18 +538,25 @@
             $('#btnSaveTransfer').show();
         }
 
-        if ($.fn.DataTable.isDataTable('#tabel2')) {
+        if ($.fn.DataTable && $.fn.DataTable.isDataTable('#tabel2')) {
             $('#tabel2').DataTable().destroy();
         }
 
+        currentTransferItems = [];
         $('#tbody_detail_transfer').html('<tr><td colspan="11" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin me-2"></i> Memuat detail transfer...</td></tr>');
-        $('#modal_sudah_trans').modal('show');
+        openModal('modal_sudah_trans');
 
         $.ajax({
             url: '{{ url("/payroll/detail") }}/' + id,
             type: 'GET',
             dataType: 'JSON',
             success: function (res) {
+                if (!res || !res.data_elemen) {
+                    Swal.fire('Error', 'Data detail transfer tidak ditemukan.', 'error');
+                    closeModal('modal_sudah_trans');
+                    return;
+                }
+
                 var el = res.data_elemen;
                 $('#detail_nama_lembaga').text(el.nama_lembaga);
                 var formattedJumlah = el.jumlah_total || (el.jumlah_total_raw ? new Intl.NumberFormat('id-ID').format(el.jumlah_total_raw) : '0');
@@ -502,44 +566,69 @@
 
                 $('#tbody_detail_transfer').html(res.html_item);
 
-                // Inisialisasi DataTable untuk #tabel2 beserta tombol export (Copy, Excel, CSV, PDF, Print)
+                currentTransferItems = res.data_items || [];
+
                 initTableItem();
             },
             error: function () {
                 Swal.fire('Error', 'Gagal memuat detail data.', 'error');
-                $('#modal_sudah_trans').modal('hide');
+                closeModal('modal_sudah_trans');
             }
         });
     }
 
     function submitTransfer() {
         const BATCH_SIZE = 10;
-        const form = document.getElementById('formTransfer');
-        const formData = new FormData(form);
+        let dataArray = [];
 
-        const namaLengkap = formData.getAll('nama_lengkap[]');
-        const namaLembaga = formData.getAll('nama_lembaga[]');
-        const namaBank    = formData.getAll('nama_bank[]');
-        const norek       = formData.getAll('norek[]');
-        const jumlah      = formData.getAll('diterima[]');
-        const nomorHp     = formData.getAll('nomor_hp[]');
-        const kategori    = formData.getAll('kategori[]');
-        const bulan       = formData.getAll('bulan[]');
-        const tahun       = formData.getAll('tahun[]');
-        const idTotal     = formData.getAll('id_total[]');
-        const idKehadiranLog = formData.getAll('id_kehadiran_lembaga_log[]');
+        if (currentTransferItems && currentTransferItems.length > 0) {
+            dataArray = currentTransferItems;
+        } else {
+            const form = document.getElementById('formTransfer');
+            const formData = new FormData(form);
 
-        const periode     = formData.get('periode');
-        const idKehadiranLembaga = formData.get('id_kehadiran_lembaga');
+            const namaLengkap = formData.getAll('nama_lengkap[]');
+            const namaLembaga = formData.getAll('nama_lembaga[]');
+            const namaBank    = formData.getAll('nama_bank[]');
+            const norek       = formData.getAll('norek[]');
+            const jumlah      = formData.getAll('diterima[]');
+            const nomorHp     = formData.getAll('nomor_hp[]');
+            const kategori    = formData.getAll('kategori[]');
+            const bulan       = formData.getAll('bulan[]');
+            const tahun       = formData.getAll('tahun[]');
+            const idTotal     = formData.getAll('id_total[]');
+            const idKehadiranLog = formData.getAll('id_kehadiran_lembaga_log[]');
 
-        if (!namaLengkap.length) {
-            Swal.fire('Info', 'Tidak ada data penerima transfer.', 'info');
+            const periode     = formData.get('periode') || $('#detail_periode').text().trim();
+            const idKehadiranLembaga = formData.get('id_kehadiran_lembaga') || $('#form_id_kehadiran_lembaga').val();
+
+            if (namaLengkap && namaLengkap.length > 0) {
+                dataArray = namaLengkap.map((_, i) => ({
+                    nama_lengkap: namaLengkap[i],
+                    nama_lembaga: namaLembaga[i],
+                    nama_bank: namaBank[i],
+                    norek: norek[i],
+                    diterima: jumlah[i],
+                    nomor_hp: nomorHp[i],
+                    kategori: kategori[i],
+                    bulan: bulan[i],
+                    tahun: tahun[i],
+                    id_total: idTotal[i],
+                    id_kehadiran_lembaga_log: idKehadiranLog[i],
+                    periode: periode,
+                    id_kehadiran_lembaga: idKehadiranLembaga
+                }));
+            }
+        }
+
+        if (!dataArray || !dataArray.length) {
+            Swal.fire('Info', 'Tidak ada data penerima transfer untuk diproses.', 'info');
             return;
         }
 
         Swal.fire({
             title: 'Konfirmasi Transfer',
-            text: 'Apakah Anda yakin transfer untuk ' + namaLengkap.length + ' penerima telah selesai dan ingin memproses notifikasi WhatsApp?',
+            text: 'Apakah Anda yakin transfer untuk ' + dataArray.length + ' penerima telah selesai dan ingin memproses notifikasi WhatsApp?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#00a15d',
@@ -547,23 +636,8 @@
             confirmButtonText: 'Ya, Selesai Transfer',
             cancelButtonText: 'Batal'
         }).then((result) => {
-            if (!result.isConfirmed) return;
-
-            const dataArray = namaLengkap.map((_, i) => ({
-                nama_lengkap: namaLengkap[i],
-                nama_lembaga: namaLembaga[i],
-                nama_bank: namaBank[i],
-                norek: norek[i],
-                diterima: jumlah[i],
-                nomor_hp: nomorHp[i],
-                kategori: kategori[i],
-                bulan: bulan[i],
-                tahun: tahun[i],
-                id_total: idTotal[i],
-                id_kehadiran_lembaga_log: idKehadiranLog[i],
-                periode: periode,
-                id_kehadiran_lembaga: idKehadiranLembaga
-            }));
+            const isConfirmed = result && (result.isConfirmed || result.value === true);
+            if (!isConfirmed) return;
 
             const batches = [];
             for (let i = 0; i < dataArray.length; i += BATCH_SIZE) {
@@ -588,6 +662,9 @@
                 showConfirmButton: false,
                 didOpen: () => {
                     sendNextBatch();
+                },
+                onOpen: () => {
+                    sendNextBatch();
                 }
             });
 
@@ -611,8 +688,10 @@
                         confirmButtonColor: '#00a15d',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        $('#modal_sudah_trans').modal('hide');
-                        table.ajax.reload(null, false);
+                        closeModal('modal_sudah_trans');
+                        if (table && table.ajax) {
+                            table.ajax.reload(null, false);
+                        }
                     });
                     return;
                 }
@@ -646,12 +725,12 @@
                     dataType: "JSON",
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                     success: function (data) {
-                        if (data.status) {
+                        if (data && data.status) {
                             currentBatch++;
                             updateProgress();
                             setTimeout(sendNextBatch, 800);
                         } else {
-                            Swal.fire('Gagal', `Gagal memproses batch ke-${currentBatch + 1}`, 'error');
+                            Swal.fire('Gagal', (data && data.message) ? data.message : `Gagal memproses batch ke-${currentBatch + 1}`, 'error');
                         }
                     },
                     error: function (xhr) {
@@ -666,7 +745,7 @@
         currentWaLembagaId = id;
         $('#waLogTableBody').html('<tr><td colspan="8" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin me-2"></i> Memuat log WA...</td></tr>');
         $('#bulkResendBtn').hide();
-        $('#waLogModal').modal('show');
+        openModal('waLogModal');
 
         $.ajax({
             url: '{{ url("/payroll/wa-log") }}',
@@ -733,7 +812,8 @@
             confirmButtonText: 'Kirim',
             cancelButtonText: 'Batal'
         }).then((result) => {
-            if (result.isConfirmed) {
+            const isConfirmed = result && (result.isConfirmed || result.value === true);
+            if (isConfirmed) {
                 $.ajax({
                     url: '{{ url("/payroll/resend-wa") }}/' + id,
                     type: 'POST',
@@ -742,7 +822,9 @@
                     success: function (res) {
                         Swal.fire('Terkirim', res.message, 'success');
                         if (currentWaLembagaId) showWaLog(currentWaLembagaId);
-                        table.ajax.reload(null, false);
+                        if (table && table.ajax) {
+                            table.ajax.reload(null, false);
+                        }
                     },
                     error: function () {
                         Swal.fire('Gagal', 'Terjadi kesalahan saat kirim ulang.', 'error');
@@ -763,11 +845,13 @@
             confirmButtonText: 'Ya, Kirim Semua',
             cancelButtonText: 'Batal'
         }).then((result) => {
-            if (result.isConfirmed) {
+            const isConfirmed = result && (result.isConfirmed || result.value === true);
+            if (isConfirmed) {
                 Swal.fire({
                     title: 'Memproses...',
                     allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); }
+                    didOpen: () => { Swal.showLoading(); },
+                    onOpen: () => { Swal.showLoading(); }
                 });
 
                 $.ajax({
@@ -779,7 +863,9 @@
                     success: function (res) {
                         Swal.fire('Selesai', res.message, 'success');
                         showWaLog(currentWaLembagaId);
-                        table.ajax.reload(null, false);
+                        if (table && table.ajax) {
+                            table.ajax.reload(null, false);
+                        }
                     },
                     error: function () {
                         Swal.fire('Gagal', 'Terjadi kesalahan saat memproses resend.', 'error');

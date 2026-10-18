@@ -234,6 +234,22 @@ class PayrollController extends Controller
             $netAmount = max(0, $nominal - $adminFee);
             $namaFormatted = trim(($sow->gelar_depan ? $sow->gelar_depan . ' ' : '') . $sow->nama_lengkap . ($sow->gelar_belakang ? ', ' . $sow->gelar_belakang : ''));
 
+            $dataItems[] = [
+                'nama_lengkap' => $namaFormatted,
+                'nama_lembaga' => $sow->nama_lembaga,
+                'nama_bank' => $sow->nama_bank,
+                'norek' => $sow->no_rekening,
+                'diterima' => $nominal,
+                'nomor_hp' => $sow->nomor_hp,
+                'kategori' => $sow->kategori,
+                'bulan' => $sow->bulan,
+                'tahun' => $sow->tahun,
+                'id_total' => $sow->id_total,
+                'id_kehadiran_lembaga_log' => $sow->id_kehadiran_lembaga,
+                'periode' => $sow->bulan . ' ' . $sow->tahun,
+                'id_kehadiran_lembaga' => $id,
+            ];
+
             $htmlItem .= '<tr>';
             $htmlItem .= '<td class="text-center font-weight-bold">' . $no++ . '</td>';
             $htmlItem .= '<td class="font-weight-bold">' . e($namaFormatted) . '</td>';
@@ -261,7 +277,6 @@ class PayrollController extends Controller
             $htmlItem .= '</tr>';
         }
 
-
         return response()->json([
             'data_elemen' => [
                 'id_kehadiran_lembaga' => $lembaga->id_kehadiran_lembaga,
@@ -274,7 +289,8 @@ class PayrollController extends Controller
                 'jumlah_total_raw' => (int)$lembaga->jumlah_total,
             ],
             'html_item' => $htmlItem,
-            'total_rows' => count($rows)
+            'total_rows' => count($rows),
+            'data_items' => $dataItems ?? []
         ]);
     }
 
