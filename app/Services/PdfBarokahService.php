@@ -152,6 +152,73 @@ class CustomPdfPotongan extends FPDF
     }
 }
 
+class CustomPdfSatpam extends FPDF
+{
+    protected $watermarkPath;
+
+    public function __construct($orientation = 'L', $unit = 'mm', $size = 'LEGAL', $watermark = null)
+    {
+        parent::__construct($orientation, $unit, $size);
+        $this->watermarkPath = $watermark ?? public_path('assets/p2s2_watermark.png');
+    }
+
+    public function Header()
+    {
+        if (file_exists($this->watermarkPath)) {
+            $pageW = $this->GetPageWidth();
+            $pageH = $this->GetPageHeight();
+            $logoW = 100;
+            $logoX = ($pageW - $logoW) / 2;
+            $logoY = ($pageH - ($logoW * 283 / 753)) / 2;
+            $this->Image($this->watermarkPath, $logoX, $logoY, $logoW);
+        }
+
+        if ($this->PageNo() > 1) {
+            $this->Cell(1, 5, '', 0, 1); // Spacer
+            $this->SetFont('arial', 'B', 8);
+
+            $x = $this->GetX();
+            $y = $this->GetY();
+
+            // 1. Tall Columns (Height 10)
+            $this->Cell(8, 10, 'No', 1, 0, 'C');
+            $this->Cell(90, 10, 'Nama Satpam', 1, 0, 'C');
+
+            // 2. Presence Groups (Top Row, Height 5)
+            $x_group = $this->GetX();
+            $this->Cell(45, 5, 'Kehadiran 1 (Siang)', 1, 0, 'C');
+            $this->Cell(60, 5, 'Kehadiran 2 (Shift)', 1, 0, 'C');
+            $this->Cell(45, 5, 'Kehadiran 3 (Dinihari)', 1, 0, 'C');
+
+            // 3. Right Tall Columns (Height 10)
+            $this->Cell(25, 10, 'Danru', 1, 0, 'C');
+            $this->Cell(25, 10, 'Potongan', 1, 0, 'C');
+            $this->Cell(30, 10, 'Total Diterima', 1, 0, 'C');
+
+            // 4. Sub-headers (Bottom Row, Height 5)
+            $this->SetXY($x_group, $y + 5);
+
+            // Group 1
+            $this->Cell(10, 5, 'H', 1, 0, 'C');
+            $this->Cell(15, 5, 'Trns', 1, 0, 'C');
+            $this->Cell(20, 5, 'Jml', 1, 0, 'C');
+
+            // Group 2
+            $this->Cell(10, 5, 'S', 1, 0, 'C');
+            $this->Cell(20, 5, 'Rank', 1, 0, 'C');
+            $this->Cell(30, 5, 'Jml', 1, 0, 'C');
+
+            // Group 3
+            $this->Cell(10, 5, 'D', 1, 0, 'C');
+            $this->Cell(15, 5, 'Kons', 1, 0, 'C');
+            $this->Cell(20, 5, 'Jml', 1, 0, 'C');
+
+            // 5. Reset for Body
+            $this->SetXY($x, $y + 10);
+        }
+    }
+}
+
 class PdfBarokahService
 {
     public static function formatRupiah($nominal)
@@ -749,7 +816,7 @@ class PdfBarokahService
      */
     public static function cetakRekapSatpam($periode, $isilist, $honorDanru = 100000)
     {
-        $pdf = new FPDF('L', 'mm', 'LEGAL');
+        $pdf = new CustomPdfSatpam('L', 'mm', 'LEGAL');
         $pdf->SetMargins(10, 10, 10);
         $pdf->SetAutoPageBreak(true, 15);
         $pdf->AddPage();
@@ -788,7 +855,7 @@ class PdfBarokahService
 
         $pdf->Ln(5);
 
-        // Header Table
+        // Header Table (Halaman 1)
         $pdf->SetFont('arial', 'B', 8);
         $x = $pdf->GetX();
         $y = $pdf->GetY();
@@ -801,8 +868,9 @@ class PdfBarokahService
         $pdf->Cell(60, 5, 'Kehadiran 2 (Shift)', 1, 0, 'C');
         $pdf->Cell(45, 5, 'Kehadiran 3 (Dinihari)', 1, 0, 'C');
 
-        $pdf->Cell(35, 10, 'Danru', 1, 0, 'C');
-        $pdf->Cell(40, 10, 'Total Diterima', 1, 0, 'C');
+        $pdf->Cell(25, 10, 'Danru', 1, 0, 'C');
+        $pdf->Cell(25, 10, 'Potongan', 1, 0, 'C');
+        $pdf->Cell(30, 10, 'Total Diterima', 1, 0, 'C');
 
         $pdf->SetXY($x_group, $y + 5);
         // Group 1
@@ -830,6 +898,7 @@ class PdfBarokahService
         $grand_barokah   = 0;
         $grand_dinihari  = 0;
         $grand_danru     = 0;
+        $grand_potongan  = 0;
         $grand_total     = 0;
 
         foreach ($isilist as $row) {
@@ -844,13 +913,15 @@ class PdfBarokahService
 
             $isDanru = (isset($row->is_danru) && (string)$row->is_danru === '1');
             $nominalDanruRow = $isDanru ? $honorDanru : 0;
+            $nominalPotonganRow = (int)($row->nominal_potongan ?? 0);
 
-            $diterima = $jumlah_transport + $jumlah_barokah + $jumlah_konsumsi + $nominalDanruRow;
+            $diterima = $jumlah_transport + $jumlah_barokah + $jumlah_konsumsi + $nominalDanruRow - $nominalPotonganRow;
 
             $grand_transport += $jumlah_transport;
             $grand_barokah   += $jumlah_barokah;
             $grand_dinihari  += $jumlah_konsumsi;
             $grand_danru     += $nominalDanruRow;
+            $grand_potongan  += $nominalPotonganRow;
             $grand_total     += $diterima;
 
             $namaLengkap = trim(($row->gelar_depan ?? '') . ' ' . ($row->nama_lengkap ?? '') . ' ' . ($row->gelar_belakang ?? ''));
@@ -874,11 +945,16 @@ class PdfBarokahService
             $pdf->Cell(20, 7, number_format($jumlah_konsumsi, 0, ',', '.'), 1, 0, 'R');
 
             // Danru
-            $pdf->Cell(35, 7, number_format($nominalDanruRow, 0, ',', '.'), 1, 0, 'R');
+            $pdf->Cell(25, 7, number_format($nominalDanruRow, 0, ',', '.'), 1, 0, 'R');
+
+            // Potongan
+            $pdf->SetTextColor(255, 0, 0);
+            $pdf->Cell(25, 7, number_format($nominalPotonganRow, 0, ',', '.'), 1, 0, 'R');
+            $pdf->SetTextColor(0, 0, 0);
 
             // Total
             $pdf->SetFont('arial', 'B', 8);
-            $pdf->Cell(40, 7, number_format($diterima, 0, ',', '.'), 1, 1, 'R');
+            $pdf->Cell(30, 7, number_format($diterima, 0, ',', '.'), 1, 1, 'R');
             $pdf->SetFont('arial', '', 8);
         }
 
@@ -902,10 +978,15 @@ class PdfBarokahService
         $pdf->Cell(20, 7, number_format($grand_dinihari, 0, ',', '.'), 1, 0, 'R');
 
         // Danru
-        $pdf->Cell(35, 7, number_format($grand_danru, 0, ',', '.'), 1, 0, 'R');
+        $pdf->Cell(25, 7, number_format($grand_danru, 0, ',', '.'), 1, 0, 'R');
+
+        // Potongan
+        $pdf->SetTextColor(255, 0, 0);
+        $pdf->Cell(25, 7, number_format($grand_potongan, 0, ',', '.'), 1, 0, 'R');
+        $pdf->SetTextColor(0, 0, 0);
 
         // Grand Total
-        $pdf->Cell(40, 7, number_format($grand_total, 0, ',', '.'), 1, 1, 'R');
+        $pdf->Cell(30, 7, number_format($grand_total, 0, ',', '.'), 1, 1, 'R');
 
         // TTD
         $pdf->Ln(10);

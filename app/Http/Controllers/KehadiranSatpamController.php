@@ -642,7 +642,8 @@ class KehadiranSatpamController extends Controller
                     u.gelar_depan,
                     u.nama_lengkap,
                     u.gelar_belakang,
-                    COALESCE(t.nominal_transport, 0) AS nominal_transport
+                    COALESCE(t.nominal_transport, 0) AS nominal_transport,
+                    (SELECT COALESCE(SUM(nominal_potongan), 0) FROM potongan_satpam WHERE id_satpam = ks.id_satpam AND (max_periode_potongan >= CURDATE() OR max_periode_potongan IS NULL OR max_periode_potongan = '0000-00-00')) AS nominal_potongan
                 FROM kehadiran_satpam ks
                 LEFT JOIN satpam s     ON s.id_satpam    = ks.id_satpam
                 LEFT JOIN umana  u     ON u.nik          = s.nik
