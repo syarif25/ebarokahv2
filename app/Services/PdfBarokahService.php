@@ -382,12 +382,8 @@ class PdfBarokahService
             $pdf->Cell(18, 7, self::formatRupiah($key->tbk ?? 0), 1, 0, 'C', $fill);
             $pdf->Cell(20, 7, self::formatRupiah($key->jumlah_barokah ?? 0), 1, 0, 'C', $fill);
             $pdf->Cell(20, 7, self::formatRupiah($key->potongan ?? 0), 1, 0, 'C', $fill);
-            $pdf->Cell(19, 7, self::formatRupiah($key->diterima ?? 0), 1, 0, 'C', $fill);
-            $pdf->Cell(0, 0, '', 0, 1);
-            $pdf->Cell(0, 0, '', 0, 1);
+            $pdf->Cell(19, 7, self::formatRupiah($key->diterima ?? 0), 1, 1, 'C', $fill);
         }
-
-        $pdf->Ln(8);
 
         // Baris TOTAL
         $pdf->SetFont('arial', 'B', 7);
@@ -411,16 +407,16 @@ class PdfBarokahService
         $pdf->Cell(18, 7, self::formatRupiah($totals['total_tbk'] ?? 0), 1, 0, 'C');
         $pdf->Cell(20, 7, self::formatRupiah($totals['total_barokah'] ?? 0), 1, 0, 'C');
         $pdf->Cell(20, 7, self::formatRupiah($totals['total_potongan'] ?? 0), 1, 0, 'C');
-        $pdf->Cell(19, 7, self::formatRupiah($totals['grand_total'] ?? 0), 1, 0, 'C');
+        $pdf->Cell(19, 7, self::formatRupiah($totals['grand_total'] ?? 0), 1, 1, 'C');
 
         // Tanggal Cetak
         $tgl = date('d');
         $b1  = self::getNamaBulanIndo(date('n'));
         $thn = date('Y');
 
-        $pdf->Ln(40);
-        $pdf->SetFont('arial', 'i', 5);
-        $pdf->Cell(292, -40, 'dicetak pada: ' . $tgl . ' ' . $b1 . ' ' . $thn, 0, 0, 'R');
+        $pdf->Ln(3);
+        $pdf->SetFont('arial', 'i', 7);
+        $pdf->Cell(329, 5, 'dicetak pada: ' . $tgl . ' ' . $b1 . ' ' . $thn, 0, 1, 'R');
 
         return $pdf->Output('S');
     }
@@ -673,11 +669,8 @@ class PdfBarokahService
             $pdf->Cell(15, 7, self::formatRupiah($key->khusus ?? ($key->tambahan ?? 0)), 1, 0, 'R', $fill);
             $pdf->Cell(15, 7, self::formatRupiah($key->jumlah ?? 0), 1, 0, 'R', $fill);
             $pdf->Cell(15, 7, self::formatRupiah($key->potongan ?? 0), 1, 0, 'R', $fill);
-            $pdf->Cell(20, 7, self::formatRupiah($key->diterima ?? 0), 1, 0, 'R', $fill);
-            $pdf->Cell(0, 0, '', 0, 1);
+            $pdf->Cell(20, 7, self::formatRupiah($key->diterima ?? 0), 1, 1, 'R', $fill);
         }
-
-        $pdf->Ln(8);
 
         // Baris TOTAL
         $pdf->SetFont('arial', 'B', 6);
@@ -696,16 +689,16 @@ class PdfBarokahService
         $pdf->Cell(15, 7, self::formatRupiah($totals['total_tambahan'] ?? 0), 1, 0, 'R');
         $pdf->Cell(15, 7, self::formatRupiah($totals['total_jumlah'] ?? 0), 1, 0, 'R');
         $pdf->Cell(15, 7, self::formatRupiah($totals['total_potongan'] ?? 0), 1, 0, 'R');
-        $pdf->Cell(20, 7, self::formatRupiah($totals['grand_total'] ?? 0), 1, 0, 'R');
+        $pdf->Cell(20, 7, self::formatRupiah($totals['grand_total'] ?? 0), 1, 1, 'R');
 
         // Tanggal Cetak
         $tgl = date('d');
         $b1  = self::getNamaBulanIndo(date('n'));
         $thn = date('Y');
 
-        $pdf->Ln(40);
-        $pdf->SetFont('arial', 'i', 5);
-        $pdf->Cell(292, -40, 'dicetak pada: ' . $tgl . ' ' . $b1 . ' ' . $thn, 0, 0, 'R');
+        $pdf->Ln(3);
+        $pdf->SetFont('arial', 'i', 7);
+        $pdf->Cell(329, 5, 'dicetak pada: ' . $tgl . ' ' . $b1 . ' ' . $thn, 0, 1, 'R');
 
         return $pdf->Output('S');
     }
