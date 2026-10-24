@@ -88,30 +88,18 @@
             </div>
 
             <div class="card-body p-4">
-                <!-- Summary 4 Cards -->
+                <!-- Summary Cards -->
                 <div class="row g-3 mb-4">
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-6 col-6">
                         <div class="summary-card">
                             <span class="summary-title"><i class="fas fa-users text-primary"></i> Total Umana'</span>
                             <h4 class="summary-value text-primary">{{ number_format($totalUmana, 0, ',', '.') }} Orang</h4>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
+                    <div class="col-md-6 col-6">
                         <div class="summary-card">
                             <span class="summary-title"><i class="fas fa-money-bill-wave text-success"></i> Total Barokah</span>
                             <h4 class="summary-value text-success">Rp {{ number_format($totalBarokah, 0, ',', '.') }}</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <div class="summary-card">
-                            <span class="summary-title"><i class="fas fa-chart-line text-info"></i> Rata-rata</span>
-                            <h4 class="summary-value text-dark">Rp {{ number_format($rataRata, 0, ',', '.') }}</h4>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <div class="summary-card">
-                            <span class="summary-title"><i class="fas fa-check-circle text-success"></i> Status</span>
-                            <h4 class="summary-value"><span class="badge bg-success text-white" style="font-size: 13px; border-radius: 8px;">Selesai</span></h4>
                         </div>
                     </div>
                 </div>
@@ -136,7 +124,6 @@
                                     <th rowspan="2" class="text-end">Kehormatan</th>
                                     <th rowspan="2" class="text-end">Potongan</th>
                                     <th rowspan="2" class="text-end">Diterima</th>
-                                    <th rowspan="2">Status</th>
                                 </tr>
                                 <tr class="text-center">
                                     <th>Hari</th>
@@ -177,11 +164,10 @@
                                         <td class="text-end">{{ number_format((float)$r->kehormatan, 0, ',', '.') }}</td>
                                         <td class="text-end text-danger">{{ number_format((float)$r->potongan, 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$r->diterima, 0, ',', '.') }}</td>
-                                        <td class="text-center"><span class="badge bg-success-light text-success">Sukses</span></td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="16" class="text-center py-4 text-muted">Tidak ada data rincian barokah</td>
+                                        <td colspan="15" class="text-center py-4 text-muted">Tidak ada data rincian barokah</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -199,7 +185,6 @@
                                     <th class="text-end">{{ number_format($totKehormatan, 0, ',', '.') }}</th>
                                     <th class="text-end text-danger">{{ number_format($totPotongan, 0, ',', '.') }}</th>
                                     <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterima, 0, ',', '.') }}</th>
-                                    <th></th>
                                 </tr>
                             </tfoot>
                         @elseif($kategori === 'Pengajar')
@@ -218,7 +203,6 @@
                                     <th class="text-end">Barokah Tambahan</th>
                                     <th class="text-end">Potongan</th>
                                     <th class="text-end">Diterima</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -252,11 +236,10 @@
                                         <td class="text-end">{{ number_format((float)$r->khusus, 0, ',', '.') }}</td>
                                         <td class="text-end text-danger">{{ number_format((float)$r->potongan, 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$r->diterima, 0, ',', '.') }}</td>
-                                        <td class="text-center"><span class="badge bg-success-light text-success">Sukses</span></td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="14" class="text-center py-4 text-muted">Tidak ada data rincian barokah pengajar</td>
+                                        <td colspan="13" class="text-center py-4 text-muted">Tidak ada data rincian barokah pengajar</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -270,7 +253,6 @@
                                     <th class="text-end">{{ number_format($totTambahanP, 0, ',', '.') }}</th>
                                     <th class="text-end text-danger">{{ number_format($totPotonganP, 0, ',', '.') }}</th>
                                     <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterimaP, 0, ',', '.') }}</th>
-                                    <th></th>
                                 </tr>
                             </tfoot>
                         @else
@@ -281,7 +263,6 @@
                                     <th>Kehadiran (Hari)</th>
                                     <th class="text-end">Potongan</th>
                                     <th class="text-end">Diterima</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -300,11 +281,10 @@
                                         <td class="text-center">{{ $r->jumlah_hadir }}</td>
                                         <td class="text-end text-danger">{{ number_format((float)$r->potongan, 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$r->diterima, 0, ',', '.') }}</td>
-                                        <td class="text-center"><span class="badge bg-success-light text-success">Sukses</span></td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-4 text-muted">Tidak ada data rincian satpam</td>
+                                        <td colspan="5" class="text-center py-4 text-muted">Tidak ada data rincian satpam</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -313,7 +293,6 @@
                                     <th colspan="3" class="text-center">TOTAL</th>
                                     <th class="text-end text-danger">{{ number_format($totPotonganS, 0, ',', '.') }}</th>
                                     <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterimaS, 0, ',', '.') }}</th>
-                                    <th></th>
                                 </tr>
                             </tfoot>
                         @endif
