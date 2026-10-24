@@ -428,35 +428,33 @@
 <!-- Modal Validasi Silang Tunjangan Ganda (Struktural & Pengajar) -->
 <div class="modal fade" id="modalCekValidasiUmana" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content" style="border-radius: 15px; border: none; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
-      <div class="modal-header bg-primary text-white py-2 px-3">
-        <h5 class="modal-title font-weight-bold text-white mb-0" style="font-size: 1.05rem;">
-          <i class="fa fa-id-card mr-2 me-2"></i> Validasi Tunjangan Umana'
+    <div class="modal-content" style="border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+      <div class="modal-header py-3 px-4 bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="modal-title font-weight-bold text-dark mb-0" style="font-size: 1rem;">
+          Validasi Tunjangan Umana'
         </h5>
-        <button type="button" class="close text-white border-0 bg-transparent" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close" style="font-size: 1.5rem;"><span>&times;</span></button>
+        <button type="button" class="close text-muted border-0 bg-transparent" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close" style="font-size: 1.5rem; line-height: 1;"><span>&times;</span></button>
       </div>
-      <div class="modal-body p-3">
+      <div class="modal-body p-4">
         <!-- Info Profil Umana' -->
-        <div class="card bg-light border-0 mb-3 shadow-none">
-          <div class="card-body py-2 px-3">
-            <span class="text-muted small">Nama Umana':</span>
-            <h6 class="font-weight-bold text-dark mb-0" id="val-umana-nama">-</h6>
+        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+          <div>
+            <span class="text-muted small">Nama:</span>
+            <span class="font-weight-bold text-dark ml-1 me-1" id="val-umana-nama">-</span>
+          </div>
+          <div>
+            <span class="badge badge-light text-muted font-weight-normal" style="font-size: 12px; border: 1px solid #e2e8f0; padding: 4px 8px;">Pengecekan Tunjangan Ganda</span>
           </div>
         </div>
 
-        <div class="alert alert-warning py-2 px-3 small mb-3 border-0" style="background-color: #fff8e1; color: #856404;">
-          <i class="fa fa-shield-alt mr-1 me-1"></i>
-          <strong>Petunjuk:</strong> Tabel di bawah menampilkan seluruh SK penempatan aktif Umana' ini di unit <strong>Struktural</strong> dan <strong>Pengajar</strong>. Pastikan tidak ada duplikasi penerimaan <em>Tunkel</em>, <em>Tunjangan Anak</em>, atau <em>Kehormatan</em> di lebih dari satu penempatan.
-        </div>
-
-        <!-- 1. TABEL STRUKTURAL -->
-        <h6 class="font-weight-bold text-primary mb-2" style="font-size: 0.9rem;">
-          <i class="fa fa-sitemap mr-1 me-1"></i> 1. Penempatan Struktural
+        <!-- TABEL STRUKTURAL -->
+        <h6 class="font-weight-bold text-dark mb-2" style="font-size: 0.85rem;">
+          Penempatan Struktural
         </h6>
-        <div class="table-responsive mb-3">
-          <table class="table table-sm table-bordered table-striped">
-            <thead class="thead-light">
-              <tr>
+        <div class="table-responsive mb-4">
+          <table class="table table-sm table-hover align-middle mb-0" style="font-size: 13px;">
+            <thead class="table-light">
+              <tr style="font-size: 11px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">
                 <th style="width: 35px;" class="text-center">No</th>
                 <th>Nama</th>
                 <th>Lembaga</th>
@@ -467,19 +465,19 @@
               </tr>
             </thead>
             <tbody id="val-tbody-struktural">
-              <tr><td colspan="7" class="text-center text-muted">Memuat data...</td></tr>
+              <tr><td colspan="7" class="text-center text-muted py-3">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
 
-        <!-- 2. TABEL PENGAJAR -->
-        <h6 class="font-weight-bold text-success mb-2" style="font-size: 0.9rem;">
-          <i class="fa fa-graduation-cap mr-1 me-1"></i> 2. Penugasan Pengajar (Guru / Dosen)
+        <!-- TABEL PENGAJAR -->
+        <h6 class="font-weight-bold text-dark mb-2" style="font-size: 0.85rem;">
+          Penugasan Pengajar (Guru / Dosen)
         </h6>
         <div class="table-responsive">
-          <table class="table table-sm table-bordered table-striped">
-            <thead class="thead-light">
-              <tr>
+          <table class="table table-sm table-hover align-middle mb-0" style="font-size: 13px;">
+            <thead class="table-light">
+              <tr style="font-size: 11px; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">
                 <th style="width: 35px;" class="text-center">No</th>
                 <th>Nama</th>
                 <th>Lembaga</th>
@@ -491,13 +489,13 @@
               </tr>
             </thead>
             <tbody id="val-tbody-pengajar">
-              <tr><td colspan="8" class="text-center text-muted">Memuat data...</td></tr>
+              <tr><td colspan="8" class="text-center text-muted py-3">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-      <div class="modal-footer py-2 px-3 border-top-0">
-        <button type="button" class="btn btn-secondary btn-sm px-4 rounded-pill" data-bs-dismiss="modal" data-dismiss="modal">Tutup</button>
+      <div class="modal-footer py-2 px-4 bg-white border-top">
+        <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal" data-dismiss="modal" style="border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 500; color: #475569;">Tutup</button>
       </div>
     </div>
   </div>
@@ -772,24 +770,19 @@
 
                 const sertifVal = res.umana.status_sertifikasi || 'Belum Sertifikasi';
 
+                const yaBadge = '<span class="badge" style="background-color: #e8f5e9; color: #1b5e20; font-weight: 600; font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid #c8e6c9;"><i class="fa fa-check mr-1 me-1"></i>Ya</span>';
+                const tidakBadge = '<span class="text-muted" style="font-size: 12px;">-</span>';
+
                 // 1. Render Tabel Struktural
                 let htmlStruk = '';
                 if(res.struktural && res.struktural.length > 0) {
                     res.struktural.forEach((item, idx) => {
-                        const tunkelBadge = (item.tunj_kel === 'Ya')
-                            ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
-                            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
-
-                        const tunjAnakBadge = (item.tunj_anak === 'Ya')
-                            ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
-                            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
-
-                        const kehormatanBadge = (item.kehormatan === 'Ya')
-                            ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
-                            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
+                        const tunkelBadge = (item.tunj_kel === 'Ya') ? yaBadge : tidakBadge;
+                        const tunjAnakBadge = (item.tunj_anak === 'Ya') ? yaBadge : tidakBadge;
+                        const kehormatanBadge = (item.kehormatan === 'Ya') ? yaBadge : tidakBadge;
 
                         htmlStruk += `<tr>
-                            <td class="text-center font-weight-bold">${idx + 1}</td>
+                            <td class="text-center font-weight-bold text-muted">${idx + 1}</td>
                             <td><strong>${formattedNama}</strong><br><small class="text-muted">${item.nama_jabatan || '-'}</small></td>
                             <td><strong>${item.nama_lembaga || '-'}</strong></td>
                             <td class="text-center">${sertifVal}</td>
@@ -799,7 +792,7 @@
                         </tr>`;
                     });
                 } else {
-                    htmlStruk = '<tr><td colspan="7" class="text-center text-muted">Tidak memiliki data penempatan struktural lain.</td></tr>';
+                    htmlStruk = '<tr><td colspan="7" class="text-center text-muted py-3">Tidak memiliki data penempatan struktural lain.</td></tr>';
                 }
                 $('#val-tbody-struktural').html(htmlStruk);
 
@@ -807,24 +800,16 @@
                 let htmlPeng = '';
                 if(res.pengajar && res.pengajar.length > 0) {
                     res.pengajar.forEach((item, idx) => {
-                        const tunkelBadge = (item.tunj_kel === 'Ya')
-                            ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
-                            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
-
-                        const tunjAnakBadge = (item.tunj_anak === 'Ya')
-                            ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
-                            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
-
-                        const kehormatanBadge = (item.kehormatan === 'Ya')
-                            ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
-                            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
+                        const tunkelBadge = (item.tunj_kel === 'Ya') ? yaBadge : tidakBadge;
+                        const tunjAnakBadge = (item.tunj_anak === 'Ya') ? yaBadge : tidakBadge;
+                        const kehormatanBadge = (item.kehormatan === 'Ya') ? yaBadge : tidakBadge;
 
                         const jenisBadge = item.jenis_pengajar
-                            ? `<span class="badge badge-primary px-2 py-1">${item.jenis_pengajar}</span>`
-                            : '-';
+                            ? `<span class="badge" style="background-color: #f1f5f9; color: #334155; font-weight: 600; font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid #e2e8f0;">${item.jenis_pengajar}</span>`
+                            : '<span class="text-muted">-</span>';
 
                         htmlPeng += `<tr>
-                            <td class="text-center font-weight-bold">${idx + 1}</td>
+                            <td class="text-center font-weight-bold text-muted">${idx + 1}</td>
                             <td><strong>${formattedNama}</strong></td>
                             <td><strong>${item.nama_lembaga || '-'}</strong></td>
                             <td class="text-center">${sertifVal}</td>
@@ -835,7 +820,7 @@
                         </tr>`;
                     });
                 } else {
-                    htmlPeng = '<tr><td colspan="8" class="text-center text-muted">Tidak memiliki data penugasan pengajar lain.</td></tr>';
+                    htmlPeng = '<tr><td colspan="8" class="text-center text-muted py-3">Tidak memiliki data penugasan pengajar lain.</td></tr>';
                 }
                 $('#val-tbody-pengajar').html(htmlPeng);
             }).fail(function() {
