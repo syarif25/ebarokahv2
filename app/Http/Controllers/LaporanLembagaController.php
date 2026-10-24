@@ -409,4 +409,124 @@ class LaporanLembagaController extends Controller
 
         return view('laporan.per-lembaga.cetak', compact('lembaga', 'rows', 'kategori'));
     }
+
+    /**
+     * Export Rincian Barokah Lembaga ke format Excel (.xls)
+     */
+    public function exportExcel($id)
+    {
+        $lembaga = DB::table('kehadiran_lembaga')
+            ->join('lembaga', 'kehadiran_lembaga.id_lembaga', '=', 'lembaga.id_lembaga')
+            ->where('kehadiran_lembaga.id_kehadiran_lembaga', $id)
+            ->select('kehadiran_lembaga.*', 'lembaga.nama_lembaga')
+            ->first();
+
+        if (!$lembaga) {
+            abort(404, 'Data lembaga tidak ditemukan');
+        }
+
+        $kategori = $lembaga->kategori ?: 'Struktural';
+        $rows = [];
+
+        if ($kategori === 'Struktural') {
+            $rows = DB::table('kehadiran')
+                ->join('kehadiran_lembaga', 'kehadiran_lembaga.id_kehadiran_lembaga', '=', 'kehadiran.id_kehadi')
+                ->join('penempatan', 'penempatan.id_penempatan', '=', 'kehadiran.id_penempatan')
+                ->join('umana', 'penempatan.nik', '=', 'umana.nik')
+                ->join('total_barokah', 'total_barokah.id_penempatan', '=', 'kehadiran.id_penempatan')
+                ->join('ketentuan_barokah', 'penempatan.id_ketentuan', '=', 'ketentuan_barokah.id_ketentuan')
+                ->join('lembaga', 'lembaga.id_lembaga', '=', 'penempatan.id_lembaga')
+                ->where('kehadiran_lembaga.id_kehadiran_lembaga', $id)
+                ->where('total_barokah.bulan', DB::raw('kehadiran_lembaga.bulan'))
+                ->where('total_barokah.tahun', DB::raw('kehadiran_lembaga.tahun'))
+                ->select(
+                    'umana.gelar_depan',
+                    'umana.gelar_belakang',
+                    'umana.nama_lengkap',
+                    'umana.nik',
+                    'ketentuan_barokah.nama_jabatan',
+                    'umana.tmt_struktural',
+                    'ketentuan_barokah.barokah',
+                    'total_barokah.mp',
+                    'kehadiran.jumlah_hadir',
+                    'total_barokah.nominal_kehadiran',
+                    'total_barokah.tunkel',
+                    'total_barokah.tunj_anak',
+                    'total_barokah.tbk',
+                    'total_barokah.tmp',
+                    'total_barokah.kehormatan',
+                    'total_barokah.potongan',
+                    'total_barokah.diterima'
+                )
+                ->groupBy('umana.nik', 'umana.gelar_depan', 'umana.gelar_belakang', 'umana.nama_lengkap', 'ketentuan_barokah.nama_jabatan', 'umana.tmt_struktural', 'ketentuan_barokah.barokah', 'total_barokah.mp', 'kehadiran.jumlah_hadir', 'total_barokah.nominal_kehadiran', 'total_barokah.tunkel', 'total_barokah.tunj_anak', 'total_barokah.tbk', 'total_barokah.tmp', 'total_barokah.kehormatan', 'total_barokah.potongan', 'total_barokah.diterima', 'ketentuan_barokah.id_ketentuan')
+                ->orderBy('ketentuan_barokah.id_ketentuan', 'asc')
+                ->get();
+        } elseif ($kategori === 'Pengajar') {
+            $rows = DB::table('kehadiran_lembaga as kl')
+                ->join('kehadiran_pengajar as kp', 'kl.id_kehadiran_lembaga', '=', 'kp.id_kehadiran_lembaga')
+                ->join('pengajar as p', 'kp.id_pengajar', '=', 'p.id_pengajar')
+                ->join('umana as u', 'p.nik', '=', 'u.nik')
+                ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
+                ->join('total_barokah_pengajar as tbp', function($join) {
+                    $join->on('tbp.id_pengajar', '=', 'kp.id_pengajar')
+                         ->on('tbp.bulan', '=', 'kl.bulan')
+                         ->on('tbp.tahun', '=', 'kl.tahun');
+                })
+                ->where('kl.id_kehadiran_lembaga', $id)
+                ->select(
+                    'u.gelar_depan',
+                    'u.gelar_belakang',
+                    'u.nama_lengkap',
+                    'u.nik',
+                    'p.kategori as nama_jabatan',
+                    'tbp.jumlah_sks',
+                    'tbp.mengajar',
+                    'tbp.mp',
+                    'tbp.dty',
+                    'tbp.jafung',
+                    'tbp.jumlah_hadir',
+                    'tbp.nominal_kehadiran',
+                    'tbp.jumlah_hadir_15',
+                    'tbp.nominal_hadir_15',
+                    'tbp.jumlah_hadir_10',
+                    'tbp.nominal_hadir_10',
+                    'tbp.jumlah_hadir_piket',
+                    'tbp.barokah_piket',
+                    'tbp.tunkel',
+                    'tbp.tun_anak as tunj_anak',
+                    'tbp.kehormatan',
+                    'tbp.walkes',
+                    'tbp.khusus',
+                    'tbp.potongan',
+                    'tbp.diterima'
+                )
+                ->orderBy('u.nama_lengkap', 'asc')
+                ->get();
+        } elseif ($kategori === 'Satpam') {
+            $rows = DB::table('total_barokah_satpam as tb')
+                ->join('satpam as s', 'tb.id_satpam', '=', 's.id_satpam')
+                ->join('umana as u', 's.nik', '=', 'u.nik')
+                ->where('tb.id_kehadiran_lembaga', $id)
+                ->select(
+                    'u.gelar_depan',
+                    'u.gelar_belakang',
+                    'u.nama_lengkap',
+                    'u.nik',
+                    'tb.jumlah_hari as jumlah_hadir',
+                    'tb.potongan',
+                    'tb.diterima'
+                )
+                ->orderBy('u.nama_lengkap', 'asc')
+                ->get();
+        }
+
+        $cleanLembaga = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $lembaga->nama_lembaga);
+        $cleanPeriode = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $lembaga->bulan . '_' . $lembaga->tahun);
+        $filename = "Laporan_Barokah_{$cleanLembaga}_{$kategori}_{$cleanPeriode}.xls";
+
+        return response()->view('laporan.per-lembaga.excel', compact('lembaga', 'rows', 'kategori'))
+            ->header('Content-Type', 'application/vnd.ms-excel; charset=utf-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->header('Cache-Control', 'max-age=0');
+    }
 }

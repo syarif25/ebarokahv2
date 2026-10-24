@@ -248,6 +248,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/laporan/per-lembaga/data', [App\Http\Controllers\LaporanLembagaController::class, 'data']);
     Route::get('/laporan/per-lembaga/rincian/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'rincian']);
     Route::get('/laporan/per-lembaga/cetak/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'cetak']);
+    Route::get('/laporan/per-lembaga/export-excel/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'exportExcel']);
 });
 
 

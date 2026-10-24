@@ -78,6 +78,9 @@
                     </p>
                 </div>
                 <div class="d-flex gap-2">
+                    <a href="{{ url('/laporan/per-lembaga/export-excel/' . $lembaga->id_kehadiran_lembaga) }}" class="btn btn-success btn-sm rounded-pill px-3 shadow-sm font-weight-bold" style="background-color: #00a15d; border-color: #00a15d;">
+                        <i class="fas fa-file-excel me-1"></i> Export XLS
+                    </a>
                     <a href="{{ url('/laporan/per-lembaga/cetak/' . $lembaga->id_kehadiran_lembaga) }}" target="_blank" class="btn btn-warning text-dark btn-sm rounded-pill px-3 shadow-sm font-weight-bold">
                         <i class="fas fa-print me-1"></i> Cetak Laporan
                     </a>
