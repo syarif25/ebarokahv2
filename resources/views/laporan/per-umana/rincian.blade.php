@@ -223,136 +223,238 @@
                         </div>
                     </div>
 
-                    <!-- Tab 2: Struktural -->
+                    <!-- Tab 2: Struktural (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-struktural" role="tabpanel">
                         <div class="table-responsive">
                             <table id="tabel_struktural" class="table table-bordered table-hover table-custom w-100">
                                 <thead>
-                                    <tr>
-                                        <th style="width: 40px;" class="text-center">No</th>
-                                        <th>Bulan Tahun</th>
-                                        <th>Lembaga</th>
-                                        <th class="text-end">Nominal Barokah</th>
-                                        <th style="width: 100px;" class="text-center">Aksi</th>
+                                    <tr class="text-center">
+                                        <th rowspan="2" style="width: 40px;">No</th>
+                                        <th rowspan="2">Bulan / Periode</th>
+                                        <th rowspan="2">Lembaga</th>
+                                        <th rowspan="2">Jabatan</th>
+                                        <th rowspan="2" class="text-end">Tunjab</th>
+                                        <th rowspan="2">MP</th>
+                                        <th colspan="2">Kehadiran</th>
+                                        <th rowspan="2" class="text-end">Tunkel</th>
+                                        <th rowspan="2" class="text-end">Tunj Anak</th>
+                                        <th rowspan="2" class="text-end">TBK</th>
+                                        <th rowspan="2" class="text-end">TMP</th>
+                                        <th rowspan="2" class="text-end">Kehormatan</th>
+                                        <th rowspan="2" class="text-end">Potongan</th>
+                                        <th rowspan="2" class="text-end">Diterima</th>
+                                    </tr>
+                                    <tr class="text-center">
+                                        <th>Hari</th>
+                                        <th class="text-end">Nominal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $totTunjab = 0; $totHadirNom = 0; $totTunkel = 0; $totTunAnak = 0;
+                                        $totTbk = 0; $totTmp = 0; $totKehormatan = 0; $totPotongan = 0; $totDiterima = 0;
+                                    @endphp
                                     @forelse($struktural as $s)
-                                    <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td><strong>{{ $s->bulan }} {{ $s->tahun }}</strong></td>
-                                        <td>{{ $s->nama_lembaga }}</td>
-                                        <td class="text-end font-weight-bold" style="color: #16a34a;">
-                                            Rp {{ number_format((float)$s->diterima, 0, ',', '.') }}
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-detail-breakdown shadow-sm" onclick="openBreakdown('{{ $s->tahun }}', '{{ $s->bulan }}', 'struktural', '{{ $s->id_lembaga }}')">
-                                                <i class="fas fa-search-plus me-1"></i> Detail
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        @php
+                                            $totTunjab += (float)$s->tunjab;
+                                            $totHadirNom += (float)$s->nominal_kehadiran;
+                                            $totTunkel += (float)$s->tunkel;
+                                            $totTunAnak += (float)$s->tunj_anak;
+                                            $totTbk += (float)$s->tbk;
+                                            $totTmp += (float)$s->tmp;
+                                            $totKehormatan += (float)$s->kehormatan;
+                                            $totPotongan += (float)$s->potongan;
+                                            $totDiterima += (float)$s->diterima;
+                                        @endphp
+                                        <tr>
+                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td><strong>{{ $s->bulan }} {{ $s->tahun }}</strong></td>
+                                            <td>{{ $s->nama_lembaga }}</td>
+                                            <td>{{ $s->nama_jabatan ?: '-' }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->tunjab, 0, ',', '.') }}</td>
+                                            <td class="text-center">{{ $s->mp ?: 0 }}</td>
+                                            <td class="text-center">{{ $s->jumlah_hadir ?: 0 }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->nominal_kehadiran, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->tunkel, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->tunj_anak, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->tbk, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->tmp, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$s->kehormatan, 0, ',', '.') }}</td>
+                                            <td class="text-end text-danger">{{ number_format((float)$s->potongan, 0, ',', '.') }}</td>
+                                            <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$s->diterima, 0, ',', '.') }}</td>
+                                        </tr>
                                     @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-4 text-muted">Data tidak ditemukan / Tidak aktif di Struktural</td>
-                                    </tr>
+                                        <tr>
+                                            <td colspan="15" class="text-center py-4 text-muted">Data tidak ditemukan / Tidak aktif di Struktural</td>
+                                        </tr>
                                     @endforelse
                                 </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #f8fafc; font-weight: bold;">
+                                        <th colspan="4" class="text-center">TOTAL</th>
+                                        <th class="text-end">{{ number_format($totTunjab, 0, ',', '.') }}</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="text-end">{{ number_format($totHadirNom, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totTunkel, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totTunAnak, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totTbk, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totTmp, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totKehormatan, 0, ',', '.') }}</th>
+                                        <th class="text-end text-danger">{{ number_format($totPotongan, 0, ',', '.') }}</th>
+                                        <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterima, 0, ',', '.') }}</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
 
-                    <!-- Tab 3: Pengajar -->
+                    <!-- Tab 3: Pengajar (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-pengajar" role="tabpanel">
                         <div class="table-responsive">
                             <table id="tabel_pengajar" class="table table-bordered table-hover table-custom w-100">
                                 <thead>
-                                    <tr>
-                                        <th style="width: 40px;" class="text-center">No</th>
-                                        <th>Bulan Tahun</th>
+                                    <tr class="text-center">
+                                        <th style="width: 40px;">No</th>
+                                        <th>Bulan / Periode</th>
                                         <th>Lembaga</th>
-                                        <th class="text-end">Nominal Barokah</th>
-                                        <th style="width: 100px;" class="text-center">Aksi</th>
+                                        <th>Kategori</th>
+                                        <th>SKS / Mengajar</th>
+                                        <th>Kehadiran</th>
+                                        <th>Piket</th>
+                                        <th class="text-end">Tunkel</th>
+                                        <th class="text-end">Tunj Anak</th>
+                                        <th class="text-end">Kehormatan</th>
+                                        <th class="text-end">Walkes</th>
+                                        <th class="text-end">Barokah Tambahan</th>
+                                        <th class="text-end">Potongan</th>
+                                        <th class="text-end">Diterima</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $totTunkelP = 0; $totTunAnakP = 0; $totKehormatanP = 0;
+                                        $totWalkesP = 0; $totTambahanP = 0;
+                                        $totPotonganP = 0; $totDiterimaP = 0;
+                                    @endphp
                                     @forelse($pengajar as $p)
-                                    <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td><strong>{{ $p->bulan }} {{ $p->tahun }}</strong></td>
-                                        <td>{{ $p->nama_lembaga }}</td>
-                                        <td class="text-end font-weight-bold" style="color: #16a34a;">
-                                            Rp {{ number_format((float)$p->diterima, 0, ',', '.') }}
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-detail-breakdown shadow-sm" onclick="openBreakdown('{{ $p->tahun }}', '{{ $p->bulan }}', 'pengajar', '{{ $p->id_lembaga }}')">
-                                                <i class="fas fa-search-plus me-1"></i> Detail
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        @php
+                                            $totTunkelP += (float)$p->tunkel;
+                                            $totTunAnakP += (float)$p->tunj_anak;
+                                            $totKehormatanP += (float)$p->kehormatan;
+                                            $totWalkesP += (float)$p->walkes;
+                                            $totTambahanP += (float)$p->tambahan;
+                                            $totPotonganP += (float)$p->potongan;
+                                            $totDiterimaP += (float)$p->diterima;
+                                        @endphp
+                                        <tr>
+                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td><strong>{{ $p->bulan }} {{ $p->tahun }}</strong></td>
+                                            <td>{{ $p->nama_lembaga }}</td>
+                                            <td class="text-center">{{ $p->nama_jabatan ?: '-' }}</td>
+                                            <td class="text-center">{{ $p->jumlah_sks ?: 0 }} SKS</td>
+                                            <td class="text-center">{{ $p->jumlah_hadir ?: 0 }}</td>
+                                            <td class="text-center">{{ $p->jumlah_hadir_piket ?? '-' }}</td>
+                                            <td class="text-end">{{ number_format((float)$p->tunkel, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$p->tunj_anak, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$p->kehormatan, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$p->walkes, 0, ',', '.') }}</td>
+                                            <td class="text-end">{{ number_format((float)$p->tambahan, 0, ',', '.') }}</td>
+                                            <td class="text-end text-danger">{{ number_format((float)$p->potongan, 0, ',', '.') }}</td>
+                                            <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$p->diterima, 0, ',', '.') }}</td>
+                                        </tr>
                                     @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-4 text-muted">Data tidak ditemukan / Tidak aktif sebagai Pengajar</td>
-                                    </tr>
+                                        <tr>
+                                            <td colspan="14" class="text-center py-4 text-muted">Data tidak ditemukan / Tidak aktif sebagai Pengajar</td>
+                                        </tr>
                                     @endforelse
                                 </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #f8fafc; font-weight: bold;">
+                                        <th colspan="7" class="text-center">TOTAL</th>
+                                        <th class="text-end">{{ number_format($totTunkelP, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totTunAnakP, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totKehormatanP, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totWalkesP, 0, ',', '.') }}</th>
+                                        <th class="text-end">{{ number_format($totTambahanP, 0, ',', '.') }}</th>
+                                        <th class="text-end text-danger">{{ number_format($totPotonganP, 0, ',', '.') }}</th>
+                                        <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterimaP, 0, ',', '.') }}</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
 
-                    <!-- Tab 4: Satpam -->
+                    <!-- Tab 4: Satpam (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-satpam" role="tabpanel">
                         <div class="table-responsive">
                             <table id="tabel_satpam" class="table table-bordered table-hover table-custom w-100">
                                 <thead>
-                                    <tr>
-                                        <th style="width: 40px;" class="text-center">No</th>
-                                        <th>Bulan Tahun</th>
-                                        <th class="text-end">Nominal Barokah</th>
-                                        <th style="width: 100px;" class="text-center">Aksi</th>
+                                    <tr class="text-center">
+                                        <th style="width: 40px;">No</th>
+                                        <th>Bulan / Periode</th>
+                                        <th>Kehadiran (Hari)</th>
+                                        <th class="text-end">Transport</th>
+                                        <th>Shift</th>
+                                        <th class="text-end">Honor Shift</th>
+                                        <th>Dini Hari</th>
+                                        <th class="text-end">Konsumsi</th>
+                                        <th class="text-end">Potongan</th>
+                                        <th class="text-end">Diterima</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @php
+                                        $totHariS = 0; $totTransS = 0; $totShiftS = 0; $totDiniS = 0;
+                                        $totPotonganS = 0; $totDiterimaS = 0;
+                                    @endphp
                                     @forelse($satpam as $st)
-                                    <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td><strong>{{ $st->bulan }} {{ $st->tahun }}</strong></td>
-                                        <td class="text-end font-weight-bold" style="color: #16a34a;">
-                                            Rp {{ number_format((float)$st->diterima, 0, ',', '.') }}
-                                        </td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-detail-breakdown shadow-sm" onclick="openBreakdown('{{ $st->tahun }}', '{{ $st->bulan }}', 'satpam', '')">
-                                                <i class="fas fa-search-plus me-1"></i> Detail
-                                            </button>
-                                        </td>
-                                    </tr>
+                                        @php
+                                            $totTransport = (float)$st->nominal_transport * (int)$st->jumlah_hadir;
+                                            $totShiftNom = (float)$st->nominal_shift * (int)$st->jumlah_shift;
+                                            $totDiniNom = (float)$st->nominal_dinihari * (int)$st->jumlah_dinihari;
+                                            $totHariS += (int)$st->jumlah_hadir;
+                                            $totTransS += $totTransport;
+                                            $totShiftS += $totShiftNom;
+                                            $totDiniS += $totDiniNom;
+                                            $totPotonganS += (float)$st->potongan;
+                                            $totDiterimaS += (float)$st->diterima;
+                                        @endphp
+                                        <tr>
+                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td><strong>{{ $st->bulan }} {{ $st->tahun }}</strong></td>
+                                            <td class="text-center">{{ $st->jumlah_hadir ?: 0 }}</td>
+                                            <td class="text-end">{{ number_format($totTransport, 0, ',', '.') }}</td>
+                                            <td class="text-center">{{ $st->jumlah_shift ?: 0 }}</td>
+                                            <td class="text-end">{{ number_format($totShiftNom, 0, ',', '.') }}</td>
+                                            <td class="text-center">{{ $st->jumlah_dinihari ?: 0 }}</td>
+                                            <td class="text-end">{{ number_format($totDiniNom, 0, ',', '.') }}</td>
+                                            <td class="text-end text-danger">{{ number_format((float)$st->potongan, 0, ',', '.') }}</td>
+                                            <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$st->diterima, 0, ',', '.') }}</td>
+                                        </tr>
                                     @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4 text-muted">Data tidak ditemukan / Tidak aktif sebagai Satpam</td>
-                                    </tr>
+                                        <tr>
+                                            <td colspan="10" class="text-center py-4 text-muted">Data tidak ditemukan / Tidak aktif sebagai Satpam</td>
+                                        </tr>
                                     @endforelse
                                 </tbody>
+                                <tfoot>
+                                    <tr style="background-color: #f8fafc; font-weight: bold;">
+                                        <th colspan="2" class="text-center">TOTAL</th>
+                                        <th class="text-center">{{ $totHariS }}</th>
+                                        <th class="text-end">{{ number_format($totTransS, 0, ',', '.') }}</th>
+                                        <th></th>
+                                        <th class="text-end">{{ number_format($totShiftS, 0, ',', '.') }}</th>
+                                        <th></th>
+                                        <th class="text-end">{{ number_format($totDiniS, 0, ',', '.') }}</th>
+                                        <th class="text-end text-danger">{{ number_format($totPotonganS, 0, ',', '.') }}</th>
+                                        <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterimaS, 0, ',', '.') }}</th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>
                 </div> <!-- End Tab Content -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Breakdown Detail -->
-<div class="modal fade" id="modal-rincian" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
-            <div class="modal-header border-bottom py-3 px-4">
-                <div>
-                    <h5 class="modal-title font-weight-bold mb-0">Rincian Komponen Barokah</h5>
-                    <small class="text-muted" id="modalSub" style="font-size: 12px;"></small>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4" id="modalBody">
-                <div class="text-center py-3"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data...</div>
             </div>
         </div>
     </div>
@@ -370,6 +472,7 @@
             searching: true,
             info: true,
             ordering: false,
+            scrollX: true,
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ data",
@@ -382,6 +485,7 @@
             searching: true,
             info: true,
             ordering: false,
+            scrollX: true,
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ data",
@@ -394,6 +498,7 @@
             searching: true,
             info: true,
             ordering: false,
+            scrollX: true,
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ data",
@@ -406,6 +511,7 @@
             searching: true,
             info: true,
             ordering: false,
+            scrollX: true,
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ data",
@@ -413,137 +519,11 @@
                 paginate: { next: '<i class="fas fa-chevron-right"></i>', previous: '<i class="fas fa-chevron-left"></i>' }
             }
         });
-    });
 
-    function fmt(n) {
-        if (n === null || n === undefined || n === '') return 'Rp 0';
-        var val = typeof n === 'number' ? n : parseFloat(String(n).replace(/[^\d.-]/g, ''));
-        return 'Rp ' + Math.round(val || 0).toLocaleString('id-ID');
-    }
-
-    function rowLine(title, value, subtitle) {
-        return `
-        <div class="list-compact-line">
-            <div>
-                <div style="font-weight: 500;">${title}</div>
-                ${subtitle ? `<div style="font-size: 11px; color: #64748b; margin-top: 2px;">${subtitle}</div>` : ''}
-            </div>
-            <div style="font-weight: 600; color: #1e293b;">${value}</div>
-        </div>`;
-    }
-
-    function openBreakdown(tahun, bulan, jenis, idLembaga) {
-        var nik = $('#hidden_nik').val();
-        var body = document.getElementById('modalBody');
-        body.innerHTML = '<div class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin me-2"></i> Memuat data...</div>';
-
-        var modalEl = document.getElementById('modal-rincian');
-        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-        modal.show();
-
-        var url = "{{ url('/laporan/per-umana/breakdown') }}?k=" + encodeURIComponent(jenis) +
-                  "&bulan=" + encodeURIComponent(bulan) +
-                  "&tahun=" + encodeURIComponent(tahun) +
-                  "&nik=" + encodeURIComponent(nik) +
-                  (idLembaga ? "&id_lembaga=" + encodeURIComponent(idLembaga) : "");
-
-        $.ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            success: function(res) {
-                if (!res.ok) {
-                    body.innerHTML = '<div class="text-center text-danger py-4">' + (res.message || 'Gagal memuat rincian') + '</div>';
-                    return;
-                }
-
-                document.getElementById('modalSub').textContent = `Kategori: ${jenis.toUpperCase()} | Periode: ${bulan} ${tahun}`;
-
-                var d = res.data || {};
-                var f = d.f || {};
-
-                if (jenis === 'pengajar') {
-                    var potItems = Array.isArray(d.potongan_items) ? d.potongan_items : [];
-                    var potDetailHTML = potItems.length
-                        ? `<div class="bg-light p-2 rounded mt-1 mb-2">
-                            ${potItems.map(it => `
-                                <div style="font-size: 12px; color: #dc2626;">~ ${it.nama}: ${fmt(it.nominal)}</div>
-                            `).join('')}
-                           </div>`
-                        : '';
-
-                    body.innerHTML = `
-                        <div class="list-compact-native">
-                            ${rowLine('Honor Mengajar', fmt(f.mengajar), d.sks ? `${d.sks} SKS × ${fmt(f.per_sks)}` : '')}
-                            ${rowLine('GTY / DTY', fmt(f.gty_dty))}
-                            ${rowLine('Jafung', fmt(f.jafung))}
-                            ${rowLine('Kehadiran', fmt(f.kehadiran), (d.jhadir > 0 ? 'Hadir ' + d.jhadir + ' Hari' : ''))}
-                            ${rowLine('Kehadiran 15.000', fmt(f.nhadir15), 'Hadir ' + (d.jhadir15 || 0) + ' × 15.000')}
-                            ${rowLine('Kehadiran 10.000', fmt(f.nhadir10), 'Hadir ' + (d.jhadir10 || 0) + ' × 10.000')}
-                            ${rowLine('Wali Kelas', fmt(f.walkes))}
-                            ${rowLine('Kehormatan', fmt(f.kehormatan))}
-                            ${rowLine('Barokah Tambahan', fmt(f.tambahan))}
-                            ${rowLine('Piket', fmt(f.piket))}
-                            ${rowLine('Tunjangan Anak', fmt(f.tun_anak))}
-                            ${rowLine('Tunjangan Keluarga', fmt(f.tunkel))}
-                            ${rowLine('Potongan', fmt(f.potongan))}
-                            ${potDetailHTML}
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
-                            <div class="font-weight-bold fs-14">Total Diterima</div>
-                            <div class="font-weight-bold text-success fs-16">${fmt(f.total)}</div>
-                        </div>`;
-                } else if (jenis === 'satpam') {
-                    var subK1 = (d.j_hari > 0) ? `${d.j_hari} hari × ${fmt(d.k1_unit)}` : '';
-                    var subK2 = (d.j_shift > 0) ? `${d.j_shift} shift × ${fmt(d.k2_unit)}` : '';
-                    var subK3 = (d.j_dinihari > 0) ? `${d.j_dinihari} kali × ${fmt(d.k3_unit)}` : '';
-
-                    body.innerHTML = `
-                        <div class="list-compact-native">
-                            ${rowLine('Kehadiran Hari Kerja', fmt(f.k1_total), subK1)}
-                            ${rowLine('Kehadiran Shift', fmt(f.k2_total), subK2)}
-                            ${rowLine('Kehadiran Dini Hari', fmt(f.k3_total), subK3)}
-                            ${rowLine('Potongan', fmt(f.potongan))}
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
-                            <div class="font-weight-bold fs-14">Total Diterima</div>
-                            <div class="font-weight-bold text-success fs-16">${fmt(f.total)}</div>
-                        </div>`;
-                } else if (jenis === 'struktural') {
-                    var potItemsS = Array.isArray(d.potongan_items) ? d.potongan_items : [];
-                    var potDetailHTMLS = potItemsS.length
-                        ? `<div class="bg-light p-2 rounded mt-1 mb-2">
-                            ${potItemsS.map(it => `
-                                <div style="font-size: 12px; color: #dc2626;">~ ${it.nama}: ${fmt(it.nominal)}</div>
-                            `).join('')}
-                           </div>`
-                        : '';
-
-                    var hadirSub = (typeof d.kehadiran === 'number' && d.kehadiran > 0)
-                        ? `Hadir Normal <strong>${d.kehadiran}</strong> Hari` : '';
-
-                    body.innerHTML = `
-                        <div class="list-compact-native">
-                            ${rowLine('Barokah Pokok / Tunjab', fmt(f.barokah_pokok))}
-                            ${rowLine('Kehadiran', fmt(f.kehadiran_nominal), hadirSub)}
-                            ${rowLine('Tunjangan Keluarga', fmt(f.tunkel))}
-                            ${rowLine('Tunjangan Anak', fmt(f.tun_anak))}
-                            ${rowLine('Tunjangan Masa Pengabdian (TMP)', fmt(f.tmp))}
-                            ${rowLine('Tunjangan Beban Kerja (TBK)', fmt(f.tbk))}
-                            ${rowLine('Tunjangan Kehormatan', fmt(f.kehormatan))}
-                            ${rowLine('Potongan', fmt(f.potongan))}
-                            ${potDetailHTMLS}
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
-                            <div class="font-weight-bold fs-14">Total Diterima</div>
-                            <div class="font-weight-bold text-success fs-16">${fmt(f.total)}</div>
-                        </div>`;
-                }
-            },
-            error: function() {
-                body.innerHTML = '<div class="text-center text-danger py-4">Terjadi kesalahan pada server saat mengambil rincian.</div>';
-            }
+        // Trigger adjust columns saat berpindah tab agar header dan kolom DataTables selaras
+        $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+            $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
         });
-    }
+    });
     </script>
 @endpush

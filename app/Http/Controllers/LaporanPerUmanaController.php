@@ -166,31 +166,97 @@ class LaporanPerUmanaController extends Controller
             ->orderByRaw($monthOrderSql . ' DESC')
             ->get();
 
-        // 3. Riwayat Khusus Struktural
+        // 3. Riwayat Khusus Struktural (Data Lengkap)
         $struktural = DB::table('total_barokah as tb')
             ->join('penempatan as p', 'tb.id_penempatan', '=', 'p.id_penempatan')
             ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
+            ->leftJoin('ketentuan_barokah as kb', 'p.id_ketentuan', '=', 'kb.id_ketentuan')
+            ->leftJoin('kehadiran as k', function ($join) {
+                $join->on('k.id_penempatan', '=', 'tb.id_penempatan');
+            })
+            ->leftJoin('kehadiran_lembaga as kl', function ($join) {
+                $join->on('kl.id_kehadiran_lembaga', '=', 'k.id_kehadi')
+                     ->on('kl.bulan', '=', 'tb.bulan')
+                     ->on('kl.tahun', '=', 'tb.tahun');
+            })
             ->where('p.nik', $nik)
-            ->select('tb.id_total_barokah', 'tb.bulan', 'tb.tahun', 'tb.diterima', 'l.nama_lembaga', 'l.id_lembaga')
+            ->select(
+                'tb.id_total_barokah',
+                'tb.bulan',
+                'tb.tahun',
+                'l.nama_lembaga',
+                'kb.nama_jabatan',
+                'tb.barokah as tunjab',
+                'tb.mp',
+                DB::raw('COALESCE(k.jumlah_hadir, 0) as jumlah_hadir'),
+                'tb.nominal_kehadiran',
+                'tb.tunkel',
+                'tb.tunj_anak',
+                'tb.tbk',
+                'tb.tmp',
+                'tb.kehormatan',
+                'tb.potongan',
+                'tb.diterima'
+            )
+            ->groupBy(
+                'tb.id_total_barokah', 'tb.bulan', 'tb.tahun', 'l.nama_lembaga',
+                'kb.nama_jabatan', 'tb.barokah', 'tb.mp', 'k.jumlah_hadir',
+                'tb.nominal_kehadiran', 'tb.tunkel', 'tb.tunj_anak', 'tb.tbk',
+                'tb.tmp', 'tb.kehormatan', 'tb.potongan', 'tb.diterima'
+            )
             ->orderBy('tb.tahun', 'desc')
             ->orderByRaw($monthOrderSql . ' DESC')
             ->get();
 
-        // 4. Riwayat Khusus Pengajar
+        // 4. Riwayat Khusus Pengajar (Data Lengkap)
         $pengajar = DB::table('total_barokah_pengajar as tbp')
             ->join('pengajar as p', 'tbp.id_pengajar', '=', 'p.id_pengajar')
             ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
             ->where('p.nik', $nik)
-            ->select('tbp.id_total_barokah_pengajar', 'tbp.bulan', 'tbp.tahun', 'tbp.diterima', 'l.nama_lembaga', 'l.id_lembaga')
+            ->select(
+                'tbp.id_total_barokah_pengajar',
+                'tbp.bulan',
+                'tbp.tahun',
+                'l.nama_lembaga',
+                'p.kategori as nama_jabatan',
+                'tbp.jumlah_sks',
+                'tbp.mengajar',
+                'tbp.jumlah_hadir',
+                'tbp.nominal_kehadiran',
+                'tbp.jumlah_hadir_piket',
+                'tbp.barokah_piket',
+                'tbp.tunkel',
+                'tbp.tun_anak as tunj_anak',
+                'tbp.kehormatan',
+                'tbp.walkes',
+                'tbp.khusus as tambahan',
+                'tbp.potongan',
+                'tbp.diterima'
+            )
             ->orderBy('tbp.tahun', 'desc')
             ->orderByRaw($monthOrderSql . ' DESC')
             ->get();
 
-        // 5. Riwayat Khusus Satpam
+        // 5. Riwayat Khusus Satpam (Data Lengkap)
         $satpam = DB::table('total_barokah_satpam as tbs')
             ->join('satpam as s', 'tbs.id_satpam', '=', 's.id_satpam')
+            ->leftJoin('kehadiran_lembaga as kl', 'kl.id_kehadiran_lembaga', '=', 'tbs.id_kehadiran_lembaga')
+            ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'kl.id_lembaga')
             ->where('s.nik', $nik)
-            ->select('tbs.id_total_barokah_satpam', 'tbs.bulan', 'tbs.tahun', 'tbs.diterima')
+            ->select(
+                'tbs.id_total_barokah_satpam',
+                'tbs.bulan',
+                'tbs.tahun',
+                DB::raw('COALESCE(l.nama_lembaga, "Satpam") as nama_lembaga'),
+                'tbs.jumlah_hari as jumlah_hadir',
+                'tbs.nominal_transport',
+                'tbs.jumlah_shift',
+                'tbs.rank as nominal_shift',
+                'tbs.jumlah_dinihari',
+                'tbs.konsumsi as nominal_dinihari',
+                'tbs.potongan',
+                'tbs.diterima'
+            )
             ->orderBy('tbs.tahun', 'desc')
             ->orderByRaw($monthOrderSql . ' DESC')
             ->get();
