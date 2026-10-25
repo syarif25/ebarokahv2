@@ -186,7 +186,7 @@ class LaporanPerUmanaController extends Controller
                 'tb.tahun',
                 'l.nama_lembaga',
                 'kb.nama_jabatan',
-                'tb.barokah as tunjab',
+                'tb.tunjab',
                 'tb.mp',
                 DB::raw('COALESCE(k.jumlah_hadir, 0) as jumlah_hadir'),
                 'tb.nominal_kehadiran',
@@ -200,12 +200,12 @@ class LaporanPerUmanaController extends Controller
             )
             ->groupBy(
                 'tb.id_total_barokah', 'tb.bulan', 'tb.tahun', 'l.nama_lembaga',
-                'kb.nama_jabatan', 'tb.barokah', 'tb.mp', 'k.jumlah_hadir',
+                'kb.nama_jabatan', 'tb.tunjab', 'tb.mp', 'k.jumlah_hadir',
                 'tb.nominal_kehadiran', 'tb.tunkel', 'tb.tunj_anak', 'tb.tbk',
                 'tb.tmp', 'tb.kehormatan', 'tb.potongan', 'tb.diterima'
             )
             ->orderBy('tb.tahun', 'desc')
-            ->orderByRaw($monthOrderSql . ' DESC')
+            ->orderByRaw(str_replace('CASE bulan', 'CASE tb.bulan', $monthOrderSql) . ' DESC')
             ->get();
 
         // 4. Riwayat Khusus Pengajar (Data Lengkap)
@@ -234,7 +234,7 @@ class LaporanPerUmanaController extends Controller
                 'tbp.diterima'
             )
             ->orderBy('tbp.tahun', 'desc')
-            ->orderByRaw($monthOrderSql . ' DESC')
+            ->orderByRaw(str_replace('CASE bulan', 'CASE tbp.bulan', $monthOrderSql) . ' DESC')
             ->get();
 
         // 5. Riwayat Khusus Satpam (Data Lengkap)
@@ -258,7 +258,7 @@ class LaporanPerUmanaController extends Controller
                 'tbs.diterima'
             )
             ->orderBy('tbs.tahun', 'desc')
-            ->orderByRaw($monthOrderSql . ' DESC')
+            ->orderByRaw(str_replace('CASE bulan', 'CASE tbs.bulan', $monthOrderSql) . ' DESC')
             ->get();
 
         return view('laporan.per-umana.rincian', compact(
