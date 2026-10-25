@@ -42,48 +42,72 @@
             border-bottom: 3px solid #00a15d;
         }
 
-        .table-custom thead th {
+        /* Table Styling identik dengan standar V2 */
+        table.dataTable.display tbody td, 
+        table.dataTable.display tbody th, 
+        table.dataTable.display thead th {
+            border-left: none !important;
+            border-right: none !important;
+            padding: 1.1rem 1rem !important;
+            vertical-align: middle;
+        }
+        table.dataTable.display thead th {
+            border-top: none !important;
+            border-bottom: 2px solid #f0f0f0 !important;
+            text-transform: capitalize;
+            font-weight: 700;
+            color: #333;
+            background-color: #fff !important;
+            font-size: 13px !important;
+        }
+        table.dataTable.display tbody tr {
+            border-bottom: 1px solid #f8f8f8 !important;
+        }
+        table.dataTable.display tbody tr.odd,
+        table.dataTable.display tbody tr.even {
+            background-color: transparent !important;
+        }
+        table.dataTable.display tbody tr:hover {
+            background-color: #fafafa !important;
+        }
+        table.dataTable,
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+        table.dataTable.display tfoot th {
+            border-top: 2px solid #eef2f6 !important;
+            border-bottom: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            padding: 1rem !important;
+            font-weight: 700;
+            color: #1e293b;
             background-color: #f8fafc !important;
-            color: #1e293b !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.2em 0.5em !important;
+        }
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 12px;
+            margin-left: 8px;
+            outline: none;
+        }
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #00a15d;
+            box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.12);
+        }
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 4px 8px;
+            margin: 0 4px;
+            outline: none;
+        }
+        .nominal-highlight {
+            color: #00a15d !important;
             font-weight: 700 !important;
-            font-size: 13px !important;
-            border-bottom: 2px solid #e2e8f0 !important;
-            vertical-align: middle;
-            padding: 12px 14px;
-        }
-        .table-custom tbody td {
-            font-size: 13px !important;
-            color: #334155 !important;
-            vertical-align: middle;
-            padding: 10px 14px;
-        }
-
-        .btn-detail-breakdown {
-            border: 1px solid #0284c7;
-            color: #0284c7;
-            background: transparent;
-            border-radius: 20px;
-            font-size: 11.5px;
-            font-weight: 600;
-            padding: 4px 14px;
-            transition: all 0.2s;
-        }
-        .btn-detail-breakdown:hover {
-            background-color: #0284c7;
-            color: #fff;
-        }
-
-        /* Modal Breakdown List Design */
-        .list-compact-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 6px;
-            border-bottom: 1px dashed #e2e8f0;
-            font-size: 13px;
-        }
-        .list-compact-line:last-child {
-            border-bottom: none;
         }
     </style>
 @endpush
@@ -188,29 +212,29 @@
                     <!-- Tab 1: Rekapitulasi Gabungan -->
                     <div class="tab-pane fade show active" id="tab-rekapitulasi" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_rekapitulasi" class="table table-bordered table-hover table-custom w-100">
+                            <table id="tabel_rekapitulasi" class="display w-100">
                                 <thead>
                                     <tr>
-                                        <th style="width: 40px;" class="text-center">No</th>
-                                        <th>Bulan Tahun</th>
+                                        <th style="width: 50px;" class="text-center">No</th>
+                                        <th>Bulan / Periode</th>
                                         <th>Lembaga</th>
                                         <th class="text-end">Total Struktural</th>
                                         <th class="text-end">Total Pengajar</th>
                                         <th class="text-end">Total Satpam</th>
-                                        <th class="text-end" style="background-color: #f1f5f9;"><strong>Grand Total</strong></th>
+                                        <th class="text-end">Grand Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse($rekap as $r)
                                     <tr>
-                                        <td class="text-center">{{ $loop->iteration }}</td>
+                                        <td class="text-center font-weight-bold">{{ $loop->iteration }}</td>
                                         <td><strong>{{ $r->bulan }} {{ $r->tahun }}</strong></td>
-                                        <td><small class="text-muted">{{ $r->daftar_lembaga ?: '-' }}</small></td>
+                                        <td><span class="text-muted">{{ $r->daftar_lembaga ?: '-' }}</span></td>
                                         <td class="text-end">Rp {{ number_format((float)$r->total_struktural, 0, ',', '.') }}</td>
                                         <td class="text-end">Rp {{ number_format((float)$r->total_pengajar, 0, ',', '.') }}</td>
                                         <td class="text-end">Rp {{ number_format((float)$r->total_satpam, 0, ',', '.') }}</td>
-                                        <td class="text-end font-weight-bold" style="background-color: #f8fafc; color: #16a34a;">
-                                            <strong>Rp {{ number_format((float)$r->grand_total, 0, ',', '.') }}</strong>
+                                        <td class="text-end nominal-highlight">
+                                            Rp {{ number_format((float)$r->grand_total, 0, ',', '.') }}
                                         </td>
                                     </tr>
                                     @empty
@@ -226,10 +250,10 @@
                     <!-- Tab 2: Struktural (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-struktural" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_struktural" class="table table-bordered table-hover table-custom w-100">
+                            <table id="tabel_struktural" class="display w-100">
                                 <thead>
                                     <tr class="text-center">
-                                        <th rowspan="2" style="width: 40px;">No</th>
+                                        <th rowspan="2" style="width: 50px;">No</th>
                                         <th rowspan="2">Bulan / Periode</th>
                                         <th rowspan="2">Lembaga</th>
                                         <th rowspan="2">Jabatan</th>
@@ -251,7 +275,7 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                        $totTunjab = 0; $totHadirNom = 0; $totTunkel = 0; $totTunAnak = 0;
+                                         $totTunjab = 0; $totHadirNom = 0; $totTunkel = 0; $totTunAnak = 0;
                                         $totTbk = 0; $totTmp = 0; $totKehormatan = 0; $totPotongan = 0; $totDiterima = 0;
                                     @endphp
                                     @forelse($struktural as $s)
@@ -267,7 +291,7 @@
                                             $totDiterima += (float)$s->diterima;
                                         @endphp
                                         <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td class="text-center font-weight-bold">{{ $loop->iteration }}</td>
                                             <td><strong>{{ $s->bulan }} {{ $s->tahun }}</strong></td>
                                             <td>{{ $s->nama_lembaga }}</td>
                                             <td>{{ $s->nama_jabatan ?: '-' }}</td>
@@ -281,7 +305,7 @@
                                             <td class="text-end">{{ number_format((float)$s->tmp, 0, ',', '.') }}</td>
                                             <td class="text-end">{{ number_format((float)$s->kehormatan, 0, ',', '.') }}</td>
                                             <td class="text-end text-danger">{{ number_format((float)$s->potongan, 0, ',', '.') }}</td>
-                                            <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$s->diterima, 0, ',', '.') }}</td>
+                                            <td class="text-end nominal-highlight">{{ number_format((float)$s->diterima, 0, ',', '.') }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -290,7 +314,7 @@
                                     @endforelse
                                 </tbody>
                                 <tfoot>
-                                    <tr style="background-color: #f8fafc; font-weight: bold;">
+                                    <tr>
                                         <th colspan="4" class="text-center">TOTAL</th>
                                         <th class="text-end">{{ number_format($totTunjab, 0, ',', '.') }}</th>
                                         <th></th>
@@ -302,7 +326,7 @@
                                         <th class="text-end">{{ number_format($totTmp, 0, ',', '.') }}</th>
                                         <th class="text-end">{{ number_format($totKehormatan, 0, ',', '.') }}</th>
                                         <th class="text-end text-danger">{{ number_format($totPotongan, 0, ',', '.') }}</th>
-                                        <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterima, 0, ',', '.') }}</th>
+                                        <th class="text-end nominal-highlight">{{ number_format($totDiterima, 0, ',', '.') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -312,10 +336,10 @@
                     <!-- Tab 3: Pengajar (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-pengajar" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_pengajar" class="table table-bordered table-hover table-custom w-100">
+                            <table id="tabel_pengajar" class="display w-100">
                                 <thead>
                                     <tr class="text-center">
-                                        <th style="width: 40px;">No</th>
+                                        <th style="width: 50px;">No</th>
                                         <th>Bulan / Periode</th>
                                         <th>Lembaga</th>
                                         <th>Kategori</th>
@@ -348,7 +372,7 @@
                                             $totDiterimaP += (float)$p->diterima;
                                         @endphp
                                         <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td class="text-center font-weight-bold">{{ $loop->iteration }}</td>
                                             <td><strong>{{ $p->bulan }} {{ $p->tahun }}</strong></td>
                                             <td>{{ $p->nama_lembaga }}</td>
                                             <td class="text-center">{{ $p->nama_jabatan ?: '-' }}</td>
@@ -361,7 +385,7 @@
                                             <td class="text-end">{{ number_format((float)$p->walkes, 0, ',', '.') }}</td>
                                             <td class="text-end">{{ number_format((float)$p->tambahan, 0, ',', '.') }}</td>
                                             <td class="text-end text-danger">{{ number_format((float)$p->potongan, 0, ',', '.') }}</td>
-                                            <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$p->diterima, 0, ',', '.') }}</td>
+                                            <td class="text-end nominal-highlight">{{ number_format((float)$p->diterima, 0, ',', '.') }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -370,7 +394,7 @@
                                     @endforelse
                                 </tbody>
                                 <tfoot>
-                                    <tr style="background-color: #f8fafc; font-weight: bold;">
+                                    <tr>
                                         <th colspan="7" class="text-center">TOTAL</th>
                                         <th class="text-end">{{ number_format($totTunkelP, 0, ',', '.') }}</th>
                                         <th class="text-end">{{ number_format($totTunAnakP, 0, ',', '.') }}</th>
@@ -378,7 +402,7 @@
                                         <th class="text-end">{{ number_format($totWalkesP, 0, ',', '.') }}</th>
                                         <th class="text-end">{{ number_format($totTambahanP, 0, ',', '.') }}</th>
                                         <th class="text-end text-danger">{{ number_format($totPotonganP, 0, ',', '.') }}</th>
-                                        <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterimaP, 0, ',', '.') }}</th>
+                                        <th class="text-end nominal-highlight">{{ number_format($totDiterimaP, 0, ',', '.') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -388,10 +412,10 @@
                     <!-- Tab 4: Satpam (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-satpam" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_satpam" class="table table-bordered table-hover table-custom w-100">
+                            <table id="tabel_satpam" class="display w-100">
                                 <thead>
                                     <tr class="text-center">
-                                        <th style="width: 40px;">No</th>
+                                        <th style="width: 50px;">No</th>
                                         <th>Bulan / Periode</th>
                                         <th>Kehadiran (Hari)</th>
                                         <th class="text-end">Transport</th>
@@ -421,7 +445,7 @@
                                             $totDiterimaS += (float)$st->diterima;
                                         @endphp
                                         <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td class="text-center font-weight-bold">{{ $loop->iteration }}</td>
                                             <td><strong>{{ $st->bulan }} {{ $st->tahun }}</strong></td>
                                             <td class="text-center">{{ $st->jumlah_hadir ?: 0 }}</td>
                                             <td class="text-end">{{ number_format($totTransport, 0, ',', '.') }}</td>
@@ -430,7 +454,7 @@
                                             <td class="text-center">{{ $st->jumlah_dinihari ?: 0 }}</td>
                                             <td class="text-end">{{ number_format($totDiniNom, 0, ',', '.') }}</td>
                                             <td class="text-end text-danger">{{ number_format((float)$st->potongan, 0, ',', '.') }}</td>
-                                            <td class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format((float)$st->diterima, 0, ',', '.') }}</td>
+                                            <td class="text-end nominal-highlight">{{ number_format((float)$st->diterima, 0, ',', '.') }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -439,7 +463,7 @@
                                     @endforelse
                                 </tbody>
                                 <tfoot>
-                                    <tr style="background-color: #f8fafc; font-weight: bold;">
+                                    <tr>
                                         <th colspan="2" class="text-center">TOTAL</th>
                                         <th class="text-center">{{ $totHariS }}</th>
                                         <th class="text-end">{{ number_format($totTransS, 0, ',', '.') }}</th>
@@ -448,7 +472,7 @@
                                         <th></th>
                                         <th class="text-end">{{ number_format($totDiniS, 0, ',', '.') }}</th>
                                         <th class="text-end text-danger">{{ number_format($totPotonganS, 0, ',', '.') }}</th>
-                                        <th class="text-end font-weight-bold" style="color: #16a34a;">{{ number_format($totDiterimaS, 0, ',', '.') }}</th>
+                                        <th class="text-end nominal-highlight">{{ number_format($totDiterimaS, 0, ',', '.') }}</th>
                                     </tr>
                                 </tfoot>
                             </table>
