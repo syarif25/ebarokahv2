@@ -45,11 +45,13 @@
         /* Table Styling identik dengan standar V2 */
         table.dataTable.display tbody td, 
         table.dataTable.display tbody th, 
-        table.dataTable.display thead th {
+        table.dataTable.display thead th,
+        table.dataTable.display tfoot th {
             border-left: none !important;
             border-right: none !important;
-            padding: 1.1rem 1rem !important;
+            padding: 1rem 0.9rem !important;
             vertical-align: middle;
+            white-space: nowrap !important;
         }
         table.dataTable.display thead th {
             border-top: none !important;
@@ -491,60 +493,31 @@
     <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script>
     $(document).ready(function() {
-        $('#tabel_rekapitulasi').DataTable({
+        const dtOptions = {
             paging: true,
             searching: true,
             info: true,
             ordering: false,
-            scrollX: true,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ periode",
-                paginate: { next: '<i class="fas fa-chevron-right"></i>', previous: '<i class="fas fa-chevron-left"></i>' }
-            }
-        });
-        $('#tabel_struktural').DataTable({
-            paging: true,
-            searching: true,
-            info: true,
-            ordering: false,
-            scrollX: true,
+            autoWidth: false,
             language: {
                 search: "Search:",
                 lengthMenu: "Show _MENU_ data",
                 info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                 paginate: { next: '<i class="fas fa-chevron-right"></i>', previous: '<i class="fas fa-chevron-left"></i>' }
             }
-        });
-        $('#tabel_pengajar').DataTable({
-            paging: true,
-            searching: true,
-            info: true,
-            ordering: false,
-            scrollX: true,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                paginate: { next: '<i class="fas fa-chevron-right"></i>', previous: '<i class="fas fa-chevron-left"></i>' }
-            }
-        });
-        $('#tabel_satpam').DataTable({
-            paging: true,
-            searching: true,
-            info: true,
-            ordering: false,
-            scrollX: true,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                paginate: { next: '<i class="fas fa-chevron-right"></i>', previous: '<i class="fas fa-chevron-left"></i>' }
-            }
-        });
+        };
 
-        // Trigger adjust columns saat berpindah tab agar header dan kolom DataTables selaras
+        $('#tabel_rekapitulasi').DataTable(Object.assign({}, dtOptions, {
+            language: Object.assign({}, dtOptions.language, {
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ periode"
+            })
+        }));
+
+        $('#tabel_struktural').DataTable(dtOptions);
+        $('#tabel_pengajar').DataTable(dtOptions);
+        $('#tabel_satpam').DataTable(dtOptions);
+
+        // Pastikan tabel menyesuaikan ukuran ketika tab diklik
         $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
             $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
         });
