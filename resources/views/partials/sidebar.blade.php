@@ -104,7 +104,9 @@
                         <a href="{{ url('/laporan/rekap-kehadiran-pengajar') }}">Rekap Kehadiran Pengajar</a>
                     </li>
                     <li><a href="{{ url('/laporan/satpam') }}">Laporan Satpam</a></li>
-                    <li><a href="{{ url('/laporan/per-umana') }}">Per Umana</a></li>
+                    <li class="{{ Request::is('laporan/per-umana*') || Request::is('Laporan/per_umana*') || Request::is('Laporan_v2/per_umana*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/laporan/per-umana') }}">Per Umana</a>
+                    </li>
                 </ul>
             </li>
             <li><a href="#" aria-expanded="false">

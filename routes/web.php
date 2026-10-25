@@ -255,6 +255,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/Rekap_kehadiran_pengajar', function() { return redirect('/laporan/rekap-kehadiran-pengajar'); });
     Route::post('/laporan/rekap-kehadiran-pengajar/get-data', [App\Http\Controllers\RekapKehadiranPengajarController::class, 'getData']);
     Route::post('/Rekap_kehadiran_pengajar/get_data', [App\Http\Controllers\RekapKehadiranPengajarController::class, 'getData']);
+
+    // Laporan Per Umana
+    Route::get('/laporan/per-umana', [App\Http\Controllers\LaporanPerUmanaController::class, 'index']);
+    Route::get('/Laporan/per_umana', function() { return redirect('/laporan/per-umana'); });
+    Route::get('/Laporan_v2/per_umana', function() { return redirect('/laporan/per-umana'); });
+    Route::post('/laporan/per-umana/data', [App\Http\Controllers\LaporanPerUmanaController::class, 'data']);
+    Route::get('/laporan/per-umana/rincian/{nik}', [App\Http\Controllers\LaporanPerUmanaController::class, 'rincian']);
+    Route::get('/laporan/per-umana/breakdown', [App\Http\Controllers\LaporanPerUmanaController::class, 'breakdown']);
 });
 
 
