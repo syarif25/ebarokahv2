@@ -100,7 +100,9 @@
                     <li class="{{ Request::is('laporan/per-lembaga*') || Request::is('Laporan_lembaga*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/per-lembaga') }}">Per Lembaga</a>
                     </li>
-                    <li><a href="{{ url('/laporan/rekap-kehadiran-pengajar') }}">Rekap Kehadiran Pengajar</a></li>
+                    <li class="{{ Request::is('laporan/rekap-kehadiran-pengajar*') || Request::is('Rekap_kehadiran_pengajar*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/laporan/rekap-kehadiran-pengajar') }}">Rekap Kehadiran Pengajar</a>
+                    </li>
                     <li><a href="{{ url('/laporan/satpam') }}">Laporan Satpam</a></li>
                     <li><a href="{{ url('/laporan/per-umana') }}">Per Umana</a></li>
                 </ul>

@@ -249,6 +249,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporan/per-lembaga/rincian/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'rincian']);
     Route::get('/laporan/per-lembaga/cetak/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'cetak']);
     Route::get('/laporan/per-lembaga/export-excel/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'exportExcel']);
+
+    // Rekap Kehadiran Pengajar
+    Route::get('/laporan/rekap-kehadiran-pengajar', [App\Http\Controllers\RekapKehadiranPengajarController::class, 'index']);
+    Route::get('/Rekap_kehadiran_pengajar', function() { return redirect('/laporan/rekap-kehadiran-pengajar'); });
+    Route::post('/laporan/rekap-kehadiran-pengajar/get-data', [App\Http\Controllers\RekapKehadiranPengajarController::class, 'getData']);
+    Route::post('/Rekap_kehadiran_pengajar/get_data', [App\Http\Controllers\RekapKehadiranPengajarController::class, 'getData']);
 });
 
 
