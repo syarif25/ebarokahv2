@@ -160,7 +160,7 @@ class LaporanLembagaController extends Controller
                 'nama_lembaga' => $namaLembagaWithKategori,
                 'nama_lembaga_murni' => $item->nama_lembaga,
                 'bulan' => $item->bulan ?: '-',
-                'tahun' => $item->tahun ?: '-',
+                'tahun' => $item->tahun ? trim(preg_replace('/^tahun\s*/i', '', $item->tahun)) : '-',
                 'kategori' => $kategori,
                 'kategori_html' => $kategoriBadge,
                 'nominal' => $nominalFormatted,
