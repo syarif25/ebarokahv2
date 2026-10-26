@@ -305,6 +305,31 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/log/kehadiran-pengajar/update/{id}', [App\Http\Controllers\LogKehadiranPengajarController::class, 'update']);
     Route::match(['get', 'post', 'delete'], '/log/kehadiran-pengajar/delete/{id}', [App\Http\Controllers\LogKehadiranPengajarController::class, 'destroy']);
     Route::get('/log/kehadiran-pengajar/pengajar-options', [App\Http\Controllers\LogKehadiranPengajarController::class, 'searchPengajar']);
+
+    // Log Potongan Pengajar
+    Route::get('/log/potongan-pengajar', [App\Http\Controllers\LogPotonganPengajarController::class, 'index']);
+    Route::post('/log/potongan-pengajar/data', [App\Http\Controllers\LogPotonganPengajarController::class, 'data']);
+    Route::get('/log/potongan-pengajar/show/{id}', [App\Http\Controllers\LogPotonganPengajarController::class, 'show']);
+    Route::post('/log/potongan-pengajar/store', [App\Http\Controllers\LogPotonganPengajarController::class, 'store']);
+    Route::post('/log/potongan-pengajar/update/{id}', [App\Http\Controllers\LogPotonganPengajarController::class, 'update']);
+    Route::match(['get', 'post', 'delete'], '/log/potongan-pengajar/delete/{id}', [App\Http\Controllers\LogPotonganPengajarController::class, 'destroy']);
+
+    // Log Potongan Satpam
+    Route::get('/log/potongan-satpam', [App\Http\Controllers\LogPotonganSatpamController::class, 'index']);
+    Route::post('/log/potongan-satpam/data', [App\Http\Controllers\LogPotonganSatpamController::class, 'data']);
+    Route::get('/log/potongan-satpam/show/{id}', [App\Http\Controllers\LogPotonganSatpamController::class, 'show']);
+    Route::post('/log/potongan-satpam/store', [App\Http\Controllers\LogPotonganSatpamController::class, 'store']);
+    Route::post('/log/potongan-satpam/update/{id}', [App\Http\Controllers\LogPotonganSatpamController::class, 'update']);
+    Route::match(['get', 'post', 'delete'], '/log/potongan-satpam/delete/{id}', [App\Http\Controllers\LogPotonganSatpamController::class, 'destroy']);
+    Route::get('/log/potongan-satpam/satpam-options', [App\Http\Controllers\LogPotonganSatpamController::class, 'searchSatpam']);
+
+    // Log Potongan Umana
+    Route::get('/log/potongan-umana', [App\Http\Controllers\LogPotonganUmanaController::class, 'index']);
+    Route::post('/log/potongan-umana/data', [App\Http\Controllers\LogPotonganUmanaController::class, 'data']);
+    Route::get('/log/potongan-umana/show/{id}', [App\Http\Controllers\LogPotonganUmanaController::class, 'show']);
+    Route::post('/log/potongan-umana/store', [App\Http\Controllers\LogPotonganUmanaController::class, 'store']);
+    Route::post('/log/potongan-umana/update/{id}', [App\Http\Controllers\LogPotonganUmanaController::class, 'update']);
+    Route::match(['get', 'post', 'delete'], '/log/potongan-umana/delete/{id}', [App\Http\Controllers\LogPotonganUmanaController::class, 'destroy']);
 });
 
 

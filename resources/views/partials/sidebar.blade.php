@@ -128,6 +128,15 @@
                     <li class="{{ Request::is('log/kehadiran-pengajar*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/log/kehadiran-pengajar') }}">Kehadiran Pengajar</a>
                     </li>
+                    <li class="{{ Request::is('log/potongan-umana*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/potongan-umana') }}">Potongan Umana</a>
+                    </li>
+                    <li class="{{ Request::is('log/potongan-pengajar*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/potongan-pengajar') }}">Potongan Pengajar</a>
+                    </li>
+                    <li class="{{ Request::is('log/potongan-satpam*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/potongan-satpam') }}">Potongan Satpam</a>
+                    </li>
                 </ul>
             </li>
 
