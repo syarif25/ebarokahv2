@@ -177,10 +177,10 @@ class LogKehadiranStrukturalController extends Controller
             $actionBtn = '
                 <div class="d-flex justify-content-center gap-1">
                     <button type="button" class="btn btn-warning btn-xs text-white btn-edit-kehadiran" data-id="' . $item->id_kehadiran . '" title="Edit">
-                        <i class="fas fa-pencil-alt"></i>
+                        <i class="fas fa-pencil-alt" style="pointer-events: none;"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-xs btn-delete-kehadiran" data-id="' . $item->id_kehadiran . '" data-nama="' . e($namaUmana) . '" title="Hapus">
-                        <i class="fas fa-trash"></i>
+                    <button type="button" class="btn btn-danger btn-xs btn-delete-kehadiran" data-id="' . $item->id_kehadiran . '" data-nama="' . htmlspecialchars($namaUmana, ENT_QUOTES, 'UTF-8') . '" title="Hapus">
+                        <i class="fas fa-trash" style="pointer-events: none;"></i>
                     </button>
                 </div>
             ';
@@ -340,17 +340,32 @@ class LogKehadiranStrukturalController extends Controller
      */
     public function destroy($id)
     {
-        $item = DB::table('kehadiran')->where('id_kehadiran', $id)->first();
-        if (!$item) {
-            return response()->json(['status' => false, 'message' => 'Data tidak ditemukan!'], 404);
+        try {
+            $id = (int) $id;
+            $item = DB::table('kehadiran')->where('id_kehadiran', $id)->first();
+            if (!$item) {
+                if (request()->ajax() || request()->wantsJson()) {
+                    return response()->json(['status' => false, 'message' => 'Data tidak ditemukan atau sudah dihapus!'], 404);
+                }
+                return redirect('/log/kehadiran-struktural')->with('error', 'Data tidak ditemukan!');
+            }
+
+            DB::table('kehadiran')->where('id_kehadiran', $id)->delete();
+
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data kehadiran struktural #' . $id . ' berhasil dihapus!',
+                ]);
+            }
+
+            return redirect('/log/kehadiran-struktural')->with('success', 'Data kehadiran struktural #' . $id . ' berhasil dihapus!');
+        } catch (\Exception $e) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['status' => false, 'message' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
+            }
+            return redirect('/log/kehadiran-struktural')->with('error', 'Gagal menghapus data: ' . $e->getMessage());
         }
-
-        DB::table('kehadiran')->where('id_kehadiran', $id)->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Data kehadiran struktural #' . $id . ' berhasil dihapus!',
-        ]);
     }
 
     /**

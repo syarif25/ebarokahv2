@@ -184,22 +184,6 @@
 
 @section('content')
 <div class="container-fluid">
-    <!-- Breadcrumb & Header Title -->
-    <div class="row page-titles mb-3">
-        <div class="col-sm-6 p-md-0">
-            <div class="welcome-text">
-                <h4 class="text-primary font-weight-bold">Log Kehadiran Struktural</h4>
-                <p class="mb-0 text-muted">Manajemen dan pemantauan riwayat kehadiran individu Umana struktural</p>
-            </div>
-        </div>
-        <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="javascript:void(0)">Log</a></li>
-                <li class="breadcrumb-item active"><a href="javascript:void(0)">Kehadiran Struktural</a></li>
-            </ol>
-        </div>
-    </div>
-
     <!-- Filter Card -->
     <div class="row">
         <div class="col-12">
@@ -525,9 +509,11 @@
             $('#modal_kehadiran').modal('show');
         });
 
-        // Edit Data Click (Event Delegation)
-        $('#tabel_kehadiran tbody').on('click', '.btn-edit-kehadiran', function() {
-            var id = $(this).data('id');
+        // Edit Data Click (Event Delegation on document)
+        $(document).on('click', '.btn-edit-kehadiran', function(e) {
+            e.preventDefault();
+            var btn = $(this).closest('.btn-edit-kehadiran');
+            var id = btn.attr('data-id');
             if (!id) return;
 
             // Show loading SweetAlert
@@ -622,10 +608,17 @@
             });
         });
 
-        // Delete Data Click (Event Delegation)
-        $('#tabel_kehadiran tbody').on('click', '.btn-delete-kehadiran', function() {
-            var id = $(this).data('id');
-            var nama = $(this).data('nama') || ('ID #' + id);
+        // Delete Data Click (Event Delegation on document)
+        $(document).on('click', '.btn-delete-kehadiran', function(e) {
+            e.preventDefault();
+            var btn = $(this).closest('.btn-delete-kehadiran');
+            var id = btn.attr('data-id');
+            var nama = btn.attr('data-nama') || ('ID #' + id);
+
+            if (!id) {
+                Swal.fire('Error', 'ID data kehadiran tidak ditemukan.', 'error');
+                return;
+            }
 
             Swal.fire({
                 title: 'Hapus Kehadiran?',
@@ -640,6 +633,7 @@
                 if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Menghapus Data...',
+                        text: 'Mohon tunggu sebentar',
                         allowOutsideClick: false,
                         didOpen: function() {
                             Swal.showLoading();
@@ -649,6 +643,12 @@
                     $.ajax({
                         url: '{{ url("/log/kehadiran-struktural/delete") }}/' + id,
                         type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
                         dataType: 'json',
                         success: function(res) {
                             Swal.close();
@@ -667,7 +667,13 @@
                         },
                         error: function(xhr) {
                             Swal.close();
-                            Swal.fire('Error', 'Terjadi kesalahan: ' + xhr.statusText, 'error');
+                            var msg = 'Terjadi kesalahan saat menghapus data.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                msg = xhr.responseJSON.message;
+                            } else if (xhr.statusText) {
+                                msg += ' (' + xhr.status + ': ' + xhr.statusText + ')';
+                            }
+                            Swal.fire('Error', msg, 'error');
                         }
                     });
                 }

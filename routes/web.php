@@ -293,12 +293,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/log/kehadiran-struktural/show/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'show']);
     Route::post('/log/kehadiran-struktural/store', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'store']);
     Route::post('/log/kehadiran-struktural/update/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'update']);
-    Route::post('/log/kehadiran-struktural/delete/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'destroy']);
+    Route::match(['get', 'post', 'delete'], '/log/kehadiran-struktural/delete/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'destroy']);
     Route::get('/log/kehadiran-struktural/penempatan-options', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'searchPenempatan']);
-    Route::get('/kehadiran/hapus/{id}', function($id) {
-        app(App\Http\Controllers\LogKehadiranStrukturalController::class)->destroy($id);
-        return redirect('/log/kehadiran-struktural')->with('success', 'Data berhasil dihapus');
-    });
+    Route::match(['get', 'post', 'delete'], '/kehadiran/hapus/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'destroy']);
 });
 
 
