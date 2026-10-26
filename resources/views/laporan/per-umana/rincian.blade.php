@@ -42,49 +42,46 @@
             border-bottom: 3px solid #00a15d;
         }
 
-        /* Table Styling identik dengan standar V2 */
-        table.dataTable.display tbody td, 
-        table.dataTable.display tbody th, 
-        table.dataTable.display thead th,
-        table.dataTable.display tfoot th {
-            border-left: none !important;
-            border-right: none !important;
-            padding: 1rem 0.9rem !important;
-            vertical-align: middle;
-            white-space: nowrap !important;
+        /* Styling Tabel Bootstrap Rapi & Konsisten */
+        .table-responsive {
+            border-radius: 8px;
+            overflow-x: auto;
         }
-        table.dataTable.display thead th {
-            border-top: none !important;
-            border-bottom: 2px solid #f0f0f0 !important;
-            text-transform: capitalize;
-            font-weight: 700;
-            color: #333;
-            background-color: #fff !important;
+        table.table-custom-clean {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-bottom: 0 !important;
             font-size: 13px !important;
         }
-        table.dataTable.display tbody tr {
-            border-bottom: 1px solid #f8f8f8 !important;
+        table.table-custom-clean th,
+        table.table-custom-clean td {
+            padding: 10px 12px !important;
+            vertical-align: middle !important;
+            border: 1px solid #e2e8f0 !important;
+            white-space: nowrap !important;
         }
-        table.dataTable.display tbody tr.odd,
-        table.dataTable.display tbody tr.even {
-            background-color: transparent !important;
-        }
-        table.dataTable.display tbody tr:hover {
-            background-color: #fafafa !important;
-        }
-        table.dataTable,
-        table.dataTable.no-footer {
-            border-bottom: none !important;
-        }
-        table.dataTable.display tfoot th {
-            border-top: 2px solid #eef2f6 !important;
-            border-bottom: none !important;
-            border-left: none !important;
-            border-right: none !important;
-            padding: 1rem !important;
-            font-weight: 700;
-            color: #1e293b;
+        table.table-custom-clean thead th {
             background-color: #f8fafc !important;
+            color: #1e293b !important;
+            font-weight: 700 !important;
+            text-align: center !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+        }
+        table.table-custom-clean tbody tr:nth-of-type(odd) {
+            background-color: #ffffff !important;
+        }
+        table.table-custom-clean tbody tr:nth-of-type(even) {
+            background-color: #fcfdfe !important;
+        }
+        table.table-custom-clean tbody tr:hover {
+            background-color: #f1f5f9 !important;
+        }
+        table.table-custom-clean tfoot th,
+        table.table-custom-clean tfoot td {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            border-top: 2px solid #cbd5e1 !important;
         }
         .dataTables_wrapper .dataTables_paginate .paginate_button {
             padding: 0.2em 0.5em !important;
@@ -214,7 +211,7 @@
                     <!-- Tab 1: Rekapitulasi Gabungan -->
                     <div class="tab-pane fade show active" id="tab-rekapitulasi" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_rekapitulasi" class="display w-100">
+                            <table id="tabel_rekapitulasi" class="table table-bordered table-striped table-custom-clean w-100">
                                 <thead>
                                     <tr>
                                         <th style="width: 50px;" class="text-center">No</th>
@@ -252,7 +249,7 @@
                     <!-- Tab 2: Struktural (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-struktural" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_struktural" class="display w-100">
+                            <table id="tabel_struktural" class="table table-bordered table-striped table-custom-clean w-100">
                                 <thead>
                                     <tr class="text-center">
                                         <th rowspan="2" style="width: 50px;">No</th>
@@ -338,7 +335,7 @@
                     <!-- Tab 3: Pengajar (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-pengajar" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_pengajar" class="display w-100">
+                            <table id="tabel_pengajar" class="table table-bordered table-striped table-custom-clean w-100">
                                 <thead>
                                     <tr class="text-center">
                                         <th style="width: 50px;">No</th>
@@ -414,7 +411,7 @@
                     <!-- Tab 4: Satpam (Tabel Rincian Lengkap) -->
                     <div class="tab-pane fade" id="tab-satpam" role="tabpanel">
                         <div class="table-responsive">
-                            <table id="tabel_satpam" class="display w-100">
+                            <table id="tabel_satpam" class="table table-bordered table-striped table-custom-clean w-100">
                                 <thead>
                                     <tr class="text-center">
                                         <th style="width: 50px;">No</th>
