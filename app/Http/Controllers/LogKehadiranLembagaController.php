@@ -27,7 +27,7 @@ class LogKehadiranLembagaController extends Controller
             ->pluck('tahun');
 
         $lembagaList = DB::table('lembaga')
-            ->select('id_lembaga', 'nama_lembaga', 'kategori')
+            ->select('id_lembaga', 'nama_lembaga')
             ->orderBy('nama_lembaga', 'asc')
             ->get();
 
