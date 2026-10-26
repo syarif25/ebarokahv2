@@ -112,6 +112,19 @@
                     </li>
                 </ul>
             </li>
+
+            <li class="{{ Request::is('log*') || Request::is('Log*') ? 'mm-active' : '' }}">
+                <a class="has-arrow {{ Request::is('log*') || Request::is('Log*') ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ Request::is('log*') || Request::is('Log*') ? 'true' : 'false' }}">
+                    <i class="fas fa-history"></i>
+                    <span class="nav-text">Log</span>
+                </a>
+                <ul aria-expanded="false" class="{{ Request::is('log*') || Request::is('Log*') ? 'mm-show' : '' }}">
+                    <li class="{{ Request::is('log/kehadiran-lembaga*') || Request::is('Log_kehadiran_lemb*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/kehadiran-lembaga') }}">Kehadiran Lembaga</a>
+                    </li>
+                </ul>
+            </li>
+
             <li><a href="#" aria-expanded="false">
                     <i class="fas fa-cog"></i>
                     <span class="nav-text">Pengaturan</span>

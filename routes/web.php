@@ -270,6 +270,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/laporan/waktu-pengajuan/data', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'data']);
     Route::post('/laporan_waktu/data_list', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'data']);
     Route::get('/laporan/waktu-pengajuan/export-excel', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'exportExcel']);
+
+    // Log Kehadiran Lembaga (CRUD kehadiran_lembaga)
+    Route::get('/log/kehadiran-lembaga', [App\Http\Controllers\LogKehadiranLembagaController::class, 'index']);
+    Route::get('/Log_kehadiran_lemb', function() { return redirect('/log/kehadiran-lembaga'); });
+    Route::post('/log/kehadiran-lembaga/data', [App\Http\Controllers\LogKehadiranLembagaController::class, 'data']);
+    Route::get('/log/kehadiran-lembaga/show/{id}', [App\Http\Controllers\LogKehadiranLembagaController::class, 'show']);
+    Route::post('/log/kehadiran-lembaga/store', [App\Http\Controllers\LogKehadiranLembagaController::class, 'store']);
+    Route::post('/log/kehadiran-lembaga/update/{id}', [App\Http\Controllers\LogKehadiranLembagaController::class, 'update']);
+    Route::post('/log/kehadiran-lembaga/delete/{id}', [App\Http\Controllers\LogKehadiranLembagaController::class, 'destroy']);
+    Route::get('/Log_kehadiran_lemb/hapus/{id}', function($id) {
+        app(App\Http\Controllers\LogKehadiranLembagaController::class)->destroy($id);
+        return redirect('/log/kehadiran-lembaga')->with('success', 'Data berhasil dihapus');
+    });
 });
 
 
