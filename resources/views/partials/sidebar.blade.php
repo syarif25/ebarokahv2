@@ -125,6 +125,9 @@
                     <li class="{{ Request::is('log/kehadiran-struktural*') || Request::is('Kehadiran/kehadiran_log*') || Request::is('kehadiran/kehadiran_log*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/log/kehadiran-struktural') }}">Kehadiran Struktural</a>
                     </li>
+                    <li class="{{ Request::is('log/kehadiran-pengajar*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/kehadiran-pengajar') }}">Kehadiran Pengajar</a>
+                    </li>
                 </ul>
             </li>
 

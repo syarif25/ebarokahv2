@@ -296,6 +296,15 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post', 'delete'], '/log/kehadiran-struktural/delete/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'destroy']);
     Route::get('/log/kehadiran-struktural/penempatan-options', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'searchPenempatan']);
     Route::match(['get', 'post', 'delete'], '/kehadiran/hapus/{id}', [App\Http\Controllers\LogKehadiranStrukturalController::class, 'destroy']);
+
+    // Log Kehadiran Pengajar (CRUD detail kehadiran pengajar)
+    Route::get('/log/kehadiran-pengajar', [App\Http\Controllers\LogKehadiranPengajarController::class, 'index']);
+    Route::post('/log/kehadiran-pengajar/data', [App\Http\Controllers\LogKehadiranPengajarController::class, 'data']);
+    Route::get('/log/kehadiran-pengajar/show/{id}', [App\Http\Controllers\LogKehadiranPengajarController::class, 'show']);
+    Route::post('/log/kehadiran-pengajar/store', [App\Http\Controllers\LogKehadiranPengajarController::class, 'store']);
+    Route::post('/log/kehadiran-pengajar/update/{id}', [App\Http\Controllers\LogKehadiranPengajarController::class, 'update']);
+    Route::match(['get', 'post', 'delete'], '/log/kehadiran-pengajar/delete/{id}', [App\Http\Controllers\LogKehadiranPengajarController::class, 'destroy']);
+    Route::get('/log/kehadiran-pengajar/pengajar-options', [App\Http\Controllers\LogKehadiranPengajarController::class, 'searchPengajar']);
 });
 
 
