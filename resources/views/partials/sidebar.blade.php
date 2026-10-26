@@ -107,6 +107,9 @@
                     <li class="{{ Request::is('laporan/per-umana*') || Request::is('Laporan/per_umana*') || Request::is('Laporan_v2/per_umana*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/per-umana') }}">Per Umana</a>
                     </li>
+                    <li class="{{ Request::is('laporan/waktu-pengajuan*') || Request::is('Laporan_waktu*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/laporan/waktu-pengajuan') }}">Waktu Pengajuan</a>
+                    </li>
                 </ul>
             </li>
             <li><a href="#" aria-expanded="false">

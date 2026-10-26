@@ -263,6 +263,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/laporan/per-umana/data', [App\Http\Controllers\LaporanPerUmanaController::class, 'data']);
     Route::get('/laporan/per-umana/rincian/{nik}', [App\Http\Controllers\LaporanPerUmanaController::class, 'rincian']);
     Route::get('/laporan/per-umana/breakdown', [App\Http\Controllers\LaporanPerUmanaController::class, 'breakdown']);
+
+    // Laporan Waktu Pengajuan
+    Route::get('/laporan/waktu-pengajuan', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'index']);
+    Route::get('/Laporan_waktu', function() { return redirect('/laporan/waktu-pengajuan'); });
+    Route::post('/laporan/waktu-pengajuan/data', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'data']);
+    Route::post('/laporan_waktu/data_list', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'data']);
+    Route::get('/laporan/waktu-pengajuan/export-excel', [App\Http\Controllers\LaporanWaktuPengajuanController::class, 'exportExcel']);
 });
 
 
