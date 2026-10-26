@@ -518,6 +518,22 @@
             });
         });
 
+            // Event delegation untuk tombol Edit
+            $('#tabel_kehadiran_lembaga tbody').on('click', '.btn-edit-kehadiran', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                editData(id);
+            });
+
+            // Event delegation untuk tombol Hapus
+            $('#tabel_kehadiran_lembaga tbody').on('click', '.btn-delete-kehadiran', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var nama = $(this).data('nama');
+                deleteData(id, nama);
+            });
+        });
+
         function addData() {
             isEdit = false;
             $('#modalFormLabel').text('Tambah Data Kehadiran Lembaga');
@@ -561,60 +577,94 @@
 
                         $('#modal_form').modal('show');
                     } else {
-                        Swal.fire('Error', 'Gagal memuat data!', 'error');
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire('Error', 'Gagal memuat data!', 'error');
+                        } else {
+                            alert('Gagal memuat data!');
+                        }
                     }
                 },
                 error: function() {
-                    Swal.fire('Error', 'Gagal mengambil data dari server!', 'error');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error', 'Gagal mengambil data dari server!', 'error');
+                    } else {
+                        alert('Gagal mengambil data dari server!');
+                    }
+                }
+            });
+        }
+
+        function executeDeleteAjax(id) {
+            $.ajax({
+                url: "{{ url('/log/kehadiran-lembaga/delete') }}/" + id,
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                success: function(res) {
+                    if (res.status) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Terhapus!',
+                                text: res.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            alert(res.message);
+                        }
+                        if (table) {
+                            table.ajax.reload(null, false);
+                        } else {
+                            location.reload();
+                        }
+                    } else {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire('Gagal!', res.message, 'error');
+                        } else {
+                            alert('Gagal: ' + res.message);
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    var errMsg = 'Gagal menghapus data dari server.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errMsg = xhr.responseJSON.message;
+                    }
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error!', errMsg, 'error');
+                    } else {
+                        alert('Error: ' + errMsg);
+                    }
                 }
             });
         }
 
         function deleteData(id, nama) {
-            Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: 'Hapus data kehadiran #' + id + ' (' + nama + ')? Tindakan ini tidak dapat dibatalkan!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ url('/log/kehadiran-lembaga/delete') }}/" + id,
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}"
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                        },
-                        success: function(res) {
-                            if (res.status) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Terhapus!',
-                                    text: res.message,
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                                table.ajax.reload(null, false);
-                            } else {
-                                Swal.fire('Gagal!', res.message, 'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            var errMsg = 'Gagal menghapus data dari server.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errMsg = xhr.responseJSON.message;
-                            }
-                            Swal.fire('Error!', errMsg, 'error');
-                        }
-                    });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: 'Hapus data kehadiran #' + id + ' (' + (nama || '') + ')? Tindakan ini tidak dapat dibatalkan!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.value || result.isConfirmed) {
+                        executeDeleteAjax(id);
+                    }
+                });
+            } else {
+                if (confirm('Hapus data kehadiran #' + id + ' (' + (nama || '') + ')?')) {
+                    executeDeleteAjax(id);
                 }
-            });
+            }
         }
     </script>
 @endpush

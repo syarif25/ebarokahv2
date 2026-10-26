@@ -161,13 +161,13 @@ class LogKehadiranLembagaController extends Controller
             // Nama Lembaga
             $namaLembaga = $item->nama_lembaga ?: ($item->kategori === 'Satpam' ? 'Satpam' : 'Lembaga #' . $item->id_lembaga);
 
-            // Action buttons
+            // Action buttons dengan data attributes (aman dari masalah quote/kutip)
             $actionBtn = '
                 <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-warning btn-xs text-white" onclick="editData(' . $item->id_kehadiran_lembaga . ')" title="Edit">
+                    <button type="button" class="btn btn-warning btn-xs text-white btn-edit-kehadiran" data-id="' . $item->id_kehadiran_lembaga . '" title="Edit">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
-                    <button type="button" class="btn btn-danger btn-xs" onclick="deleteData(' . $item->id_kehadiran_lembaga . ', \'' . addslashes($namaLembaga) . '\')" title="Hapus">
+                    <button type="button" class="btn btn-danger btn-xs btn-delete-kehadiran" data-id="' . $item->id_kehadiran_lembaga . '" data-nama="' . e($namaLembaga) . '" title="Hapus">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
