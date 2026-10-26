@@ -11,7 +11,46 @@
     <link href="{{ asset('vendor/select2/css/select2.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.css') }}" rel="stylesheet">
     <style>
-        /* Card Filter Styling */
+        /* Custom Table Styling matching Master Menu */
+        table.dataTable.display tbody td, 
+        table.dataTable.display tbody th, 
+        table.dataTable.display thead th {
+            border-left: none !important;
+            border-right: none !important;
+            padding: 1.25rem 1rem !important;
+            vertical-align: middle;
+        }
+        table.dataTable.display thead th {
+            border-top: none !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+            text-transform: capitalize;
+            font-weight: 800;
+            color: #333;
+            background-color: transparent !important;
+        }
+        table.dataTable.display tbody tr {
+            border-bottom: 1px solid #f8f8f8 !important;
+        }
+        table.dataTable.display tbody tr.odd {
+            background-color: transparent !important;
+        }
+        table.dataTable.display tbody tr.even {
+            background-color: transparent !important;
+        }
+        table.dataTable.display tbody tr:hover {
+            background-color: #fafafa !important;
+        }
+        table.dataTable {
+            border-bottom: none !important;
+        }
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.2em 0.5em !important;
+        }
+
+        /* Filter Card Styling */
         .filter-card {
             background: #ffffff;
             border-radius: 14px;
@@ -62,111 +101,6 @@
             z-index: 9999 !important;
         }
 
-        /* Badges */
-        .badge-id-kehadiran {
-            background-color: #f1f5f9 !important;
-            color: #475569 !important;
-            font-weight: 700 !important;
-            font-size: 12px !important;
-            padding: 5px 10px !important;
-            border-radius: 6px !important;
-            border: 1px solid #cbd5e1 !important;
-        }
-
-        .badge-periode {
-            background-color: #f8fafc !important;
-            color: #1e293b !important;
-            border: 1px solid #e2e8f0 !important;
-            font-weight: 600 !important;
-            font-size: 12px !important;
-            padding: 5px 10px !important;
-            border-radius: 8px !important;
-        }
-
-        .badge-kehadi {
-            background-color: #ede9fe !important;
-            color: #6d28d9 !important;
-            border: 1px solid #ddd6fe !important;
-            font-weight: 700 !important;
-            font-size: 12px !important;
-            padding: 5px 10px !important;
-            border-radius: 6px !important;
-        }
-
-        .badge-stat-hadir {
-            background-color: #10b981 !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
-            font-size: 11px !important;
-            padding: 4px 8px !important;
-            border-radius: 6px !important;
-        }
-        .badge-stat-tugas {
-            background-color: #0284c7 !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
-            font-size: 11px !important;
-            padding: 4px 8px !important;
-            border-radius: 6px !important;
-        }
-        .badge-stat-izin {
-            background-color: #f59e0b !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
-            font-size: 11px !important;
-            padding: 4px 8px !important;
-            border-radius: 6px !important;
-        }
-        .badge-stat-sakit {
-            background-color: #ef4444 !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
-            font-size: 11px !important;
-            padding: 4px 8px !important;
-            border-radius: 6px !important;
-        }
-
-        /* Clean Table */
-        table.dataTable.display tbody td {
-            padding: 0.85rem 1rem !important;
-            vertical-align: middle;
-        }
-        table.dataTable.display thead th {
-            border-top: none !important;
-            border-bottom: 2px solid #e2e8f0 !important;
-            font-weight: 700 !important;
-            font-size: 12px !important;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #475569 !important;
-            background-color: #f8fafc !important;
-        }
-
-        .btn-custom-action {
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-        }
-
-        .btn-success-custom {
-            background-color: #00a15d !important;
-            border-color: #00a15d !important;
-            color: #ffffff !important;
-            border-radius: 10px !important;
-            padding: 9px 20px !important;
-            font-weight: 600 !important;
-            transition: all 0.2s ease !important;
-        }
-        .btn-success-custom:hover {
-            background-color: #00874e !important;
-            border-color: #00874e !important;
-            box-shadow: 0 4px 12px rgba(0, 161, 93, 0.25) !important;
-        }
-
         .input-custom {
             border: 1px solid #cbd5e1 !important;
             border-radius: 10px !important;
@@ -201,7 +135,7 @@
                         </select>
                     </div>
 
-                    <div class="col-lg-2 col-md-4 col-6">
+                    <div class="col-lg-3 col-md-3 col-6">
                         <label class="filter-label">
                             <i class="far fa-calendar-alt text-success"></i> Bulan
                         </label>
@@ -213,7 +147,7 @@
                         </select>
                     </div>
 
-                    <div class="col-lg-2 col-md-4 col-6">
+                    <div class="col-lg-2 col-md-3 col-6">
                         <label class="filter-label">
                             <i class="far fa-clock text-info"></i> Tahun
                         </label>
@@ -232,12 +166,9 @@
                         <input type="text" id="filter_kehadi" class="form-control input-custom" placeholder="ID Blanko...">
                     </div>
 
-                    <div class="col-lg-3 col-md-8 col-12 d-flex justify-content-end gap-2">
-                        <button type="button" id="btn_reset_filter" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1" style="border-radius: 10px; height: 42px;">
-                            <i class="fas fa-undo"></i> Reset
-                        </button>
-                        <button type="button" id="btn_tambah_data" class="btn btn-success-custom d-inline-flex align-items-center gap-2">
-                            <i class="fas fa-plus"></i> Tambah Data
+                    <div class="col-lg-2 col-md-4 col-6 d-flex align-items-end">
+                        <button type="button" id="btn_reset_filter" class="btn btn-outline-secondary w-100 d-inline-flex align-items-center justify-content-center gap-1" style="border-radius: 10px; height: 42px;">
+                            <i class="fas fa-undo"></i> Reset Filter
                         </button>
                     </div>
                 </div>
@@ -245,30 +176,30 @@
         </div>
     </div>
 
-    <!-- Data Table Card -->
+    <!-- Data Table Card (Matching Master Menu) -->
     <div class="row">
         <div class="col-12">
-            <div class="card" style="border-radius: 14px; border: 1px solid #eef2f6; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);">
+            <div class="card">
                 <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title text-dark font-weight-bold mb-0">Daftar Log Kehadiran Umana</h5>
-                    <button type="button" id="btn_refresh_table" class="btn btn-sm btn-light border text-secondary" title="Segarkan Data">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                    <h4 class="card-title">Daftar Kehadiran Struktural</h4>
+                    <button type="button" class="btn btn-primary btn-sm btn-tambah-data" id="btn_tambah_data" style="background-color: #00a15d; border-color: #00a15d; border-radius: 20px; padding: 6px 18px; font-weight: 600;">
+                        <i class="fas fa-plus me-1"></i> Tambah Kehadiran
                     </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="tabel_kehadiran" class="table display table-hover" style="width:100%">
+                        <table id="tabel_kehadiran" class="display" style="min-width: 845px; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 40px;">No</th>
-                                    <th style="width: 60px;">ID</th>
-                                    <th>Nama Umana & NIK</th>
-                                    <th>Lembaga</th>
-                                    <th>Periode</th>
-                                    <th>ID Blanko</th>
-                                    <th>Kehadiran</th>
-                                    <th>Tgl Input</th>
-                                    <th style="width: 80px;" class="text-center">Aksi</th>
+                                    <th style="width: 50px;"><strong>No</strong></th>
+                                    <th><strong>ID</strong></th>
+                                    <th><strong>Nama Umana & NIK</strong></th>
+                                    <th><strong>Lembaga</strong></th>
+                                    <th><strong>Periode</strong></th>
+                                    <th><strong>ID Blanko</strong></th>
+                                    <th><strong>Kehadiran</strong></th>
+                                    <th><strong>Tgl Input</strong></th>
+                                    <th><strong>Aksi</strong></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -367,8 +298,8 @@
                     </div>
                 </div>
                 <div class="modal-footer bg-light" style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
-                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 10px;">Batal</button>
-                    <button type="submit" id="btn_submit_kehadiran" class="btn btn-success-custom px-4">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 20px;">Batal</button>
+                    <button type="submit" id="btn_submit_kehadiran" class="btn btn-primary px-4" style="background-color: #00a15d; border-color: #00a15d; border-radius: 20px; font-weight: 600;">
                         <i class="fas fa-save me-1"></i> Simpan Data
                     </button>
                 </div>
@@ -428,7 +359,7 @@
             }
         });
 
-        // Init DataTable Server-Side
+        // Init DataTable Server-Side (Matching Master Menu layout)
         var table = $('#tabel_kehadiran').DataTable({
             processing: true,
             serverSide: true,
@@ -443,32 +374,24 @@
                 }
             },
             columns: [
-                { data: 'no', name: 'no', orderable: false, searchable: false, className: 'text-center' },
-                { data: 'id_kehadiran', name: 'k.id_kehadiran', className: 'text-center' },
+                { data: 'no', name: 'no', orderable: false, searchable: false },
+                { data: 'id_kehadiran', name: 'k.id_kehadiran' },
                 { data: 'nama_umana', name: 'u.nama_lengkap' },
                 { data: 'lembaga', name: 'l.nama_lembaga' },
                 { data: 'periode', name: 'k.tahun' },
-                { data: 'id_kehadi', name: 'k.id_kehadi', className: 'text-center' },
+                { data: 'id_kehadi', name: 'k.id_kehadi' },
                 { data: 'kehadiran', name: 'k.jumlah_hadir' },
                 { data: 'tgl_input', name: 'k.tgl_input' },
-                { data: 'aksi', name: 'aksi', orderable: false, searchable: false, className: 'text-center' }
+                { data: 'aksi', name: 'aksi', orderable: false, searchable: false }
             ],
             order: [[1, 'desc']],
             pageLength: 25,
             lengthMenu: [10, 25, 50, 100],
             language: {
                 processing: '<div class="d-flex justify-content-center py-3"><div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div></div>',
-                search: "Cari Data:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
-                infoFiltered: "(disaring dari _MAX_ total data)",
-                zeroRecords: "Tidak ada data yang sesuai",
                 paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
-                    next: "Selanjutnya",
-                    previous: "Sebelumnya"
+                    next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
+                    previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>'
                 }
             }
         });
@@ -492,10 +415,6 @@
             $('#filter_tahun').val('').trigger('change.select2');
             $('#filter_kehadi').val('');
             table.ajax.reload();
-        });
-
-        $('#btn_refresh_table').on('click', function() {
-            table.ajax.reload(null, false);
         });
 
         // Open Modal Tambah
@@ -560,12 +479,22 @@
                         $('#modalKehadiranLabel').text('Edit Log Kehadiran #' + d.id_kehadiran);
                         $('#modal_kehadiran').modal('show');
                     } else {
-                        Swal.fire('Gagal', res.message || 'Data tidak ditemukan', 'error');
+                        Swal.fire({
+                            type: 'error',
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: res.message || 'Data tidak ditemukan'
+                        });
                     }
                 },
                 error: function(xhr) {
                     Swal.close();
-                    Swal.fire('Error', 'Terjadi kesalahan saat mengambil data: ' + xhr.statusText, 'error');
+                    Swal.fire({
+                        type: 'error',
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat mengambil data: ' + xhr.statusText
+                    });
                 }
             });
         });
@@ -594,6 +523,7 @@
                         $('#modal_kehadiran').modal('hide');
                         table.ajax.reload(null, false);
                         Swal.fire({
+                            type: 'success',
                             icon: 'success',
                             title: 'Berhasil',
                             text: res.message,
@@ -601,7 +531,12 @@
                             showConfirmButton: false
                         });
                     } else {
-                        Swal.fire('Gagal', res.message || 'Terjadi kesalahan', 'error');
+                        Swal.fire({
+                            type: 'error',
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: res.message || 'Terjadi kesalahan'
+                        });
                     }
                 },
                 error: function(xhr) {
@@ -610,7 +545,12 @@
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         msg = xhr.responseJSON.message;
                     }
-                    Swal.fire('Validasi / Error', msg, 'error');
+                    Swal.fire({
+                        type: 'error',
+                        icon: 'error',
+                        title: 'Validasi / Error',
+                        text: msg
+                    });
                 }
             });
         });
@@ -699,14 +639,14 @@
             }
 
             Swal.fire({
-                title: 'Hapus Kehadiran?',
-                text: 'Apakah Anda yakin ingin menghapus data kehadiran untuk ' + nama + '?',
+                title: 'Apakah Anda yakin?',
+                text: 'Data kehadiran #' + id + ' (' + nama + ') akan dihapus secara permanen!',
                 type: 'warning',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                cancelButtonColor: '#6e7881',
-                confirmButtonText: '<i class="fas fa-trash me-1"></i> Ya, Hapus!',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
                 cancelButtonText: 'Batal'
             }).then(function(result) {
                 if (result && (result.value || result.isConfirmed || result === true)) {

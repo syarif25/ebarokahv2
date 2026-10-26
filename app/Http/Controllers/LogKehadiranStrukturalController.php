@@ -134,62 +134,64 @@ class LogKehadiranStrukturalController extends Controller
         $no = $start + 1;
         foreach ($list as $item) {
             $namaUmana = $item->nama_lengkap ?: 'Umana (NIK: ' . ($item->nik ?: 'N/A') . ')';
-            $jabatan = $item->jabatan_lembaga ?: '-';
+            $jabatan = $item->jabatan_lembaga ?: '';
             $lembaga = $item->nama_lembaga ?: '-';
 
             // Format Nama & NIK & Jabatan
-            $namaHtml = '
-                <div class="d-flex flex-column">
-                    <span class="fw-bold text-dark">' . e($namaUmana) . '</span>
-                    <small class="text-muted"><i class="far fa-id-card me-1"></i>' . e($item->nik ?: '-') . ' &bull; ' . e($jabatan) . '</small>
-                </div>
-            ';
+            $namaHtml = '<div><strong>' . e($namaUmana) . '</strong>';
+            if ($item->nik || ($jabatan && $jabatan !== '-')) {
+                $sub = [];
+                if ($item->nik) $sub[] = e($item->nik);
+                if ($jabatan && $jabatan !== '-') $sub[] = e($jabatan);
+                $namaHtml .= '<br><small class="text-muted">' . implode(' &bull; ', $sub) . '</small>';
+            }
+            $namaHtml .= '</div>';
 
-            // Periode
-            $periodeHtml = '<span class="badge badge-periode"><i class="far fa-calendar-alt me-1 text-success"></i>' . e($item->bulan ?: '-') . ' ' . e($item->tahun ?: '-') . '</span>';
+            // Lembaga (clean plain text)
+            $lembagaHtml = e($lembaga);
 
-            // ID Kehadi (Blanko)
-            $kehadiHtml = $item->id_kehadi 
-                ? '<span class="badge badge-kehadi">#' . e($item->id_kehadi) . '</span>'
-                : '<span class="text-muted">-</span>';
+            // Periode (clean plain text)
+            $periodeHtml = e($item->bulan ?: '-') . ' ' . e($item->tahun ?: '-');
 
-            // Kehadiran metrics
-            $kehadiranHtml = '
-                <div class="d-flex flex-wrap gap-1 align-items-center">
-                    <span class="badge badge-stat-hadir" title="Jumlah Hadir">H: ' . (int)$item->jumlah_hadir . '</span>
-            ';
+            // ID Blanko (clean plain text)
+            $kehadiHtml = $item->id_kehadi ? '#' . e($item->id_kehadi) : '-';
+
+            // Kehadiran (clean plain text)
+            $kehadiranHtml = (int)$item->jumlah_hadir . ' Hadir';
+            $extra = [];
             if ($item->jumlah_tugas !== null && $item->jumlah_tugas !== '') {
-                $kehadiranHtml .= '<span class="badge badge-stat-tugas" title="Jumlah Tugas">T: ' . (int)$item->jumlah_tugas . '</span>';
+                $extra[] = (int)$item->jumlah_tugas . ' Tugas';
             }
             if ($item->jumlah_izin !== null && $item->jumlah_izin !== '') {
-                $kehadiranHtml .= '<span class="badge badge-stat-izin" title="Jumlah Izin">I: ' . (int)$item->jumlah_izin . '</span>';
+                $extra[] = (int)$item->jumlah_izin . ' Izin';
             }
             if ($item->jumlah_sakit !== null && $item->jumlah_sakit !== '') {
-                $kehadiranHtml .= '<span class="badge badge-stat-sakit" title="Jumlah Sakit">S: ' . (int)$item->jumlah_sakit . '</span>';
+                $extra[] = (int)$item->jumlah_sakit . ' Sakit';
             }
-            $kehadiranHtml .= '</div>';
+            if (!empty($extra)) {
+                $kehadiranHtml .= '<br><small class="text-muted">' . implode(', ', $extra) . '</small>';
+            }
 
-            // Tanggal Input
-            $tglInputStr = $item->tgl_input ? date('d/m/Y H:i', strtotime($item->tgl_input)) : '-';
-            $tglHtml = '<small class="text-muted d-inline-flex align-items-center gap-1"><i class="far fa-clock"></i>' . $tglInputStr . '</small>';
+            // Tanggal Input (clean plain text)
+            $tglHtml = $item->tgl_input ? date('d/m/Y H:i', strtotime($item->tgl_input)) : '-';
 
-            // Action buttons
+            // Action buttons (exact matching Master menu)
             $actionBtn = '
-                <div class="d-flex justify-content-center gap-1">
-                    <button type="button" class="btn btn-warning btn-xs text-white btn-edit-kehadiran" data-id="' . $item->id_kehadiran . '" title="Edit">
-                        <i class="fas fa-pencil-alt" style="pointer-events: none;"></i>
+                <div class="d-flex">
+                    <button type="button" class="btn btn-outline-danger btn-sm shadow-sm btn-edit-kehadiran" style="border-radius: 20px; padding: 5px 15px;" data-id="' . $item->id_kehadiran . '">
+                        <i class="fas fa-pencil-alt me-1" style="pointer-events: none;"></i> Edit
                     </button>
-                    <button type="button" class="btn btn-danger btn-xs btn-delete-kehadiran" data-id="' . $item->id_kehadiran . '" data-nama="' . htmlspecialchars($namaUmana, ENT_QUOTES, 'UTF-8') . '" title="Hapus">
-                        <i class="fas fa-trash" style="pointer-events: none;"></i>
+                    <button type="button" class="btn btn-outline-warning btn-sm shadow-sm btn-delete-kehadiran" style="border-radius: 20px; padding: 5px 15px; margin-left: 5px;" data-id="' . $item->id_kehadiran . '" data-nama="' . htmlspecialchars($namaUmana, ENT_QUOTES, 'UTF-8') . '">
+                        <i class="fas fa-trash me-1" style="pointer-events: none;"></i> Hapus
                     </button>
                 </div>
             ';
 
             $data[] = [
-                'no' => $no++,
-                'id_kehadiran' => '<span class="badge badge-id-kehadiran">#' . $item->id_kehadiran . '</span>',
+                'no' => '<strong>' . ($no++) . '</strong>',
+                'id_kehadiran' => '#' . $item->id_kehadiran,
                 'nama_umana' => $namaHtml,
-                'lembaga' => '<span class="fw-semibold text-secondary">' . e($lembaga) . '</span>',
+                'lembaga' => $lembagaHtml,
                 'periode' => $periodeHtml,
                 'id_kehadi' => $kehadiHtml,
                 'kehadiran' => $kehadiranHtml,
