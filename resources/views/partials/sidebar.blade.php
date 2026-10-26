@@ -118,9 +118,12 @@
                     <i class="fas fa-history"></i>
                     <span class="nav-text">Log</span>
                 </a>
-                <ul aria-expanded="false" class="{{ Request::is('log*') || Request::is('Log*') ? 'mm-show' : '' }}">
+                <ul aria-expanded="false" class="{{ Request::is('log*') || Request::is('Log*') || Request::is('Kehadiran/kehadiran_log*') || Request::is('kehadiran/kehadiran_log*') ? 'mm-show' : '' }}">
                     <li class="{{ Request::is('log/kehadiran-lembaga*') || Request::is('Log_kehadiran_lemb*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/log/kehadiran-lembaga') }}">Kehadiran Lembaga</a>
+                    </li>
+                    <li class="{{ Request::is('log/kehadiran-struktural*') || Request::is('Kehadiran/kehadiran_log*') || Request::is('kehadiran/kehadiran_log*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/kehadiran-struktural') }}">Kehadiran Struktural</a>
                     </li>
                 </ul>
             </li>
