@@ -181,24 +181,10 @@
 @endpush
 
 @section('content')
-<div class="container-fluid">
-    <div class="row page-titles mx-0 mb-4">
-        <div class="col-sm-6 p-md-0">
-            <div class="welcome-text">
-                <h4 class="text-primary font-weight-bold" style="color: #00a15d !important;">Log Kehadiran Lembaga</h4>
-                <p class="mb-0 text-muted">Manajemen & CRUD data tabel riwayat kehadiran lembaga</p>
-            </div>
-        </div>
-        <div class="col-sm-6 p-md-0 justify-content-sm-end mt-2 mt-sm-0 d-flex">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="javascript:void(0)" class="text-muted">Log</a></li>
-                <li class="breadcrumb-item active"><a href="javascript:void(0)" style="color: #ff5e5e !important; font-weight: 600;">Kehadiran Lembaga</a></li>
-            </ol>
-        </div>
-    </div>
-
-    <!-- Filter Card -->
-    <div class="filter-card">
+<!-- Filter Card -->
+<div class="row">
+    <div class="col-12">
+        <div class="filter-card">
         <div class="row align-items-end g-3">
             <div class="col-lg-3 col-md-6">
                 <label class="filter-label">
@@ -254,6 +240,7 @@
             </div>
         </div>
     </div>
+</div>
 
     <!-- Table Card -->
     <div class="row">
@@ -290,7 +277,6 @@
             </div>
         </div>
     </div>
-</div>
 
 <!-- Modal Form CRUD -->
 <div class="modal fade" id="modal_form" tabindex="-1" aria-labelledby="modalFormLabel" aria-hidden="true">
