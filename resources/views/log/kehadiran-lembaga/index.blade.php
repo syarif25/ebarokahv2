@@ -585,8 +585,11 @@
                     $.ajax({
                         url: "{{ url('/log/kehadiran-lembaga/delete') }}/" + id,
                         type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}"
+                        },
                         headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         success: function(res) {
                             if (res.status) {
@@ -602,8 +605,12 @@
                                 Swal.fire('Gagal!', res.message, 'error');
                             }
                         },
-                        error: function() {
-                            Swal.fire('Error!', 'Gagal menghapus data dari server.', 'error');
+                        error: function(xhr) {
+                            var errMsg = 'Gagal menghapus data dari server.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errMsg = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Error!', errMsg, 'error');
                         }
                     });
                 }
