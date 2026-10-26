@@ -117,96 +117,94 @@
 @endpush
 
 @section('content')
-<div class="container-fluid">
-    <!-- Filter Card -->
-    <div class="row">
-        <div class="col-12">
-            <div class="filter-card">
-                <div class="row align-items-end g-3">
-                    <div class="col-lg-3 col-md-6 col-12">
-                        <label class="filter-label">
-                            <i class="fas fa-university text-primary"></i> Lembaga
-                        </label>
-                        <select id="filter_lembaga" class="form-control select2-filter">
-                            <option value="">Semua Lembaga</option>
-                            @foreach($lembagaList as $lem)
-                                <option value="{{ $lem->id_lembaga }}">{{ $lem->nama_lembaga }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+<!-- Filter Card -->
+<div class="row">
+    <div class="col-12">
+        <div class="filter-card">
+            <div class="row align-items-end g-3">
+                <div class="col-lg-3 col-md-6 col-12">
+                    <label class="filter-label">
+                        <i class="fas fa-university text-primary"></i> Lembaga
+                    </label>
+                    <select id="filter_lembaga" class="form-control select2-filter">
+                        <option value="">Semua Lembaga</option>
+                        @foreach($lembagaList as $lem)
+                            <option value="{{ $lem->id_lembaga }}">{{ $lem->nama_lembaga }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                    <div class="col-lg-3 col-md-3 col-6">
-                        <label class="filter-label">
-                            <i class="far fa-calendar-alt text-success"></i> Bulan
-                        </label>
-                        <select id="filter_bulan" class="form-control select2-filter">
-                            <option value="">Semua Bulan</option>
-                            @foreach($bulanList as $b)
-                                <option value="{{ $b }}">{{ $b }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="col-lg-3 col-md-3 col-6">
+                    <label class="filter-label">
+                        <i class="far fa-calendar-alt text-success"></i> Bulan
+                    </label>
+                    <select id="filter_bulan" class="form-control select2-filter">
+                        <option value="">Semua Bulan</option>
+                        @foreach($bulanList as $b)
+                            <option value="{{ $b }}">{{ $b }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                    <div class="col-lg-2 col-md-3 col-6">
-                        <label class="filter-label">
-                            <i class="far fa-clock text-info"></i> Tahun
-                        </label>
-                        <select id="filter_tahun" class="form-control select2-filter">
-                            <option value="">Semua Tahun</option>
-                            @foreach($tahunList as $th)
-                                <option value="{{ $th }}">{{ $th }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <label class="filter-label">
+                        <i class="far fa-clock text-info"></i> Tahun
+                    </label>
+                    <select id="filter_tahun" class="form-control select2-filter">
+                        <option value="">Semua Tahun</option>
+                        @foreach($tahunList as $th)
+                            <option value="{{ $th }}">{{ $th }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <label class="filter-label">
-                            <i class="fas fa-hashtag text-warning"></i> ID Blanko
-                        </label>
-                        <input type="text" id="filter_kehadi" class="form-control input-custom" placeholder="ID Blanko...">
-                    </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="filter-label">
+                        <i class="fas fa-hashtag text-warning"></i> ID Blanko
+                    </label>
+                    <input type="text" id="filter_kehadi" class="form-control input-custom" placeholder="ID Blanko...">
+                </div>
 
-                    <div class="col-lg-2 col-md-4 col-6 d-flex align-items-end">
-                        <button type="button" id="btn_reset_filter" class="btn btn-outline-secondary w-100 d-inline-flex align-items-center justify-content-center gap-1" style="border-radius: 10px; height: 42px;">
-                            <i class="fas fa-undo"></i> Reset Filter
-                        </button>
-                    </div>
+                <div class="col-lg-2 col-md-4 col-6 d-flex align-items-end">
+                    <button type="button" id="btn_reset_filter" class="btn btn-outline-secondary w-100 d-inline-flex align-items-center justify-content-center gap-1" style="border-radius: 10px; height: 42px;">
+                        <i class="fas fa-undo"></i> Reset Filter
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Data Table Card (Matching Master Menu) -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
-                    <h4 class="card-title">Daftar Kehadiran Struktural</h4>
-                    <button type="button" class="btn btn-primary btn-sm btn-tambah-data" id="btn_tambah_data" style="background-color: #00a15d; border-color: #00a15d; border-radius: 20px; padding: 6px 18px; font-weight: 600;">
-                        <i class="fas fa-plus me-1"></i> Tambah Kehadiran
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="tabel_kehadiran" class="display" style="min-width: 845px; width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 50px;"><strong>No</strong></th>
-                                    <th><strong>ID</strong></th>
-                                    <th><strong>Nama Umana & NIK</strong></th>
-                                    <th><strong>Lembaga</strong></th>
-                                    <th><strong>Periode</strong></th>
-                                    <th><strong>ID Blanko</strong></th>
-                                    <th><strong>Kehadiran</strong></th>
-                                    <th><strong>Tgl Input</strong></th>
-                                    <th><strong>Aksi</strong></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- DataTables Server-Side Processing -->
-                            </tbody>
-                        </table>
-                    </div>
+<!-- Data Table Card (Matching Master Menu) -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                <h4 class="card-title">Daftar Kehadiran Struktural</h4>
+                <button type="button" class="btn btn-primary btn-sm btn-tambah-data" id="btn_tambah_data" style="background-color: #00a15d; border-color: #00a15d; border-radius: 20px; padding: 6px 18px; font-weight: 600;">
+                    <i class="fas fa-plus me-1"></i> Tambah Kehadiran
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="tabel_kehadiran" class="display" style="min-width: 845px; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;"><strong>No</strong></th>
+                                <th><strong>ID</strong></th>
+                                <th><strong>Nama Umana & NIK</strong></th>
+                                <th><strong>Lembaga</strong></th>
+                                <th><strong>Periode</strong></th>
+                                <th><strong>ID Blanko</strong></th>
+                                <th><strong>Kehadiran</strong></th>
+                                <th><strong>Tgl Input</strong></th>
+                                <th><strong>Aksi</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- DataTables Server-Side Processing -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
