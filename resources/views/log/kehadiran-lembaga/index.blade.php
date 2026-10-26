@@ -515,6 +515,8 @@
                         });
                     }
                 });
+            });
+
             // Event delegation untuk tombol Edit
             $('#tabel_kehadiran_lembaga tbody').on('click', '.btn-edit-kehadiran', function(e) {
                 e.preventDefault();
