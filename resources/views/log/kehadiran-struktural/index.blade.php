@@ -521,8 +521,15 @@
                 title: 'Memuat Data...',
                 text: 'Mohon tunggu sebentar',
                 allowOutsideClick: false,
+                onBeforeOpen: function() {
+                    if (typeof Swal.showLoading === 'function') {
+                        Swal.showLoading();
+                    }
+                },
                 didOpen: function() {
-                    Swal.showLoading();
+                    if (typeof Swal.showLoading === 'function') {
+                        Swal.showLoading();
+                    }
                 }
             });
 
@@ -608,6 +615,72 @@
             });
         });
 
+        function executeDeleteAjax(id) {
+            Swal.fire({
+                title: 'Menghapus Data...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                onBeforeOpen: function() {
+                    if (typeof Swal.showLoading === 'function') {
+                        Swal.showLoading();
+                    }
+                },
+                didOpen: function() {
+                    if (typeof Swal.showLoading === 'function') {
+                        Swal.showLoading();
+                    }
+                }
+            });
+
+            $.ajax({
+                url: '{{ url("/log/kehadiran-struktural/delete") }}/' + id,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                dataType: 'json',
+                success: function(res) {
+                    Swal.close();
+                    if (res.status) {
+                        table.ajax.reload(null, false);
+                        Swal.fire({
+                            type: 'success',
+                            icon: 'success',
+                            title: 'Terhapus!',
+                            text: res.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            type: 'error',
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: res.message || 'Gagal menghapus data'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.close();
+                    var msg = 'Terjadi kesalahan saat menghapus data.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        msg = xhr.responseJSON.message;
+                    } else if (xhr.statusText) {
+                        msg += ' (' + xhr.status + ': ' + xhr.statusText + ')';
+                    }
+                    Swal.fire({
+                        type: 'error',
+                        icon: 'error',
+                        title: 'Error',
+                        text: msg
+                    });
+                }
+            });
+        }
+
         // Delete Data Click (Event Delegation on document)
         $(document).on('click', '.btn-delete-kehadiran', function(e) {
             e.preventDefault();
@@ -616,13 +689,19 @@
             var nama = btn.attr('data-nama') || ('ID #' + id);
 
             if (!id) {
-                Swal.fire('Error', 'ID data kehadiran tidak ditemukan.', 'error');
+                Swal.fire({
+                    type: 'error',
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'ID data kehadiran tidak ditemukan.'
+                });
                 return;
             }
 
             Swal.fire({
                 title: 'Hapus Kehadiran?',
                 text: 'Apakah Anda yakin ingin menghapus data kehadiran untuk ' + nama + '?',
+                type: 'warning',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -630,52 +709,8 @@
                 confirmButtonText: '<i class="fas fa-trash me-1"></i> Ya, Hapus!',
                 cancelButtonText: 'Batal'
             }).then(function(result) {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Menghapus Data...',
-                        text: 'Mohon tunggu sebentar',
-                        allowOutsideClick: false,
-                        didOpen: function() {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    $.ajax({
-                        url: '{{ url("/log/kehadiran-struktural/delete") }}/' + id,
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        dataType: 'json',
-                        success: function(res) {
-                            Swal.close();
-                            if (res.status) {
-                                table.ajax.reload(null, false);
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Terhapus!',
-                                    text: res.message,
-                                    timer: 2000,
-                                    showConfirmButton: false
-                                });
-                            } else {
-                                Swal.fire('Gagal', res.message || 'Gagal menghapus data', 'error');
-                            }
-                        },
-                        error: function(xhr) {
-                            Swal.close();
-                            var msg = 'Terjadi kesalahan saat menghapus data.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                msg = xhr.responseJSON.message;
-                            } else if (xhr.statusText) {
-                                msg += ' (' + xhr.status + ': ' + xhr.statusText + ')';
-                            }
-                            Swal.fire('Error', msg, 'error');
-                        }
-                    });
+                if (result && (result.value || result.isConfirmed || result === true)) {
+                    executeDeleteAjax(id);
                 }
             });
         });
