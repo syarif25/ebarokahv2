@@ -833,9 +833,10 @@ class KehadiranPengajarController extends Controller
             ->where('pp.id_pengajar', $id_pengajar);
 
         if ($periode_date) {
-            $query->where(function ($q) use ($periode_date) {
+            $lastDay = date('Y-m-t', strtotime($periode_date));
+            $query->where(function ($q) use ($lastDay) {
                 $q->whereNull('pp.min_periode_potongan')
-                  ->orWhere('pp.min_periode_potongan', '<=', DB::raw("LAST_DAY('$periode_date')"));
+                  ->orWhere('pp.min_periode_potongan', '<=', $lastDay);
             })->where(function ($q) use ($periode_date) {
                 $q->whereNull('pp.max_periode_potongan')
                   ->orWhere('pp.max_periode_potongan', '>=', $periode_date);
@@ -980,13 +981,13 @@ class KehadiranPengajarController extends Controller
         $lembaga = Lembaga::findOrFail($id_lembaga);
         $bulanLaporan = null;
         $tahunLaporan = null;
-        $filterTanggal = "DATE_FORMAT(NOW(), '%Y-%m-01')";
+        $filterTanggal = date('Y-m-01');
 
         if (!empty($id_kehadiran)) {
             $periode = KehadiranLembaga::find($id_kehadiran);
             if ($periode) {
                 $periodeDate = HitungPengajarService::getPeriodeDate($periode->bulan, $periode->tahun);
-                $filterTanggal = "'{$periodeDate}'";
+                $filterTanggal = $periodeDate;
                 $bulanLaporan = ucfirst($periode->bulan);
                 $tahunLaporan = $periode->tahun;
             }
@@ -1002,14 +1003,14 @@ class KehadiranPengajarController extends Controller
             JOIN potongan pot ON pp.jenis_potongan = pot.id_potongan
             JOIN lembaga l ON p.id_lembaga = l.id_lembaga
             WHERE 
-                (pp.min_periode_potongan IS NULL OR pp.min_periode_potongan <= {$filterTanggal})
-                AND (pp.max_periode_potongan IS NULL OR pp.max_periode_potongan >= {$filterTanggal})
+                (pp.min_periode_potongan IS NULL OR pp.min_periode_potongan <= ?)
+                AND (pp.max_periode_potongan IS NULL OR pp.max_periode_potongan >= ?)
                 AND p.id_lembaga = ?
                 AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())
             ORDER BY u.nama_lengkap ASC
         ";
 
-        $potonganList = DB::select($query, [$id_lembaga]);
+        $potonganList = DB::select($query, [$filterTanggal, $filterTanggal, $id_lembaga]);
 
         $pdfContent = PdfBarokahService::cetakPotonganPengajar($potonganList, $lembaga, $bulanLaporan, $tahunLaporan);
 

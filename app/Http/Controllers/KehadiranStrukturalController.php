@@ -774,7 +774,7 @@ class KehadiranStrukturalController extends Controller
 
         $bulanLaporan = null;
         $tahunLaporan = null;
-        $filterTanggal = "DATE_FORMAT(NOW(), '%Y-%m-01')";
+        $filterTanggal = date('Y-m-01');
 
         if (!empty($id_kehadiran)) {
             $idKehadiranDecoded = is_numeric($id_kehadiran) ? (int)$id_kehadiran : (int)base64_decode($id_kehadiran);
@@ -790,7 +790,7 @@ class KehadiranStrukturalController extends Controller
                 $blnNum = is_numeric($blnRaw) ? str_pad((int)$blnRaw, 2, '0', STR_PAD_LEFT) : ($mapBulan[$blnRaw] ?? date('m'));
                 $thnStr = (int)$periodeLaporan->tahun;
 
-                $filterTanggal = "'{$thnStr}-{$blnNum}-01'";
+                $filterTanggal = sprintf('%04d-%02d-01', $thnStr, (int)$blnNum);
                 $bulanLaporan = ucfirst($blnRaw);
                 $tahunLaporan = $thnStr;
             }
@@ -812,13 +812,13 @@ class KehadiranStrukturalController extends Controller
             JOIN potongan_umana pp ON pp.id_penempatan = p.id_penempatan
             JOIN potongan pot ON pp.jenis_potongan = pot.id_potongan
             JOIN lembaga l ON p.id_lembaga = l.id_lembaga
-            WHERE pp.min_periode_potongan <= {$filterTanggal}
-              AND pp.max_periode_potongan >= {$filterTanggal}
+            WHERE pp.min_periode_potongan <= ?
+              AND pp.max_periode_potongan >= ?
               AND p.id_lembaga = ?
             ORDER BY u.nama_lengkap ASC
         ";
 
-        $potonganList = DB::select($query, [$idLembaga]);
+        $potonganList = DB::select($query, [$filterTanggal, $filterTanggal, $idLembaga]);
         $lembagaInfo  = DB::table('lembaga')->where('id_lembaga', $idLembaga)->first();
 
         $pdfContent = PdfBarokahService::cetakPotongan($potonganList, $lembagaInfo, $bulanLaporan, $tahunLaporan);
