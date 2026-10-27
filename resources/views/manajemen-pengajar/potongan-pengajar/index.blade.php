@@ -41,18 +41,87 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 161, 93, 0.25) !important;
         }
         
-        /* Clean Table Style */
+        /* Senior-Friendly & High Contrast Table Styling */
         #table-potongan.dataTable tbody tr {
-            border-bottom: 1px solid #f1f1f1;
+            border-bottom: 1px solid #cbd5e1 !important;
         }
-        #table-potongan.dataTable, #table-potongan.dataTable th, #table-potongan.dataTable td {
-            border-top: none;
-            border-left: none;
-            border-right: none;
+        #table-potongan.dataTable, 
+        #table-potongan.dataTable th, 
+        #table-potongan.dataTable td {
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            color: #0f172a !important;
+            font-size: 14.5px !important;
+            vertical-align: middle !important;
         }
         #table-potongan.dataTable thead th {
-            border-bottom: 2px solid #f1f1f1;
-            background-color: #fff;
+            border-bottom: 2.5px solid #94a3b8 !important;
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 12px !important;
+        }
+        #table-potongan.dataTable tbody td {
+            padding: 15px 12px !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+        }
+        #table-potongan.dataTable tbody tr:hover {
+            background-color: #f1f5f9 !important;
+        }
+
+        /* High Contrast Filter Row Inputs */
+        .filters th input.form-control {
+            border: 1.5px solid #64748b !important;
+            border-radius: 8px !important;
+            color: #0f172a !important;
+            font-size: 13.5px !important;
+            font-weight: 600 !important;
+            background-color: #ffffff !important;
+            height: 38px !important;
+            padding: 6px 12px !important;
+        }
+        .filters th input.form-control::placeholder {
+            color: #475569 !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+        }
+        .filters th input.form-control:focus {
+            border-color: #00a15d !important;
+            box-shadow: 0 0 0 2px rgba(0, 161, 93, 0.25) !important;
+        }
+
+        /* DataTables Controls (Show entries, pagination, info) */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: #0f172a !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            border: 1.5px solid #64748b !important;
+            border-radius: 6px !important;
+            color: #0f172a !important;
+            font-weight: 800 !important;
+            padding: 5px 10px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            border-radius: 6px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #00a15d !important;
+            color: #ffffff !important;
+            border: 1px solid #00a15d !important;
         }
         
         /* Light Pink Button */
@@ -71,7 +140,8 @@
             border-radius: 30px; 
             padding: 10px 25px;
             border: none;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 14px;
             box-shadow: 0 4px 6px rgba(216, 72, 201, 0.2);
         }
         
@@ -292,36 +362,64 @@
                 });
             },
             columns: [
-                { data: null, render: function (data, type, row, meta) { return meta.row + 1; } },
-                { data: 'umana.nama_lengkap', render: function(data) { return data ? `<span class="font-weight-bold text-dark">${data}</span>` : '-'; }},
-                { data: 'lembaga.nama_lembaga', render: function(data) { return data ? data : '-'; }},
                 { 
-                    data: 'potongans', 
+                    data: null, 
+                    render: function (data, type, row, meta) { 
+                        return `<span style="color: #0f172a; font-weight: 800; font-size: 14.5px;">${meta.row + 1}</span>`; 
+                    } 
+                },
+                { 
+                    data: 'umana.nama_lengkap', 
                     render: function(data) { 
-                        if(!data || data.length === 0) return '-';
-                        let count = data.length;
-                        let total = data.reduce((sum, p) => sum + parseFloat(p.nominal_potongan || 0), 0);
-                        return `<div><span class="d-block font-weight-bold">${count} Potongan</span><span class="text-success font-weight-bold">${formatRupiah(total)}</span></div>`;
+                        return data ? `<span style="color: #0f172a; font-weight: 800; font-size: 15px; letter-spacing: 0.2px;">${data}</span>` : '-'; 
+                    }
+                },
+                { 
+                    data: 'lembaga.nama_lembaga', 
+                    render: function(data) { 
+                        return data ? `<span style="color: #1e293b; font-weight: 700; font-size: 14px;">${data}</span>` : '-'; 
                     }
                 },
                 { 
                     data: 'potongans', 
                     render: function(data) { 
-                        if(!data || data.length === 0) return '-';
-                        // Ambil range terkecil dan terbesar
+                        if(!data || data.length === 0) return '<span style="color: #64748b; font-weight: 600;">-</span>';
+                        let count = data.length;
+                        let total = data.reduce((sum, p) => sum + parseFloat(p.nominal_potongan || 0), 0);
+                        return `<div>
+                            <span class="badge" style="background-color: #f1f5f9; color: #0f172a; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 12px; font-weight: 700; padding: 4px 10px;">${count} Potongan</span>
+                            <span class="d-block font-weight-bold mt-1" style="color: #047857; font-size: 15px;">${formatRupiah(total)}</span>
+                        </div>`;
+                    }
+                },
+                { 
+                    data: 'potongans', 
+                    render: function(data) { 
+                        if(!data || data.length === 0) return '<span style="color: #64748b; font-weight: 600;">-</span>';
                         let minDate = data.reduce((min, p) => p.min_periode_potongan < min ? p.min_periode_potongan : min, data[0].min_periode_potongan);
                         let maxDate = data.reduce((max, p) => p.max_periode_potongan > max ? p.max_periode_potongan : max, data[0].max_periode_potongan);
-                        return `<span class="text-success">${formatDate(minDate)}<br>s.d<br>${formatDate(maxDate)}</span>`;
+                        return `<span style="color: #0f172a; font-weight: 700; font-size: 13.5px; line-height: 1.45;">${formatDate(minDate)}<br><span style="color: #64748b; font-weight: 800; font-size: 11px;">s.d</span><br>${formatDate(maxDate)}</span>`;
                     }
                 },
                 {
                     data: 'id_pengajar',
                     render: function(data) {
-                        return `<button class="btn btn-outline-success btn-sm btn-detail" style="border-radius: 20px; border-color: #4ade80; color: #4ade80; font-weight: 600;" data-id="${data}"><i class="fas fa-eye"></i> Detail</button>`;
+                        return `<button class="btn btn-outline-success btn-sm btn-detail" style="border-radius: 20px; border: 2px solid #059669; color: #059669; font-weight: 700; padding: 5px 16px; font-size: 13px;" data-id="${data}"><i class="fas fa-eye me-1"></i> Detail</button>`;
                     }
                 }
             ],
-            language: { search: "Search:" }
+            language: { 
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: '<i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i>'
+                }
+            }
         });
 
         // Format Rupiah untuk input text
@@ -477,15 +575,15 @@
 
                         tbody.append(`
                             <tr>
-                                <td>${index + 1}</td>
-                                <td>${item.potongan ? item.potongan.nama_potongan : '-'}</td>
-                                <td class="text-success font-weight-bold">${formatRupiah(item.nominal_potongan)}</td>
-                                <td class="text-center text-success">
-                                    ${formatDate(item.min_periode_potongan)}<br>s.d<br>${formatDate(item.max_periode_potongan)}
+                                <td style="color: #0f172a; font-weight: 800; font-size: 14px;">${index + 1}</td>
+                                <td style="color: #0f172a; font-weight: 800; font-size: 14.5px;">${item.potongan ? item.potongan.nama_potongan : '-'}</td>
+                                <td style="color: #047857; font-weight: 800; font-size: 15px;">${formatRupiah(item.nominal_potongan)}</td>
+                                <td class="text-center" style="color: #0f172a; font-weight: 700; font-size: 13.5px;">
+                                    ${formatDate(item.min_periode_potongan)} <span style="color:#64748b; font-weight: 800; font-size: 11px;">s.d</span> ${formatDate(item.max_periode_potongan)}
                                     ${badgeHtml}
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-outline-danger btn-sm btn-edit-potongan" style="border-radius: 20px; color: #d848c9; border-color: #d848c9; background: white;" data-item='${JSON.stringify(item)}'><i class="far fa-edit"></i> Edit</button>
+                                    <button class="btn btn-outline-danger btn-sm btn-edit-potongan" style="border-radius: 20px; color: #d848c9; border: 2px solid #d848c9; background: white; font-weight: 700; padding: 4px 14px;" data-item='${JSON.stringify(item)}'><i class="far fa-edit me-1"></i> Edit</button>
                                 </td>
                             </tr>
                         `);

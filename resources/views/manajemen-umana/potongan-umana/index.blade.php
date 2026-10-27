@@ -41,6 +41,89 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 161, 93, 0.25) !important;
         }
 
+        /* Senior-Friendly & High Contrast Table Styling */
+        #table-potongan.dataTable tbody tr {
+            border-bottom: 1px solid #cbd5e1 !important;
+        }
+        #table-potongan.dataTable, 
+        #table-potongan.dataTable th, 
+        #table-potongan.dataTable td {
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            color: #0f172a !important;
+            font-size: 14.5px !important;
+            vertical-align: middle !important;
+        }
+        #table-potongan.dataTable thead th {
+            border-bottom: 2.5px solid #94a3b8 !important;
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 12px !important;
+        }
+        #table-potongan.dataTable tbody td {
+            padding: 15px 12px !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+        }
+        #table-potongan.dataTable tbody tr:hover {
+            background-color: #f1f5f9 !important;
+        }
+
+        /* High Contrast Filter Row Inputs */
+        .filters th input.form-control {
+            border: 1.5px solid #64748b !important;
+            border-radius: 8px !important;
+            color: #0f172a !important;
+            font-size: 13.5px !important;
+            font-weight: 600 !important;
+            background-color: #ffffff !important;
+            height: 38px !important;
+            padding: 6px 12px !important;
+        }
+        .filters th input.form-control::placeholder {
+            color: #475569 !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+        }
+        .filters th input.form-control:focus {
+            border-color: #00a15d !important;
+            box-shadow: 0 0 0 2px rgba(0, 161, 93, 0.25) !important;
+        }
+
+        /* DataTables Controls (Show entries, pagination, info) */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            color: #0f172a !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            border: 1.5px solid #64748b !important;
+            border-radius: 6px !important;
+            color: #0f172a !important;
+            font-weight: 800 !important;
+            padding: 5px 10px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            border-radius: 6px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: #00a15d !important;
+            color: #ffffff !important;
+            border: 1px solid #00a15d !important;
+        }
+
         /* Clean Modal Detail Styling */
         #table-detail.dataTable.no-footer,
         #table-detail {
@@ -297,21 +380,36 @@
                 });
             },
             columns: [
-                { data: null, render: function (data, type, row, meta) { return meta.row + 1; } },
-                { data: 'umana.nama_lengkap', render: function(data) { return data ? `<span class="font-weight-bold text-dark">${data}</span>` : '-'; }},
-                { data: 'lembaga.nama_lembaga', render: function(data) { return data ? data : '-'; }},
+                { 
+                    data: null, 
+                    render: function (data, type, row, meta) { 
+                        return `<span style="color: #0f172a; font-weight: 800; font-size: 14.5px;">${meta.row + 1}</span>`; 
+                    } 
+                },
+                { 
+                    data: 'umana.nama_lengkap', 
+                    render: function(data) { 
+                        return data ? `<span style="color: #0f172a; font-weight: 800; font-size: 15px; letter-spacing: 0.2px;">${data}</span>` : '-'; 
+                    }
+                },
+                { 
+                    data: 'lembaga.nama_lembaga', 
+                    render: function(data) { 
+                        return data ? `<span style="color: #1e293b; font-weight: 700; font-size: 14px;">${data}</span>` : '-'; 
+                    }
+                },
                 { 
                     data: 'ketentuan.nama_jabatan', 
                     defaultContent: '-',
                     render: function(data, type, row) { 
                         let jab = data ? data : (row.jabatan_lembaga ? row.jabatan_lembaga : '-');
-                        return `<span class="badge badge-light border text-dark font-weight-bold" style="font-size: 0.85rem;">${jab}</span>`; 
+                        return `<span class="badge" style="background-color: #e2e8f0; color: #0f172a; font-size: 12.5px; font-weight: 800; border: 1.5px solid #cbd5e1; padding: 6px 12px; border-radius: 20px;">${jab}</span>`; 
                     }
                 },
                 { 
                     data: 'potongans', 
                     render: function(data) { 
-                        if(!data || data.length === 0) return '-';
+                        if(!data || data.length === 0) return '<span style="color: #64748b; font-weight: 600;">-</span>';
                         let todayStr = new Date().toISOString().slice(0, 10);
                         let aktifList = data.filter(p => todayStr >= (p.min_periode_potongan || '').substring(0, 10) && todayStr <= (p.max_periode_potongan || '').substring(0, 10));
                         let totalAll = data.reduce((sum, p) => sum + parseFloat(p.nominal_potongan || 0), 0);
@@ -319,14 +417,15 @@
                         if(aktifList.length > 0) {
                             let totalAktif = aktifList.reduce((sum, p) => sum + parseFloat(p.nominal_potongan || 0), 0);
                             return `<div>
-                                <span class="badge" style="background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa fa-check-circle mr-1 text-success"></i> ${aktifList.length} Aktif</span>
-                                <span class="d-block text-success font-weight-bold mt-1">${formatRupiah(totalAktif)}</span>
-                                <small class="text-muted">Total: ${data.length} Potongan</small>
+                                <span class="badge" style="background-color: #dcfce7; color: #14532d; border: 1.5px solid #86efac; border-radius: 12px; font-size: 12px; font-weight: 700; padding: 4px 10px;"><i class="fa fa-check-circle me-1" style="color: #16a34a;"></i> ${aktifList.length} Aktif</span>
+                                <span class="d-block font-weight-bold mt-1" style="color: #047857; font-size: 15px;">${formatRupiah(totalAktif)}</span>
+                                <small style="color: #475569; font-weight: 600; font-size: 11.5px;">Total: ${data.length} Potongan</small>
                             </div>`;
                         } else {
                             return `<div>
-                                <span class="badge" style="background-color: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 11px; font-weight: 500;"><i class="fa fa-history mr-1"></i> Selesai (${data.length})</span>
-                                <span class="d-block text-muted font-weight-bold mt-1">${formatRupiah(totalAll)}</span>
+                                <span class="badge" style="background-color: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 12px; font-weight: 700; padding: 4px 10px;"><i class="fa fa-history me-1" style="color: #475569;"></i> Selesai (${data.length})</span>
+                                <span class="d-block font-weight-bold mt-1" style="color: #0f172a; font-size: 15px;">${formatRupiah(totalAll)}</span>
+                                <small style="color: #64748b; font-weight: 600; font-size: 11.5px;">Total: ${data.length} Potongan</small>
                             </div>`;
                         }
                     }
@@ -334,18 +433,14 @@
                 { 
                     data: 'potongans', 
                     render: function(data) { 
-                        if(!data || data.length === 0) return '-';
+                        if(!data || data.length === 0) return '<span style="color: #64748b; font-weight: 600;">-</span>';
                         let todayStr = new Date().toISOString().slice(0, 10);
                         let aktifList = data.filter(p => todayStr >= (p.min_periode_potongan || '').substring(0, 10) && todayStr <= (p.max_periode_potongan || '').substring(0, 10));
 
                         let minDate = data.reduce((min, p) => p.min_periode_potongan < min ? p.min_periode_potongan : min, data[0].min_periode_potongan);
                         let maxDate = data.reduce((max, p) => p.max_periode_potongan > max ? p.max_periode_potongan : max, data[0].max_periode_potongan);
 
-                        if (aktifList.length > 0) {
-                            return `<span class="text-success font-weight-bold">${formatDate(minDate)}<br>s.d<br>${formatDate(maxDate)}</span>`;
-                        } else {
-                            return `<span class="text-muted">${formatDate(minDate)}<br>s.d<br>${formatDate(maxDate)}</span>`;
-                        }
+                        return `<span style="color: #0f172a; font-weight: 700; font-size: 13.5px; line-height: 1.45;">${formatDate(minDate)}<br><span style="color: #64748b; font-weight: 800; font-size: 11px;">s.d</span><br>${formatDate(maxDate)}</span>`;
                     }
                 },
                 {
@@ -354,11 +449,22 @@
                         let nama = row.umana ? row.umana.nama_lengkap : '-';
                         let lembaga = row.lembaga ? row.lembaga.nama_lembaga : '-';
                         let jabatan = (row.ketentuan && row.ketentuan.nama_jabatan) ? row.ketentuan.nama_jabatan : (row.jabatan_lembaga || '-');
-                        return `<button class="btn btn-outline-success btn-sm btn-detail shadow-sm" data-id="${data}" data-nama="${nama}" data-lembaga="${lembaga}" data-jabatan="${jabatan}">Detail</button>`;
+                        return `<button class="btn btn-outline-success btn-sm btn-detail shadow-sm" style="border-radius: 20px; border: 2px solid #059669; color: #059669; font-weight: 700; padding: 5px 16px; font-size: 13px;" data-id="${data}" data-nama="${nama}" data-lembaga="${lembaga}" data-jabatan="${jabatan}"><i class="fas fa-eye me-1"></i> Detail</button>`;
                     }
                 }
             ],
-            language: { search: "Search:" }
+            language: { 
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: '<i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i>'
+                }
+            }
         });
 
         // Format Rupiah untuk input text
@@ -546,28 +652,28 @@
                             totalAktif += nominal;
                             trStyle = 'style="background-color: #f0fdf4;"';
                             btnClass = 'btn-outline-success';
-                            statusBadge = `<span class="badge" style="background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 20px; font-size: 11px; padding: 4px 10px; font-weight: 600;"><i class="fa fa-check-circle mr-1 text-success"></i> Aktif</span>`;
-                            nominalHtml = `<span class="text-success font-weight-bold" style="font-size: 13.5px;">${formatRupiah(nominal)}</span>`;
-                            periodeHtml = `<span class="font-weight-bold text-dark">${formatDate(item.min_periode_potongan)} s.d ${formatDate(item.max_periode_potongan)}</span>`;
+                            statusBadge = `<span class="badge" style="background-color: #dcfce7; color: #14532d; border: 1.5px solid #86efac; border-radius: 20px; font-size: 11.5px; padding: 4px 10px; font-weight: 700;"><i class="fa fa-check-circle me-1" style="color: #16a34a;"></i> Aktif</span>`;
+                            nominalHtml = `<span style="color: #047857; font-weight: 800; font-size: 14.5px;">${formatRupiah(nominal)}</span>`;
+                            periodeHtml = `<span style="color: #0f172a; font-weight: 700;">${formatDate(item.min_periode_potongan)} <span style="color:#64748b; font-weight: 800; font-size: 11px;">s.d</span> ${formatDate(item.max_periode_potongan)}</span>`;
                         } else if (status === 'akan_datang') {
-                            statusBadge = `<span class="badge" style="background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 20px; font-size: 11px; padding: 4px 10px; font-weight: 600;"><i class="fa fa-clock-o mr-1 text-warning"></i> Akan Datang</span>`;
-                            nominalHtml = `<span class="text-dark font-weight-bold">${formatRupiah(nominal)}</span>`;
-                            periodeHtml = `<span class="text-dark">${formatDate(item.min_periode_potongan)} s.d ${formatDate(item.max_periode_potongan)}</span>`;
+                            statusBadge = `<span class="badge" style="background-color: #fef3c7; color: #78350f; border: 1.5px solid #fde68a; border-radius: 20px; font-size: 11.5px; padding: 4px 10px; font-weight: 700;"><i class="fa fa-clock-o me-1" style="color: #d97706;"></i> Akan Datang</span>`;
+                            nominalHtml = `<span style="color: #0f172a; font-weight: 800; font-size: 14px;">${formatRupiah(nominal)}</span>`;
+                            periodeHtml = `<span style="color: #0f172a; font-weight: 700;">${formatDate(item.min_periode_potongan)} <span style="color:#64748b; font-weight: 800; font-size: 11px;">s.d</span> ${formatDate(item.max_periode_potongan)}</span>`;
                         } else {
-                            statusBadge = `<span class="badge" style="background-color: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 11px; padding: 4px 10px; font-weight: 500;"><i class="fa fa-history mr-1 text-muted"></i> Selesai</span>`;
-                            nominalHtml = `<span class="text-muted">${formatRupiah(nominal)}</span>`;
-                            periodeHtml = `<span class="text-muted">${formatDate(item.min_periode_potongan)} s.d ${formatDate(item.max_periode_potongan)}</span>`;
+                            statusBadge = `<span class="badge" style="background-color: #f1f5f9; color: #334155; border: 1.5px solid #cbd5e1; border-radius: 20px; font-size: 11.5px; padding: 4px 10px; font-weight: 700;"><i class="fa fa-history me-1" style="color: #475569;"></i> Selesai</span>`;
+                            nominalHtml = `<span style="color: #0f172a; font-weight: 700; font-size: 14px;">${formatRupiah(nominal)}</span>`;
+                            periodeHtml = `<span style="color: #334155; font-weight: 600;">${formatDate(item.min_periode_potongan)} <span style="color:#64748b; font-weight: 800; font-size: 11px;">s.d</span> ${formatDate(item.max_periode_potongan)}</span>`;
                         }
 
                         tbody.append(`
                             <tr ${trStyle}>
-                                <td class="text-center font-weight-bold ${status === 'aktif' ? 'text-success' : 'text-muted'}">${index + 1}</td>
-                                <td class="${status === 'aktif' ? 'font-weight-bold text-dark' : 'text-muted'}">${item.potongan ? item.potongan.nama_potongan : '-'}</td>
+                                <td class="text-center font-weight-bold" style="color: #0f172a; font-size: 14px;">${index + 1}</td>
+                                <td style="color: #0f172a; font-weight: 700; font-size: 14.5px;">${item.potongan ? item.potongan.nama_potongan : '-'}</td>
                                 <td>${nominalHtml}</td>
                                 <td class="text-center">${periodeHtml}</td>
                                 <td class="text-center">${statusBadge}</td>
                                 <td class="text-center">
-                                    <button class="btn ${btnClass} btn-sm btn-edit-potongan shadow-sm" style="border-radius: 20px; padding: 4px 14px; font-size: 12px;" data-item='${JSON.stringify(item)}'>
+                                    <button class="btn ${btnClass} btn-sm btn-edit-potongan shadow-sm" style="border-radius: 20px; padding: 4px 14px; font-size: 12.5px; font-weight: 700;" data-item='${JSON.stringify(item)}'>
                                         Edit
                                     </button>
                                 </td>
