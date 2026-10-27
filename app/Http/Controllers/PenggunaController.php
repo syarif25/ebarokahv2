@@ -18,31 +18,45 @@ class PenggunaController extends Controller
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'username' => 'required|string|max:100|unique:pengguna,username',
+            'jabatan'  => 'required|string|in:SuperAdmin,Evaluasi,AdminLembaga,SDM,Kasir,Satpam',
+            'lembaga'  => 'nullable|integer',
+            'no_hp'    => 'nullable|string|max:20',
+            'password' => 'required|string|min:6',
+        ]);
+
         $data = [
-            'username' => $request->username,
-            'jabatan' => $request->jabatan,
-            'lembaga' => $request->lembaga,
-            'no_hp' => $request->no_hp,
+            'username' => $validated['username'],
+            'jabatan'  => $validated['jabatan'],
+            'lembaga'  => $validated['lembaga'] ?? null,
+            'no_hp'    => $validated['no_hp'] ?? null,
+            'password' => bcrypt($validated['password']),
         ];
-        if ($request->password) {
-            $data['password'] = bcrypt($request->password);
-        }
         Pengguna::insert($data);
         
-        Cache::forget('master_pengguna'); // Hapus cache agar data terbaru muncul
+        Cache::forget('master_pengguna');
         return response()->json(['success' => true]);
     }
 
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'username' => 'required|string|max:100|unique:pengguna,username,' . (int)$id . ',id_pengguna',
+            'jabatan'  => 'required|string|in:SuperAdmin,Evaluasi,AdminLembaga,SDM,Kasir,Satpam',
+            'lembaga'  => 'nullable|integer',
+            'no_hp'    => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+        ]);
+
         $data = [
-            'username' => $request->username,
-            'jabatan' => $request->jabatan,
-            'lembaga' => $request->lembaga,
-            'no_hp' => $request->no_hp,
+            'username' => $validated['username'],
+            'jabatan'  => $validated['jabatan'],
+            'lembaga'  => $validated['lembaga'] ?? null,
+            'no_hp'    => $validated['no_hp'] ?? null,
         ];
-        if ($request->password) {
-            $data['password'] = bcrypt($request->password);
+        if (!empty($validated['password'])) {
+            $data['password'] = bcrypt($validated['password']);
         }
         Pengguna::where('id_pengguna', $id)->update($data);
         
