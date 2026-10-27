@@ -116,7 +116,31 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/Validasi_satpam/detail_potongan/{id_satpam}', [App\Http\Controllers\KehadiranSatpamController::class, 'detailPotongan']);
         Route::post('/kehadiran-satpam/savePotongan', [App\Http\Controllers\KehadiranSatpamController::class, 'savePotongan']);
         Route::post('/Validasi_satpam/save_potongan', [App\Http\Controllers\KehadiranSatpamController::class, 'savePotongan']);
-        Route::get('/laporan/satpam', [App\Http\Controllers\KehadiranSatpamController::class, 'index']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | POTONGAN STRUKTURAL & PENGAJAR (SuperAdmin & AdminLembaga)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:SuperAdmin,AdminLembaga'])->group(function () {
+        // Potongan Struktural (Umana)
+        Route::get('/manajemen-umana/potongan-umana', [App\Http\Controllers\PotonganUmanaController::class, 'index']);
+        Route::get('/potongan/struktural', function() { return redirect('/manajemen-umana/potongan-umana'); });
+        Route::get('/manajemen-umana/potongan-umana/detail/{id}', [App\Http\Controllers\PotonganUmanaController::class, 'getDetail']);
+        Route::post('/manajemen-umana/potongan-umana/store', [App\Http\Controllers\PotonganUmanaController::class, 'store']);
+        Route::post('/manajemen-umana/potongan-umana/update/{id}', [App\Http\Controllers\PotonganUmanaController::class, 'update']);
+        Route::post('/manajemen-umana/potongan-umana/delete/{id}', [App\Http\Controllers\PotonganUmanaController::class, 'destroy']);
+    });
+
+    Route::middleware(['role:SuperAdmin,AdminLembaga', 'akses.pengajar'])->group(function () {
+        // Potongan Pengajar
+        Route::get('/Potongan_pengajar', [App\Http\Controllers\PotonganPengajarController::class, 'index']);
+        Route::get('/potongan/pengajar', function() { return redirect('/Potongan_pengajar'); });
+        Route::get('/Potongan_pengajar/detail/{id}', [App\Http\Controllers\PotonganPengajarController::class, 'getDetail']);
+        Route::post('/Potongan_pengajar/store', [App\Http\Controllers\PotonganPengajarController::class, 'store']);
+        Route::post('/Potongan_pengajar/update/{id}', [App\Http\Controllers\PotonganPengajarController::class, 'update']);
+        Route::post('/Potongan_pengajar/delete/{id}', [App\Http\Controllers\PotonganPengajarController::class, 'destroy']);
     });
 
     /*
@@ -259,12 +283,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/manajemen-umana/penempatan/update/{id}', [App\Http\Controllers\PenempatanController::class, 'update']);
         Route::post('/manajemen-umana/penempatan/delete/{id}', [App\Http\Controllers\PenempatanController::class, 'destroy']);
 
-        Route::get('/manajemen-umana/potongan-umana', [App\Http\Controllers\PotonganUmanaController::class, 'index']);
-        Route::get('/manajemen-umana/potongan-umana/detail/{id}', [App\Http\Controllers\PotonganUmanaController::class, 'getDetail']);
-        Route::post('/manajemen-umana/potongan-umana/store', [App\Http\Controllers\PotonganUmanaController::class, 'store']);
-        Route::post('/manajemen-umana/potongan-umana/update/{id}', [App\Http\Controllers\PotonganUmanaController::class, 'update']);
-        Route::post('/manajemen-umana/potongan-umana/delete/{id}', [App\Http\Controllers\PotonganUmanaController::class, 'destroy']);
-
         Route::get('/manajemen-umana/tunjangan-beban-kerja', [App\Http\Controllers\TBebanKerjaController::class, 'index']);
         Route::post('/manajemen-umana/tunjangan-beban-kerja/store', [App\Http\Controllers\TBebanKerjaController::class, 'store']);
         Route::post('/manajemen-umana/tunjangan-beban-kerja/update/{id}', [App\Http\Controllers\TBebanKerjaController::class, 'update']);
@@ -276,12 +294,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/Penempatan/pengajar/delete/{id}', [App\Http\Controllers\PengajarController::class, 'destroy']);
         Route::get('/Penempatan/pengajar/cekValidasiUmana/{nik}', [App\Http\Controllers\KehadiranStrukturalController::class, 'cekValidasiUmana']);
         
-        Route::get('/Potongan_pengajar', [App\Http\Controllers\PotonganPengajarController::class, 'index']);
-        Route::get('/Potongan_pengajar/detail/{id}', [App\Http\Controllers\PotonganPengajarController::class, 'getDetail']);
-        Route::post('/Potongan_pengajar/store', [App\Http\Controllers\PotonganPengajarController::class, 'store']);
-        Route::post('/Potongan_pengajar/update/{id}', [App\Http\Controllers\PotonganPengajarController::class, 'update']);
-        Route::post('/Potongan_pengajar/delete/{id}', [App\Http\Controllers\PotonganPengajarController::class, 'destroy']);
-
         Route::get('/Barokah_tambahan', [App\Http\Controllers\BarokahTambahanController::class, 'index']);
         Route::get('/Barokah_tambahan/detail/{id}', [App\Http\Controllers\BarokahTambahanController::class, 'detail']);
         Route::post('/Barokah_tambahan/store', [App\Http\Controllers\BarokahTambahanController::class, 'store']);

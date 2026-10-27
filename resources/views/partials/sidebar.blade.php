@@ -120,6 +120,31 @@
             </li>
             @endif
 
+            {{-- POTONGAN (SuperAdmin & AdminLembaga) --}}
+            @if($isSuperAdmin || $isAdminLembaga)
+            @php
+                $isPotonganActive = Request::is('manajemen-umana/potongan-umana*') || Request::is('Potongan_pengajar*') || Request::is('potongan*');
+            @endphp
+            <li class="{{ $isPotonganActive ? 'mm-active' : '' }}">
+                <a class="has-arrow {{ $isPotonganActive ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ $isPotonganActive ? 'true' : 'false' }}">
+                    <i class="fas fa-user-check"></i>
+                    <span class="nav-text">Potongan</span>
+                </a>
+                <ul aria-expanded="{{ $isPotonganActive ? 'true' : 'false' }}" class="{{ $isPotonganActive ? 'mm-show' : '' }}">
+                    @if($canStruktural || $isSuperAdmin)
+                        <li class="{{ Request::is('manajemen-umana/potongan-umana*') || Request::is('potongan/struktural*') ? 'mm-active' : '' }}">
+                            <a href="{{ url('/manajemen-umana/potongan-umana') }}">Struktural</a>
+                        </li>
+                    @endif
+                    @if($canPengajar || $isSuperAdmin)
+                        <li class="{{ Request::is('Potongan_pengajar*') || Request::is('potongan/pengajar*') ? 'mm-active' : '' }}">
+                            <a href="{{ url('/Potongan_pengajar') }}">Pengajar</a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+            @endif
+
             {{-- VALIDASI BAROKAH & AUDIT (SuperAdmin & Evaluasi) --}}
             @if($isSuperAdmin || $isEvaluasi)
             <li class="{{ (Request::is('validasi') || Request::is('Validasi')) && !Request::is('validasi/audit*') ? 'mm-active' : '' }}">
@@ -211,7 +236,7 @@
             @endif
         </ul>
         <div class="copyright">
-            <p><strong>E-Barokah Payroll</strong> © 2026 All Rights Reserved</p>
+            <p><strong>E-Barokah P2S3</strong> © 2026 All Rights Reserved</p>
         </div>
     </div>
 </div>
