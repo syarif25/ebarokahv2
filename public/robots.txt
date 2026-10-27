@@ -1,2 +1,6 @@
+# =====================================================================
+# E-Barokah P2S3 - Internal Payroll & Management System
+# Privasi & Keamanan: Mencegah mesin pencari mengindeks sistem internal
+# =====================================================================
 User-agent: *
-Disallow:
+Disallow: /
