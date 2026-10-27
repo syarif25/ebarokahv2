@@ -145,6 +145,16 @@
             </li>
             @endif
 
+            {{-- BEBAN SKS / JAM MENGAJAR (AdminLembaga dengan Hak Akses Pengajar) --}}
+            @if($isAdminLembaga && $canPengajar)
+            <li class="{{ Request::is('Penempatan/pengajar*') ? 'mm-active' : '' }}">
+                <a class="{{ Request::is('Penempatan/pengajar*') ? 'mm-active' : '' }}" href="{{ url('/Penempatan/pengajar') }}" aria-expanded="false">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span class="nav-text">Beban SKS/Jam Mengajar</span>
+                </a>
+            </li>
+            @endif
+
             {{-- VALIDASI BAROKAH & AUDIT (SuperAdmin & Evaluasi) --}}
             @if($isSuperAdmin || $isEvaluasi)
             <li class="{{ (Request::is('validasi') || Request::is('Validasi')) && !Request::is('validasi/audit*') ? 'mm-active' : '' }}">

@@ -42,6 +42,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'umana' => [
+            'driver' => 'session',
+            'provider' => 'umanas',
+        ],
     ],
 
     /*
@@ -67,10 +72,10 @@ return [
             'model' => env('AUTH_MODEL', App\Models\Pengguna::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'umanas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Umana::class,
+        ],
     ],
 
     /*

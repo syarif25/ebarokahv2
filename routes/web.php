@@ -16,8 +16,36 @@ use App\Http\Controllers\LembagaController;
 
 // Auth Routes (Public dengan Rate Limiting)
 Route::get('/', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'authenticate'])->middleware('throttle:5,1');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::post('/login', [AuthController::class, 'authenticate'])->middleware('throttle:10,1');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/Login/logout', [AuthController::class, 'logout']);
+Route::match(['get', 'post'], '/login/logout', [AuthController::class, 'logout']);
+Route::match(['get', 'post'], '/Report/logout', [AuthController::class, 'logout']);
+Route::match(['get', 'post'], '/report/logout', [AuthController::class, 'logout']);
+
+/*
+|--------------------------------------------------------------------------
+| PWA UMANA ROUTES (/Report)
+|--------------------------------------------------------------------------
+*/
+Route::get('/Report', [App\Http\Controllers\ReportController::class, 'index'])->name('pwa.dashboard');
+Route::get('/report', [App\Http\Controllers\ReportController::class, 'index']);
+Route::get('/Report/Kehadiran', [App\Http\Controllers\ReportController::class, 'kehadiran'])->name('pwa.kehadiran');
+Route::get('/report/kehadiran', [App\Http\Controllers\ReportController::class, 'kehadiran']);
+Route::get('/Report/Barokah', [App\Http\Controllers\ReportController::class, 'barokah'])->name('pwa.barokah');
+Route::get('/report/barokah', [App\Http\Controllers\ReportController::class, 'barokah']);
+
+// JSON Endpoints for PWA
+Route::get('/Report/dashboard_barokah', [App\Http\Controllers\ReportController::class, 'dashboard_barokah']);
+Route::get('/report/dashboard_barokah', [App\Http\Controllers\ReportController::class, 'dashboard_barokah']);
+Route::get('/Report/dashboard_rincian', [App\Http\Controllers\ReportController::class, 'dashboard_rincian']);
+Route::get('/report/dashboard_rincian', [App\Http\Controllers\ReportController::class, 'dashboard_rincian']);
+Route::get('/Report/barokah_data', [App\Http\Controllers\ReportController::class, 'barokah_data']);
+Route::get('/report/barokah_data', [App\Http\Controllers\ReportController::class, 'barokah_data']);
+Route::get('/Report/barokah_detail', [App\Http\Controllers\ReportController::class, 'barokah_detail']);
+Route::get('/report/barokah_detail', [App\Http\Controllers\ReportController::class, 'barokah_detail']);
+Route::get('/Report/barokah_breakdown', [App\Http\Controllers\ReportController::class, 'barokah_breakdown']);
+Route::get('/report/barokah_breakdown', [App\Http\Controllers\ReportController::class, 'barokah_breakdown']);
 
 // Authed Routes Group
 Route::middleware(['auth'])->group(function () {
@@ -134,6 +162,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['role:SuperAdmin,AdminLembaga', 'akses.pengajar'])->group(function () {
+        // Penempatan Pengajar (Beban SKS/Jam Mengajar)
+        Route::get('/Penempatan/pengajar', [App\Http\Controllers\PengajarController::class, 'index']);
+        Route::post('/Penempatan/pengajar/store', [App\Http\Controllers\PengajarController::class, 'store']);
+        Route::post('/Penempatan/pengajar/update/{id}', [App\Http\Controllers\PengajarController::class, 'update']);
+        Route::post('/Penempatan/pengajar/delete/{id}', [App\Http\Controllers\PengajarController::class, 'destroy']);
+        Route::get('/Penempatan/pengajar/cekValidasiUmana/{nik}', [App\Http\Controllers\KehadiranStrukturalController::class, 'cekValidasiUmana']);
+
         // Potongan Pengajar
         Route::get('/Potongan_pengajar', [App\Http\Controllers\PotonganPengajarController::class, 'index']);
         Route::get('/potongan/pengajar', function() { return redirect('/Potongan_pengajar'); });
@@ -287,12 +322,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/manajemen-umana/tunjangan-beban-kerja/store', [App\Http\Controllers\TBebanKerjaController::class, 'store']);
         Route::post('/manajemen-umana/tunjangan-beban-kerja/update/{id}', [App\Http\Controllers\TBebanKerjaController::class, 'update']);
 
-        // Manajemen Pengajar
-        Route::get('/Penempatan/pengajar', [App\Http\Controllers\PengajarController::class, 'index']);
-        Route::post('/Penempatan/pengajar/store', [App\Http\Controllers\PengajarController::class, 'store']);
-        Route::post('/Penempatan/pengajar/update/{id}', [App\Http\Controllers\PengajarController::class, 'update']);
-        Route::post('/Penempatan/pengajar/delete/{id}', [App\Http\Controllers\PengajarController::class, 'destroy']);
-        Route::get('/Penempatan/pengajar/cekValidasiUmana/{nik}', [App\Http\Controllers\KehadiranStrukturalController::class, 'cekValidasiUmana']);
+        // Manajemen Pengajar (Lanjutan: Barokah Tambahan)
         
         Route::get('/Barokah_tambahan', [App\Http\Controllers\BarokahTambahanController::class, 'index']);
         Route::get('/Barokah_tambahan/detail/{id}', [App\Http\Controllers\BarokahTambahanController::class, 'detail']);

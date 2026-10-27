@@ -43,7 +43,7 @@
 
         /* Senior-Friendly & High Contrast Table Styling */
         #table-potongan.dataTable tbody tr {
-            border-bottom: 1px solid #cbd5e1 !important;
+            border-bottom: 1px solid #f1f1f1 !important;
         }
         #table-potongan.dataTable, 
         #table-potongan.dataTable th, 
@@ -51,48 +51,54 @@
             border-top: none !important;
             border-left: none !important;
             border-right: none !important;
-            color: #0f172a !important;
-            font-size: 14.5px !important;
-            vertical-align: middle !important;
         }
         #table-potongan.dataTable thead th {
-            border-bottom: 2.5px solid #94a3b8 !important;
-            background-color: #f8fafc !important;
-            color: #0f172a !important;
+            border-bottom: 2px solid #f1f1f1 !important;
+            background-color: #ffffff !important;
+            color: #333333 !important;
             font-size: 14px !important;
-            font-weight: 800 !important;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 14px 12px !important;
+            font-weight: 700 !important;
+            padding: 12px 10px !important;
+            letter-spacing: normal;
+            text-transform: none;
         }
         #table-potongan.dataTable tbody td {
-            padding: 15px 12px !important;
-            color: #0f172a !important;
-            font-weight: 600 !important;
+            padding: 14px 10px !important;
+            color: #333333 !important;
+            font-size: 13.5px !important;
         }
         #table-potongan.dataTable tbody tr:hover {
-            background-color: #f1f5f9 !important;
+            background-color: #f8fafc !important;
         }
 
-        /* High Contrast Filter Row Inputs */
-        .filters th input.form-control {
-            border: 1.5px solid #64748b !important;
-            border-radius: 8px !important;
-            color: #0f172a !important;
-            font-size: 13.5px !important;
-            font-weight: 600 !important;
+        /* Filter per Kolom (Seperti Menu Kehadiran) */
+        .filters th {
+            padding: 6px 8px !important;
+            border-bottom: 2px solid #eef2f6 !important;
             background-color: #ffffff !important;
-            height: 38px !important;
-            padding: 6px 12px !important;
+        }
+        .filters th input.form-control {
+            width: 100% !important;
+            padding: 6px 10px !important;
+            font-size: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            background-color: #fafafa !important;
+            color: #495057 !important;
+            font-weight: normal !important;
+            height: 36px !important;
+            transition: all 0.2s ease !important;
         }
         .filters th input.form-control::placeholder {
-            color: #475569 !important;
-            font-weight: 500 !important;
-            opacity: 1 !important;
+            color: #888888 !important;
+            font-weight: normal !important;
+            opacity: 0.85 !important;
         }
         .filters th input.form-control:focus {
             border-color: #00a15d !important;
-            box-shadow: 0 0 0 2px rgba(0, 161, 93, 0.25) !important;
+            background-color: #ffffff !important;
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(0, 161, 93, 0.15) !important;
         }
 
         /* DataTables Controls (Show entries, pagination, info) */
@@ -179,21 +185,21 @@
                     <table class="display" id="table-potongan" style="min-width: 845px; width:100%">
                         <thead>
                             <tr>
-                                <th class="font-weight-bold">No</th>
-                                <th class="font-weight-bold">Nama Lengkap</th>
-                                <th class="font-weight-bold">Lembaga</th>
-                                <th class="font-weight-bold">Jabatan</th>
-                                <th class="font-weight-bold">Jumlah Potongan</th>
-                                <th class="font-weight-bold">Periode</th>
-                                <th class="font-weight-bold">Aksi</th>
+                                <th class="font-weight-bold pb-3 pt-2">No</th>
+                                <th class="font-weight-bold pb-3 pt-2">Nama Lengkap</th>
+                                <th class="font-weight-bold pb-3 pt-2">Lembaga</th>
+                                <th class="font-weight-bold pb-3 pt-2">Jabatan</th>
+                                <th class="font-weight-bold pb-3 pt-2">Jumlah Potongan</th>
+                                <th class="font-weight-bold pb-3 pt-2">Periode</th>
+                                <th class="font-weight-bold pb-3 pt-2 text-center">Aksi</th>
                             </tr>
                             <tr class="filters">
                                 <th></th>
-                                <th><input type="text" class="form-control" placeholder="Filter Nama" /></th>
-                                <th><input type="text" class="form-control" placeholder="Filter Lembaga" /></th>
-                                <th><input type="text" class="form-control" placeholder="Filter Jabatan" /></th>
-                                <th><input type="text" class="form-control" placeholder="Filter Jml" /></th>
-                                <th><input type="text" class="form-control" placeholder="Filter Periode" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Filter Nama" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Filter Lembaga" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Filter Jabatan" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Filter Jml" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Filter Periode" /></th>
                                 <th></th>
                             </tr>
                         </thead>

@@ -358,6 +358,23 @@ class KehadiranSatpamController extends Controller
             return response()->json(['status' => false, 'message' => 'Parameter tidak lengkap.'], 422);
         }
 
+        $periode = KehadiranLembaga::where('kategori', 'Satpam')->find($idKL);
+        if (!$periode) {
+            return response()->json(['status' => false, 'message' => 'Periode tidak ditemukan.'], 404);
+        }
+
+        if ($periode->status === 'acc' || $periode->status === 'selesai') {
+            return response()->json(['status' => false, 'message' => 'Periode sudah disetujui (ACC), data terkunci dan tidak dapat diubah.'], 403);
+        }
+
+        $user = Auth::user();
+        $jabatan = $user ? $user->jabatan : 'SuperAdmin';
+        $isApprover = in_array($jabatan, ['SuperAdmin', 'Evaluasi']);
+
+        if (!$isApprover && $periode->status === 'Terkirim') {
+            return response()->json(['status' => false, 'message' => 'Periode sedang dikoreksi oleh Evaluasi, data terkunci.'], 403);
+        }
+
         if ($hari < 0 || $shift < 0 || $dini < 0) {
             return response()->json(['status' => false, 'message' => 'Nilai kehadiran tidak valid.'], 422);
         }
@@ -503,6 +520,12 @@ class KehadiranSatpamController extends Controller
      */
     public function validasi(Request $request)
     {
+        $user = Auth::user();
+        $jabatan = $user ? $user->jabatan : 'SuperAdmin';
+        if (!in_array($jabatan, ['SuperAdmin', 'Evaluasi'])) {
+            return response()->json(['status' => false, 'message' => 'Anda tidak memiliki hak akses untuk menyetujui (ACC).'], 403);
+        }
+
         $id = $request->input('id_kehadiran_lembaga');
         $periode = KehadiranLembaga::where('kategori', 'Satpam')->findOrFail($id);
 

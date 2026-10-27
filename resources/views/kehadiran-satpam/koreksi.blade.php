@@ -173,6 +173,18 @@
 
               <!-- Aksi -->
               <td class="cell-center">
+                @php
+                  $user = Auth::user();
+                  $jabatanUser = $user ? $user->jabatan : 'SuperAdmin';
+                  $canEditSatpam = false;
+                  if (in_array($jabatanUser, ['SuperAdmin', 'Evaluasi'])) {
+                      if (($periode->status ?? '') !== 'acc' && ($periode->status ?? '') !== 'selesai') $canEditSatpam = true;
+                  } else {
+                      if (($periode->status ?? '') === 'Sudah' || ($periode->status ?? '') === 'Revisi') $canEditSatpam = true;
+                  }
+                @endphp
+
+                @if($canEditSatpam)
                 <button type="button"
                         class="btn btn-sm btn-outline-primary btn-edit"
                         data-id="{{ $d->id_kehadiran_satpam }}"
@@ -183,6 +195,9 @@
                         data-nama="{{ $namaLengkap }}">
                   Edit
                 </button>
+                @else
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Data terkunci">Edit</button>
+                @endif
               </td>
             </tr>
           @endforeach

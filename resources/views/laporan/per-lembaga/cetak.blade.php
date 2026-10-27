@@ -360,7 +360,7 @@
     </div>
 
     <div class="footer-note">
-        <span>Dicetak secara otomatis oleh Sistem E-Barokah Payroll</span>
+        <span>Dicetak secara otomatis oleh Sistem E-Barokah P2S3</span>
         <span>Halaman 1 dari 1</span>
     </div>
 </body>

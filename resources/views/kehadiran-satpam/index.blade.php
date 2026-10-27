@@ -102,50 +102,41 @@
 @endpush
 
 @section('content')
-<div class="content-wrapper">
-    <div class="card mb-4 border-0 shadow-sm" style="border-radius: 15px; margin-top: 10px;">
-        <div class="card-body py-3">
-            <h5 class="mb-0 font-weight-normal"><strong class="text-danger">Kehadiran</strong> <span class="text-muted" style="color: #999 !important;">/ Kehadiran Satpam</span></h5>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
-            <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                        <h4 class="card-title text-dark font-weight-bold mb-0" style="font-size: 1.2rem;">Daftar Kehadiran Satpam</h4>
-                        <button type="button" class="btn btn-sm btn-tambah-blanko" data-bs-toggle="modal" data-bs-target="#modalBlanko" id="btnTambah">
-                            <i class="fas fa-plus me-1"></i> Tambah Blanko Kehadiran
-                        </button>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="display" id="table-kehadiran" style="min-width: 845px; width:100%">
-                            <thead>
-                                <tr>
-                                    <th class="font-weight-bold pb-3 pt-2">No</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Nama Lembaga</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Jumlah Satpam</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Bulan</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Tahun</th>
-                                    <th class="font-weight-bold pb-3 pt-2 text-center">Status</th>
-                                    <th class="font-weight-bold pb-3 pt-2 text-center">Aksi</th>
-                                </tr>
-                                <tr class="filters">
-                                    <th></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Nama lembaga" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Jumlah Satpam" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Bulan" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Tahun" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Status" /></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center flex-wrap">
+                <h4 class="card-title text-dark font-weight-bold mb-0" style="font-size: 1.2rem;">Daftar Kehadiran Satpam</h4>
+                <button type="button" class="btn btn-sm btn-tambah-blanko shadow-sm mt-2 mt-sm-0" data-bs-toggle="modal" data-bs-target="#modalBlanko" id="btnTambah">
+                    <i class="fas fa-plus me-1"></i> Tambah Blanko Kehadiran
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="display" id="table-kehadiran" style="min-width: 845px; width:100%">
+                        <thead>
+                            <tr>
+                                <th class="font-weight-bold pb-3 pt-2">No</th>
+                                <th class="font-weight-bold pb-3 pt-2">Nama Lembaga</th>
+                                <th class="font-weight-bold pb-3 pt-2">Jumlah Satpam</th>
+                                <th class="font-weight-bold pb-3 pt-2">Bulan</th>
+                                <th class="font-weight-bold pb-3 pt-2">Tahun</th>
+                                <th class="font-weight-bold pb-3 pt-2 text-center">Status</th>
+                                <th class="font-weight-bold pb-3 pt-2 text-center">Aksi</th>
+                            </tr>
+                            <tr class="filters">
+                                <th></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Nama lembaga" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Jumlah Satpam" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Bulan" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Tahun" /></th>
+                                <th><input type="text" class="form-control form-control-sm" placeholder="Status" /></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
