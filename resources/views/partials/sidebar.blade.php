@@ -210,12 +210,6 @@
             </li>
             @endif
         </ul>
-
-        <div class="plus-box text-center">
-            <h4 class="fs-18 font-w600 mb-2">Butuh Bantuan?</h4>
-            <p class="fs-12 text-muted mb-3">{{ $user ? $user->username . ' (' . $user->jabatan . ')' : 'E-Barokah' }}</p>
-            <a href="https://wa.me/" target="_blank" class="btn btn-primary btn-rounded btn-sm">Hubungi Support</a>
-        </div>
         <div class="copyright">
             <p><strong>E-Barokah Payroll</strong> © 2026 All Rights Reserved</p>
         </div>
