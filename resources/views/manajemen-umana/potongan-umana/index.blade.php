@@ -165,53 +165,42 @@
     </style>
 @endpush
 @section('content')
-<div class="content-wrapper">
-    <div class="page-header">
-        <h3 class="page-title">
-            <span class="page-title-icon bg-gradient-success text-white me-2">
-                <i class="mdi mdi-cash-multiple"></i>
-            </span> 
-        </h3>
-    </div>
-    
-    <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
-            <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="card-title text-success font-weight-bold mb-0">Daftar Potongan Barokah Per Umana</h4>
-                        <button type="button" class="btn btn-sm btn-tambah-potongan shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPotongan" id="btnTambah">
-                            Tambah Potongan
-                        </button>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="display" id="table-potongan" style="min-width: 845px; width:100%">
-                            <thead>
-                                <tr>
-                                    <th class="font-weight-bold">No</th>
-                                    <th class="font-weight-bold">Nama Lengkap</th>
-                                    <th class="font-weight-bold">Lembaga</th>
-                                    <th class="font-weight-bold">Jabatan</th>
-                                    <th class="font-weight-bold">Jumlah Potongan</th>
-                                    <th class="font-weight-bold">Periode</th>
-                                    <th class="font-weight-bold">Aksi</th>
-                                </tr>
-                                <tr class="filters">
-                                    <th></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Nama" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Lembaga" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Jabatan" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Jml" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Periode" /></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data will be populated by DataTables -->
-                            </tbody>
-                        </table>
-                    </div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                <h4 class="card-title text-dark font-weight-bold mb-0" style="font-size: 1.2rem;">Daftar Potongan Barokah Per Umana</h4>
+                <button type="button" class="btn btn-sm btn-tambah-potongan shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPotongan" id="btnTambah">
+                    <i class="fas fa-plus me-1"></i> Tambah Potongan
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="display" id="table-potongan" style="min-width: 845px; width:100%">
+                        <thead>
+                            <tr>
+                                <th class="font-weight-bold">No</th>
+                                <th class="font-weight-bold">Nama Lengkap</th>
+                                <th class="font-weight-bold">Lembaga</th>
+                                <th class="font-weight-bold">Jabatan</th>
+                                <th class="font-weight-bold">Jumlah Potongan</th>
+                                <th class="font-weight-bold">Periode</th>
+                                <th class="font-weight-bold">Aksi</th>
+                            </tr>
+                            <tr class="filters">
+                                <th></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Nama" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Lembaga" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Jabatan" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Jml" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Periode" /></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by DataTables -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

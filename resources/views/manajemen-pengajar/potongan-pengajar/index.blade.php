@@ -156,49 +156,40 @@
     </style>
 @endpush
 @section('content')
-<div class="content-wrapper">
-    <div class="card mb-4 border-0 shadow-sm" style="border-radius: 15px; margin-top: 10px;">
-        <div class="card-body py-3">
-            <h5 class="mb-0 font-weight-normal"><strong class="text-danger">Manajemen Pengajar</strong> <span class="text-muted" style="color: #999 !important;">/ Potongan Barokah Pengajar</span></h5>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
-            <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-                        <h4 class="card-title text-dark font-weight-bold mb-0" style="font-size: 1.2rem;">Daftar Potongan Barokah Per Pengajar</h4>
-                        <button type="button" class="btn btn-sm btn-tambah-potongan" data-bs-toggle="modal" data-bs-target="#modalPotongan" id="btnTambah">
-                            <i class="fas fa-plus"></i> Tambah Potongan
-                        </button>
-                    </div>
-                    
-                    <div class="table-responsive">
-                        <table class="display" id="table-potongan" style="min-width: 845px; width:100%">
-                            <thead>
-                                <tr>
-                                    <th class="font-weight-bold">No</th>
-                                    <th class="font-weight-bold">Nama Lengkap</th>
-                                    <th class="font-weight-bold">Lembaga</th>
-                                    <th class="font-weight-bold">Jumlah Potongan</th>
-                                    <th class="font-weight-bold">Periode</th>
-                                    <th class="font-weight-bold">Aksi</th>
-                                </tr>
-                                <tr class="filters">
-                                    <th></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Nama" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Lembaga" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Jml" /></th>
-                                    <th><input type="text" class="form-control" placeholder="Filter Periode" /></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data will be populated by DataTables -->
-                            </tbody>
-                        </table>
-                    </div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                <h4 class="card-title text-dark font-weight-bold mb-0" style="font-size: 1.2rem;">Daftar Potongan Barokah Per Pengajar</h4>
+                <button type="button" class="btn btn-sm btn-tambah-potongan" data-bs-toggle="modal" data-bs-target="#modalPotongan" id="btnTambah">
+                    <i class="fas fa-plus me-1"></i> Tambah Potongan
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="display" id="table-potongan" style="min-width: 845px; width:100%">
+                        <thead>
+                            <tr>
+                                <th class="font-weight-bold">No</th>
+                                <th class="font-weight-bold">Nama Lengkap</th>
+                                <th class="font-weight-bold">Lembaga</th>
+                                <th class="font-weight-bold">Jumlah Potongan</th>
+                                <th class="font-weight-bold">Periode</th>
+                                <th class="font-weight-bold">Aksi</th>
+                            </tr>
+                            <tr class="filters">
+                                <th></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Nama" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Lembaga" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Jml" /></th>
+                                <th><input type="text" class="form-control" placeholder="Filter Periode" /></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by DataTables -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
