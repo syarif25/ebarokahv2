@@ -1,0 +1,24 @@
+# =====================================================================
+# SECURITY PROTECTION: DISABLE PHP AND SCRIPT EXECUTION IN UPLOADS
+# =====================================================================
+# Mencegah eksekusi file script berbahaya di folder upload publik.
+# =====================================================================
+
+<FilesMatch "\.(php|php3|php4|php5|phtml|phar|pl|py|cgi|sh|bash|exe|bin|jsp|asp|aspx)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Matikan PHP engine untuk direktori ini (Apache mod_php)
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Nonaktifkan eksekusi CGI dan directory listing
+Options -ExecCGI -Indexes

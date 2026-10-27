@@ -197,6 +197,12 @@ class KehadiranSatpamController extends Controller
         // Upload File PDF Absensi
         $fileName = $periode->file;
         if ($request->hasFile('file')) {
+            $request->validate([
+                'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            ], [
+                'file.mimes' => 'File bukti absensi harus berformat PDF, JPG, atau PNG.',
+                'file.max'   => 'Ukuran file maksimal 10MB.'
+            ]);
             $file = $request->file('file');
             $customName = \Illuminate\Support\Str::random(50) . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('upload'), $customName);

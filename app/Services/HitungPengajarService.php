@@ -211,11 +211,13 @@ class HitungPengajarService
 
         // Potongan Historis
         $id_pengajar = (int)($key->id_pengajar ?? 0);
+        $lastDay = date('Y-m-t', strtotime($periode_date));
+
         $potongan = (int)DB::table('potongan_pengajar')
             ->where('id_pengajar', $id_pengajar)
-            ->where(function ($q) use ($periode_date) {
+            ->where(function ($q) use ($lastDay) {
                 $q->whereNull('min_periode_potongan')
-                  ->orWhere('min_periode_potongan', '<=', DB::raw("LAST_DAY('$periode_date')"));
+                  ->orWhere('min_periode_potongan', '<=', $lastDay);
             })
             ->where(function ($q) use ($periode_date) {
                 $q->whereNull('max_periode_potongan')
@@ -226,9 +228,9 @@ class HitungPengajarService
         // Barokah Tambahan Khusus Historis
         $tambahan = (int)DB::table('barokah_tambahan')
             ->where('id_pengajar', $id_pengajar)
-            ->where(function ($q) use ($periode_date) {
+            ->where(function ($q) use ($lastDay) {
                 $q->whereNull('min_periode_tambahan')
-                  ->orWhere('min_periode_tambahan', '<=', DB::raw("LAST_DAY('$periode_date')"));
+                  ->orWhere('min_periode_tambahan', '<=', $lastDay);
             })
             ->where(function ($q) use ($periode_date) {
                 $q->whereNull('max_periode_tambahan')

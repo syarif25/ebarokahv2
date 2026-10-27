@@ -63,7 +63,7 @@ class PenempatanController extends Controller
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = 'sk_' . \Illuminate\Support\Str::random(30) . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/sk_penempatan'), $filename);
             $data['file_sk'] = $filename;
         }
@@ -110,7 +110,7 @@ class PenempatanController extends Controller
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = 'sk_' . \Illuminate\Support\Str::random(30) . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/sk_penempatan'), $filename);
             $data['file_sk'] = $filename;
             

@@ -60,7 +60,13 @@ class AuditTunjanganController extends Controller
             ->leftJoin('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
             ->where('p.nik', $nik)
             ->where('p.status', 'Aktif')
-            ->whereRaw("1=1 $dateFilterP")
+            ->when($scope === 'berlaku', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->whereNull('p.tgl_selesai')
+                        ->orWhere('p.tgl_selesai', '0000-00-00')
+                        ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
+                });
+            })
             ->select(
                 'p.id_penempatan',
                 'l.nama_lembaga',
@@ -80,7 +86,13 @@ class AuditTunjanganController extends Controller
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'peng.id_lembaga')
             ->where('peng.nik', $nik)
             ->where('peng.status', 'Aktif')
-            ->whereRaw("1=1 $dateFilterPeng")
+            ->when($scope === 'berlaku', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->whereNull('peng.tgl_selesai')
+                        ->orWhere('peng.tgl_selesai', '0000-00-00')
+                        ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
+                });
+            })
             ->select(
                 'peng.id_pengajar',
                 'l.nama_lembaga',
@@ -286,7 +298,13 @@ class AuditTunjanganController extends Controller
             ->leftJoin('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
             ->whereIn('p.nik', $nikList)
             ->where('p.status', 'Aktif')
-            ->whereRaw("1=1 $dateFilterP")
+            ->when($scope === 'berlaku', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->whereNull('p.tgl_selesai')
+                        ->orWhere('p.tgl_selesai', '0000-00-00')
+                        ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
+                });
+            })
             ->select(
                 'p.nik',
                 'p.id_penempatan',
@@ -305,7 +323,13 @@ class AuditTunjanganController extends Controller
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'peng.id_lembaga')
             ->whereIn('peng.nik', $nikList)
             ->where('peng.status', 'Aktif')
-            ->whereRaw("1=1 $dateFilterPeng")
+            ->when($scope === 'berlaku', function ($q) {
+                $q->where(function ($sub) {
+                    $sub->whereNull('peng.tgl_selesai')
+                        ->orWhere('peng.tgl_selesai', '0000-00-00')
+                        ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
+                });
+            })
             ->select(
                 'peng.nik',
                 'peng.id_pengajar',

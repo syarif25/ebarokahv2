@@ -137,7 +137,7 @@ class SatpamController extends Controller
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');
-            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9_\-\.]/', '', $file->getClientOriginalName());
+            $filename = 'sk_satpam_' . \Illuminate\Support\Str::random(30) . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('upload'), $filename);
             $data['file_sk'] = $filename;
         }
@@ -206,7 +206,7 @@ class SatpamController extends Controller
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');
-            $filename = time() . '_' . preg_replace('/[^A-Za-z0-9_\-\.]/', '', $file->getClientOriginalName());
+            $filename = 'sk_satpam_' . \Illuminate\Support\Str::random(30) . '_' . time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('upload'), $filename);
 
             // Hapus file lama jika ada
