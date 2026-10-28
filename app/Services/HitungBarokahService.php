@@ -65,6 +65,98 @@ class HitungBarokahService
      */
     public static function hitungPeriode($idKehadiranLembaga)
     {
+        $periodeModel = KehadiranLembaga::with('lembaga')->find($idKehadiranLembaga);
+        if (!$periodeModel) {
+            return [
+                'rows' => [],
+                'periode' => null,
+                'totals' => self::emptyTotals(),
+            ];
+        }
+
+        // 1. Cek Snapshot First di total_barokah jika periode sudah acc / selesai / sudah transfer
+        $isSnapshotEligible = in_array(strtolower(trim($periodeModel->status)), ['selesai', 'acc']);
+        if ($isSnapshotEligible) {
+            $snapshot = DB::table('total_barokah as tb')
+                ->join('penempatan as p', 'p.id_penempatan', '=', 'tb.id_penempatan')
+                ->join('umana as u', 'u.nik', '=', 'p.nik')
+                ->join('lembaga as l', 'l.id_lembaga', '=', 'p.id_lembaga')
+                ->join('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
+                ->leftJoin('kehadiran as k', function($join) {
+                    $join->on('k.id_kehadi', '=', 'tb.id_kehadiran')
+                         ->on('k.id_penempatan', '=', 'tb.id_penempatan');
+                })
+                ->leftJoin('transport as t', 't.id_transport', '=', 'p.kategori_trans')
+                ->where('tb.id_kehadiran', $idKehadiranLembaga)
+                ->select(
+                    'tb.*',
+                    'p.id_lembaga', 'l.nama_lembaga', 'l.id_bidang',
+                    'p.tgl_mulai', 'p.tgl_selesai',
+                    'p.tunj_kel', 'p.tunj_anak as status_tunj_anak', 'p.tunj_mp', 'p.kehormatan as status_kehormatan',
+                    'u.tmt_struktural',
+                    'u.nik', 'u.nama_lengkap', 'u.gelar_depan', 'u.gelar_belakang',
+                    'u.status_sertifikasi', 'u.tmt_dosen', 'u.tmt_guru', 'u.tmt_maif',
+                    'kb.nama_jabatan', 'kb.wajib_hadir',
+                    't.nominal_transport',
+                    'k.id_kehadiran', 'k.jumlah_hadir', 'k.jumlah_tugas', 'k.jumlah_izin', 'k.jumlah_sakit'
+                )
+                ->orderBy('tb.tunjab', 'desc')
+                ->orderBy('u.nama_lengkap', 'asc')
+                ->get();
+
+            if ($snapshot->isNotEmpty()) {
+                $rows = [];
+                $totals = self::emptyTotals();
+
+                foreach ($snapshot as $s) {
+                    $s->wajib_hadir_bulanan = (int)$s->kehadiran;
+                    $s->persentase_kehadiran = 100;
+                    $s->tunjab_asli = (int)$s->tunjab;
+                    $s->is_punishment_tunjab = false;
+                    $s->nilai_kehormatan = (int)$s->kehormatan;
+                    $s->jumlah_barokah = (int)$s->tunjab + (int)$s->tmp + (int)$s->nominal_kehadiran + (int)$s->tunkel + (int)$s->tunj_anak + (int)$s->kehormatan + (int)$s->tbk;
+                    $s->catatan_khusus = $s->catatan_khusus_umana ?? '';
+                    $s->is_warning = false;
+                    $s->selisih_komponen = 0;
+                    $s->komponen_berubah = [];
+
+                    $totals['total_tunjab']     += (int)$s->tunjab;
+                    $totals['total_tmp']        += (int)$s->tmp;
+                    $totals['total_kehadiran']  += (int)$s->nominal_kehadiran;
+                    $totals['total_tunkel']     += (int)$s->tunkel;
+                    $totals['total_tunjanak']   += (int)$s->tunj_anak;
+                    $totals['total_kehormatan'] += (int)$s->nilai_kehormatan;
+                    $totals['total_tbk']        += (int)$s->tbk;
+                    $totals['total_barokah']    += (int)$s->jumlah_barokah;
+                    $totals['total_potongan']   += (int)$s->potongan;
+                    $totals['grand_total']      += (int)$s->diterima;
+
+                    $rows[] = $s;
+                }
+
+                $periode = (object)[
+                    'id_kehadiran_lembaga' => $periodeModel->id_kehadiran_lembaga,
+                    'id_lembaga'           => $periodeModel->id_lembaga,
+                    'nama_lembaga'         => $periodeModel->lembaga->nama_lembaga ?? '',
+                    'id_bidang'            => $periodeModel->lembaga->id_bidang ?? '',
+                    'bulan'                => $periodeModel->bulan,
+                    'tahun'                => $periodeModel->tahun,
+                    'status'               => $periodeModel->status,
+                    'file'                 => $periodeModel->file,
+                    'catatan_umum_pimpinan'=> $periodeModel->catatan_umum_pimpinan ?? '',
+                    'libur_pesantren'      => 0,
+                    'is_snapshot'          => true,
+                ];
+
+                return [
+                    'rows'    => $rows,
+                    'periode' => $periode,
+                    'totals'  => $totals
+                ];
+            }
+        }
+
+        // 2. Jika belum snapshot / data snapshot tidak ada, lakukan kalkulasi live
         $sql = "
             SELECT 
                 kl.id_kehadiran_lembaga, kl.bulan, kl.tahun, kl.file, kl.status as status_pengajuan, kl.catatan_umum_pimpinan,

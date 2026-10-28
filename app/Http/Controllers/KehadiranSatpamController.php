@@ -285,6 +285,75 @@ class KehadiranSatpamController extends Controller
 
         $tarif = HitungSatpamService::getTarif();
 
+        // 1. Cek Snapshot First di total_barokah_satpam jika sudah selesai/acc
+        $isSnapshotEligible = in_array(strtolower(trim($periode->status)), ['selesai', 'acc']);
+        if ($isSnapshotEligible) {
+            $snapshot = DB::table('total_barokah_satpam as tbs')
+                ->join('satpam as s', 's.id_satpam', '=', 'tbs.id_satpam')
+                ->join('umana as u', 'u.nik', '=', 's.nik')
+                ->leftJoin('transport as t', 't.id_transport', '=', 's.id_transport')
+                ->where('tbs.id_kehadiran_lembaga', $id)
+                ->select(
+                    'tbs.*',
+                    's.is_danru',
+                    'u.gelar_depan',
+                    'u.nama_lengkap',
+                    'u.gelar_belakang',
+                    't.nominal_transport'
+                )
+                ->orderBy('u.nama_lengkap', 'asc')
+                ->get();
+
+            if ($snapshot->isNotEmpty()) {
+                $sum_transport = 0;
+                $sum_barokah   = 0;
+                $sum_dini      = 0;
+                $sum_danru     = 0;
+                $sum_potongan  = 0;
+                $sum_grand     = 0;
+
+                $isilist = [];
+                foreach ($snapshot as $s) {
+                    $calc = [
+                        'jumlah_hari'       => (int)$s->jumlah_hari,
+                        'nominal_transport' => (int)$s->nominal_transport,
+                        'jumlah_transport'  => (int)$s->jumlah_transport,
+                        'jumlah_shift'      => (int)$s->jumlah_shift,
+                        'rank'              => (int)$s->rank,
+                        'jumlah_barokah'    => (int)$s->jumlah_barokah,
+                        'jumlah_dinihari'   => (int)$s->jumlah_dinihari,
+                        'konsumsi'          => (int)$s->konsumsi,
+                        'jumlah_konsumsi'   => (int)$s->jumlah_konsumsi,
+                        'nominal_danru'     => (int)$s->nominal_danru,
+                        'nominal_potongan'  => (int)$s->potongan,
+                        'diterima'          => (int)$s->diterima,
+                    ];
+                    $s->calc = $calc;
+
+                    $sum_transport += $calc['jumlah_transport'];
+                    $sum_barokah   += $calc['jumlah_barokah'];
+                    $sum_dini      += $calc['jumlah_konsumsi'];
+                    $sum_danru     += $calc['nominal_danru'];
+                    $sum_potongan  += $calc['nominal_potongan'];
+                    $sum_grand     += $calc['diterima'];
+
+                    $isilist[] = $s;
+                }
+
+                $totals = [
+                    'total_transport' => $sum_transport,
+                    'total_barokah'   => $sum_barokah,
+                    'total_dinihari'  => $sum_dini,
+                    'total_danru'     => $sum_danru,
+                    'total_potongan'  => $sum_potongan,
+                    'grand_total'     => $sum_grand,
+                ];
+
+                return view('kehadiran-satpam.koreksi', compact('periode', 'isilist', 'totals', 'tarif'));
+            }
+        }
+
+        // 2. Live calculation
         $sql = "
             SELECT 
                 ks.id_kehadiran_satpam,
