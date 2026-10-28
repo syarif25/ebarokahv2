@@ -33,7 +33,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="mb-1"><strong>Password</strong></label>
-                            <input type="password" class="form-control" name="password" placeholder="Password">
+                            <div class="input-group">
+                                <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Masukkan password" required>
+                                <button class="btn btn-outline-light border" type="button" id="btnTogglePassword" style="background-color: #f8fafc; color: #64748b;">
+                                    <i class="fas fa-eye" id="toggleIcon"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="row d-flex justify-content-between mt-4 mb-2">
                             <div class="mb-3">
@@ -53,3 +58,28 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var btnToggle = document.getElementById('btnTogglePassword');
+        var inputPass = document.getElementById('inputPassword');
+        var icon = document.getElementById('toggleIcon');
+
+        if (btnToggle && inputPass && icon) {
+            btnToggle.addEventListener('click', function () {
+                var isPassword = inputPass.getAttribute('type') === 'password';
+                if (isPassword) {
+                    inputPass.setAttribute('type', 'text');
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    inputPass.setAttribute('type', 'password');
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        }
+    });
+</script>
+@endpush
