@@ -146,8 +146,8 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nama Pimpinan <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="inputPimpinan" placeholder="Contoh: Budi Santoso" required>
+                        <label class="form-label">Nama Pimpinan</label>
+                        <input type="text" class="form-control" id="inputPimpinan" placeholder="Contoh: Budi Santoso (Opsional)">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -203,7 +203,18 @@
                         });
                     },
                     error: function(err) {
-                        Swal.fire('Error', 'Terjadi kesalahan saat menyimpan data', 'error');
+                        var msg = 'Terjadi kesalahan saat menyimpan data';
+                        if (err.responseJSON && err.responseJSON.errors) {
+                            var errors = err.responseJSON.errors;
+                            var errList = [];
+                            for (var k in errors) {
+                                errList.push(errors[k].join(', '));
+                            }
+                            msg = errList.join('<br>');
+                        } else if (err.responseJSON && err.responseJSON.message) {
+                            msg = err.responseJSON.message;
+                        }
+                        Swal.fire('Error', msg, 'error');
                     }
                 });
             });

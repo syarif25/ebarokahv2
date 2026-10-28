@@ -16,11 +16,15 @@ class LembagaController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'nama_lembaga' => 'required|string|max:100',
+        ]);
+
         Lembaga::insert([
             'nama_lembaga' => $request->nama_lembaga,
-            'id_bidang' => $request->id_bidang,
-            'tenaga_pengajar' => $request->tenaga_pengajar,
-            'nama_pimpinan' => $request->nama_pimpinan,
+            'id_bidang' => $request->id_bidang ?? '',
+            'tenaga_pengajar' => $request->tenaga_pengajar ?? 'Tidak',
+            'nama_pimpinan' => $request->nama_pimpinan ?? '',
         ]);
         
         Cache::forget('master_lembaga');
@@ -29,11 +33,15 @@ class LembagaController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'nama_lembaga' => 'required|string|max:100',
+        ]);
+
         Lembaga::where('id_lembaga', $id)->update([
             'nama_lembaga' => $request->nama_lembaga,
-            'id_bidang' => $request->id_bidang,
-            'tenaga_pengajar' => $request->tenaga_pengajar,
-            'nama_pimpinan' => $request->nama_pimpinan,
+            'id_bidang' => $request->id_bidang ?? '',
+            'tenaga_pengajar' => $request->tenaga_pengajar ?? 'Tidak',
+            'nama_pimpinan' => $request->nama_pimpinan ?? '',
         ]);
         
         Cache::forget('master_lembaga');
