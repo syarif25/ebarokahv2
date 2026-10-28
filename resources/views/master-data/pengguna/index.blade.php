@@ -214,7 +214,18 @@
                         });
                     },
                     error: function(err) {
-                        Swal.fire('Error', 'Terjadi kesalahan saat menyimpan data', 'error');
+                        var msg = 'Terjadi kesalahan saat menyimpan data';
+                        if (err.responseJSON && err.responseJSON.errors) {
+                            var errors = err.responseJSON.errors;
+                            var errList = [];
+                            for (var k in errors) {
+                                errList.push(errors[k].join(', '));
+                            }
+                            msg = errList.join('<br>');
+                        } else if (err.responseJSON && err.responseJSON.message) {
+                            msg = err.responseJSON.message;
+                        }
+                        Swal.fire('Error', msg, 'error');
                     }
                 });
             });
@@ -260,15 +271,26 @@
                 $('#inputIdPengguna').val(id);
                 $('#inputUsername').val(username);
                 
-                // Bersihkan string dari spasi berlebih
+                // Normalisasi string jabatan
                 jabatan = $.trim(jabatan);
+                var cleanJab = jabatan.replace(/\s+/g, '');
                 
-                // Failsafe: Jika nilai dari DB tidak ada di opsi HTML, tambahkan otomatis
-                if (jabatan !== '' && $('#inputJabatan option[value="' + jabatan + '"]').length === 0) {
-                    $('#inputJabatan').append(new Option(jabatan, jabatan));
+                // Map ke opsi yang sesuai
+                var matchedVal = '';
+                $('#inputJabatan option').each(function() {
+                    var optVal = $(this).val();
+                    if (optVal && (optVal === jabatan || optVal.toLowerCase() === cleanJab.toLowerCase())) {
+                        matchedVal = optVal;
+                        return false;
+                    }
+                });
+
+                if (matchedVal) {
+                    $('#inputJabatan').val(matchedVal).trigger('change');
+                } else if (jabatan !== '') {
+                    $('#inputJabatan').append(new Option(jabatan, cleanJab)).val(cleanJab).trigger('change');
                 }
                 
-                $('#inputJabatan').val(jabatan).trigger('change');
                 $('#inputLembaga').val(lembaga).trigger('change');
                 $('#inputNoHp').val(nohp);
                 $('#inputPassword').val('');

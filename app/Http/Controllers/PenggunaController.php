@@ -18,6 +18,17 @@ class PenggunaController extends Controller
 
     public function store(Request $request)
     {
+        // Normalisasi jabatan jika dikirim dengan spasi (misal 'Admin Lembaga')
+        if ($request->has('jabatan')) {
+            $rawJab = str_replace(' ', '', (string)$request->jabatan);
+            if (strcasecmp($rawJab, 'AdminLembaga') === 0) $request->merge(['jabatan' => 'AdminLembaga']);
+            elseif (strcasecmp($rawJab, 'SuperAdmin') === 0) $request->merge(['jabatan' => 'SuperAdmin']);
+            elseif (strcasecmp($rawJab, 'SDM') === 0) $request->merge(['jabatan' => 'SDM']);
+            elseif (strcasecmp($rawJab, 'Evaluasi') === 0) $request->merge(['jabatan' => 'Evaluasi']);
+            elseif (strcasecmp($rawJab, 'Kasir') === 0) $request->merge(['jabatan' => 'Kasir']);
+            elseif (strcasecmp($rawJab, 'Satpam') === 0) $request->merge(['jabatan' => 'Satpam']);
+        }
+
         $validated = $request->validate([
             'username' => 'required|string|max:100|unique:pengguna,username',
             'jabatan'  => 'required|string|in:SuperAdmin,Evaluasi,AdminLembaga,SDM,Kasir,Satpam',
@@ -41,6 +52,17 @@ class PenggunaController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Normalisasi jabatan jika dikirim dengan spasi (misal 'Admin Lembaga')
+        if ($request->has('jabatan')) {
+            $rawJab = str_replace(' ', '', (string)$request->jabatan);
+            if (strcasecmp($rawJab, 'AdminLembaga') === 0) $request->merge(['jabatan' => 'AdminLembaga']);
+            elseif (strcasecmp($rawJab, 'SuperAdmin') === 0) $request->merge(['jabatan' => 'SuperAdmin']);
+            elseif (strcasecmp($rawJab, 'SDM') === 0) $request->merge(['jabatan' => 'SDM']);
+            elseif (strcasecmp($rawJab, 'Evaluasi') === 0) $request->merge(['jabatan' => 'Evaluasi']);
+            elseif (strcasecmp($rawJab, 'Kasir') === 0) $request->merge(['jabatan' => 'Kasir']);
+            elseif (strcasecmp($rawJab, 'Satpam') === 0) $request->merge(['jabatan' => 'Satpam']);
+        }
+
         $validated = $request->validate([
             'username' => 'required|string|max:100|unique:pengguna,username,' . (int)$id . ',id_pengguna',
             'jabatan'  => 'required|string|in:SuperAdmin,Evaluasi,AdminLembaga,SDM,Kasir,Satpam',
