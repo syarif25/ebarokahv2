@@ -9,8 +9,8 @@
         <div class="card">
             <div class="card-body d-flex px-4 justify-content-between align-items-center">
                 <div>
-                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Total Karyawan</h4>
-                    <h2 class="fs-32 font-w700 mb-0 text-primary">124</h2>
+                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Total Umana</h4>
+                    <h2 class="fs-32 font-w700 mb-0 text-primary">{{ number_format($totalUmana ?? 0, 0, ',', '.') }}</h2>
                 </div>
                 <i class="fas fa-users fa-3x text-primary" style="opacity: 0.5;"></i>
             </div>
@@ -20,10 +20,10 @@
         <div class="card">
             <div class="card-body d-flex px-4 justify-content-between align-items-center">
                 <div>
-                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Gaji Bulan Ini</h4>
-                    <h2 class="fs-24 font-w700 mb-0 text-success">Rp 450 Jt</h2>
+                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Total Lembaga</h4>
+                    <h2 class="fs-32 font-w700 mb-0 text-success">{{ number_format($totalLembaga ?? 0, 0, ',', '.') }}</h2>
                 </div>
-                <i class="fas fa-money-bill-wave fa-3x text-success" style="opacity: 0.5;"></i>
+                <i class="fas fa-building fa-3x text-success" style="opacity: 0.5;"></i>
             </div>
         </div>
     </div>
@@ -31,10 +31,10 @@
         <div class="card">
             <div class="card-body d-flex px-4 justify-content-between align-items-center">
                 <div>
-                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Belum Terbayar</h4>
-                    <h2 class="fs-24 font-w700 mb-0 text-danger">0</h2>
+                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Struktural Aktif</h4>
+                    <h2 class="fs-32 font-w700 mb-0 text-info">{{ number_format($totalPenempatan ?? 0, 0, ',', '.') }}</h2>
                 </div>
-                <i class="fas fa-exclamation-circle fa-3x text-danger" style="opacity: 0.5;"></i>
+                <i class="fas fa-user-tie fa-3x text-info" style="opacity: 0.5;"></i>
             </div>
         </div>
     </div>
@@ -42,10 +42,10 @@
         <div class="card">
             <div class="card-body d-flex px-4 justify-content-between align-items-center">
                 <div>
-                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Departemen</h4>
-                    <h2 class="fs-32 font-w700 mb-0 text-warning">8</h2>
+                    <h4 class="fs-18 font-w600 mb-2 text-nowrap">Pengajar Aktif</h4>
+                    <h2 class="fs-32 font-w700 mb-0 text-warning">{{ number_format($totalPengajar ?? 0, 0, ',', '.') }}</h2>
                 </div>
-                <i class="fas fa-building fa-3x text-warning" style="opacity: 0.5;"></i>
+                <i class="fas fa-chalkboard-teacher fa-3x text-warning" style="opacity: 0.5;"></i>
             </div>
         </div>
     </div>

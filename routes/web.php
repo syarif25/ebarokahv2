@@ -51,9 +51,7 @@ Route::get('/report/barokah_breakdown', [App\Http\Controllers\ReportController::
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard (Dapat diakses seluruh akun yang telah login)
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    });
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     /*
     |--------------------------------------------------------------------------
