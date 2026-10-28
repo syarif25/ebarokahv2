@@ -108,9 +108,30 @@ class HitungBarokahService
                 $rows = [];
                 $totals = self::emptyTotals();
 
+                // Hitung libur pesantren periode snapshot
+                $bulanString = trim($periodeModel->bulan ?? '');
+                $tahunInt = (int)($periodeModel->tahun ?? date('Y'));
+                $liburPesantren = (int)LiburPesantren::where('bulan', $bulanString)
+                    ->where('tahun', $tahunInt)
+                    ->sum('jumlah_hari');
+
                 foreach ($snapshot as $s) {
-                    $s->wajib_hadir_bulanan = (int)$s->kehadiran;
-                    $s->persentase_kehadiran = 100;
+                    $wajibPerMinggu = (int)($s->wajib_hadir ?? 0);
+                    $wajibBulanan = self::hitungWajibHadirBulanan($s->bulan, $s->tahun, $wajibPerMinggu, $liburPesantren);
+                    $s->wajib_hadir_bulanan = $wajibBulanan > 0 ? $wajibBulanan : (int)$s->kehadiran;
+
+                    $jHadir = (int)($s->jumlah_hadir ?? $s->kehadiran);
+                    $jTugas = (int)($s->jumlah_tugas ?? 0);
+                    $jIzin  = (int)($s->jumlah_izin ?? 0);
+                    $jSakit = (int)($s->jumlah_sakit ?? 0);
+                    $kehadiranEfektif = ($jHadir * 1) + ($jTugas * 1) + ($jIzin * 0.25) + ($jSakit * 1.0);
+
+                    if ($s->wajib_hadir_bulanan > 0) {
+                        $s->persentase_kehadiran = round(($kehadiranEfektif / $s->wajib_hadir_bulanan) * 100, 2);
+                    } else {
+                        $s->persentase_kehadiran = 100;
+                    }
+
                     $s->tunjab_asli = (int)$s->tunjab;
                     $s->is_punishment_tunjab = false;
                     $s->nilai_kehormatan = (int)$s->kehormatan;
