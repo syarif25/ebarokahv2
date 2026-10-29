@@ -432,8 +432,13 @@ class KehadiranStrukturalController extends Controller
             ->where('pu.id_penempatan', $id_penempatan);
 
         if ($periodeDate) {
-            $query->where(function($q) use ($periodeDate) {
-                $q->whereNull('pu.max_periode_potongan')->orWhere('pu.max_periode_potongan', '>=', $periodeDate);
+            $lastDay = date('Y-m-t', strtotime($periodeDate));
+            $query->where(function ($q) use ($lastDay) {
+                $q->whereNull('pu.min_periode_potongan')
+                  ->orWhere('pu.min_periode_potongan', '<=', $lastDay);
+            })->where(function ($q) use ($periodeDate) {
+                $q->whereNull('pu.max_periode_potongan')
+                  ->orWhere('pu.max_periode_potongan', '>=', $periodeDate);
             });
         }
 
