@@ -1138,9 +1138,12 @@
 
                         const isTetap = ['DTY', 'GTY'].includes(item.jenis_pengajar);
                         const isSertif = (sertifVal !== 'Belum' && sertifVal !== 'Belum Sertifikasi');
+                        const isGuru = ['GTY', 'GTT'].includes(item.jenis_pengajar);
+                        const labelSertif = isGuru ? 'Sergur' : 'Serdos';
+
                         const gtyDtyBadge = isTetap
                             ? (isSertif
-                                ? '<span class="badge badge-info px-2 py-1">Serdos/Sergur</span>'
+                                ? `<span class="badge badge-info px-2 py-1">${labelSertif}</span>`
                                 : '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Dapat</span>')
                             : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
 
