@@ -161,31 +161,18 @@
 
 @section('content')
 <div class="content-wrapper">
-    <!-- INFO BANNER PERIODE (KETERANGAN LENGKAP) -->
-    <div class="card mb-4 border-0 shadow-sm rekap-card">
-        <div class="card-body p-4">
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge" style="background: #e0f8e9; color: #00a15d; border-radius: 8px; font-size: 11px; font-weight: 600;">KATEGORI: STRUKTURAL</span>
-                            <span class="badge" style="background: #e2e8f0; color: #475569; border-radius: 8px; font-size: 11px; font-weight: 600;">STATUS: {{ $periode->status }}</span>
-                        </div>
-                        <h4 class="font-weight-bold text-dark mb-0" style="letter-spacing: -0.3px;">{{ $periode->lembaga->nama_lembaga }}</h4>
-                        <p class="text-muted mb-0 font-weight-500" style="font-size: 13px;">
-                            <i class="far fa-calendar-alt text-success me-1"></i> Periode: <strong>{{ $periode->bulan }} {{ $periode->tahun }}</strong> 
-                            <span class="mx-2">•</span>
-                            <i class="fas fa-users text-primary me-1"></i> Total Umana': <strong>{{ count($pegawai) }} Orang</strong>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="d-flex align-items-center gap-2">
-                    <a href="{{ url('/kehadiran_struktural') }}" class="btn btn-kembali">
-                        <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
-                    </a>
-                </div>
+    <!-- HEADER BREADCRUMB STANDAR E-BAROKAH -->
+    <div class="card mb-4 border-0 shadow-sm" style="border-radius: 12px; margin-top: 5px;">
+        <div class="card-body py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h5 class="mb-0 font-weight-bold text-dark">
+                    {{ $periode->lembaga->nama_lembaga }}
+                    <span class="text-muted font-weight-normal fs-14"> — Rekap Kehadiran Bulan {{ $periode->bulan }} {{ $periode->tahun }}</span>
+                </h5>
             </div>
+            <a href="{{ url('/kehadiran_struktural') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
+            </a>
         </div>
     </div>
 
