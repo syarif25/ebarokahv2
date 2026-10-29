@@ -100,7 +100,7 @@ class HitungBarokahService
                     't.nominal_transport',
                     'k.id_kehadiran', 'k.jumlah_hadir', 'k.jumlah_tugas', 'k.jumlah_izin', 'k.jumlah_sakit'
                 )
-                ->orderBy('tb.tunjab', 'desc')
+                ->orderBy('kb.barokah', 'desc')
                 ->orderBy('u.nama_lengkap', 'asc')
                 ->get();
 
