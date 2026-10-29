@@ -832,14 +832,14 @@ class KehadiranPengajarController extends Controller
             ->select('pp.id_potongan_pengajar', 'pp.jenis_potongan', 'p.nama_potongan', 'pp.nominal_potongan', 'pp.min_periode_potongan', 'pp.max_periode_potongan')
             ->where('pp.id_pengajar', $id_pengajar);
 
-        if ($periode_date) {
-            $lastDay = date('Y-m-t', strtotime($periode_date));
+        if ($periodeDate) {
+            $lastDay = date('Y-m-t', strtotime($periodeDate));
             $query->where(function ($q) use ($lastDay) {
                 $q->whereNull('pp.min_periode_potongan')
                   ->orWhere('pp.min_periode_potongan', '<=', $lastDay);
-            })->where(function ($q) use ($periode_date) {
+            })->where(function ($q) use ($periodeDate) {
                 $q->whereNull('pp.max_periode_potongan')
-                  ->orWhere('pp.max_periode_potongan', '>=', $periode_date);
+                  ->orWhere('pp.max_periode_potongan', '>=', $periodeDate);
             });
         }
 
