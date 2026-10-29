@@ -365,12 +365,16 @@ $(function(){
           columns: ':visible:not(:last-child)', // Sembunyikan kolom aksi
           format: {
             body: function (data, row, column, node) {
-              var clean = $(node).text().trim();
+              var $clone = $(node).clone();
+              $clone.find('.badge, i, svg').remove();
+              var clean = $clone.text().trim();
               clean = clean.replace(/\s+/g, ' ');
               return clean;
             },
             footer: function (data, row, column, node) {
-              return $(node).text().trim().replace(/\s+/g, ' ');
+              var $clone = $(node).clone();
+              $clone.find('.badge, i, svg').remove();
+              return $clone.text().trim().replace(/\s+/g, ' ');
             }
           }
         }
