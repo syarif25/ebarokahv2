@@ -19,28 +19,29 @@
     }
 
     #tabel_rek tbody tr {
-        border-bottom: 1px solid #f1f3f5;
+        border-bottom: 1px solid #cbd5e1;
         transition: background-color 0.15s ease;
     }
     #tabel_rek tbody tr:hover {
-        background-color: #f8fafc;
+        background-color: #f1f5f9;
     }
     #tabel_rek thead th {
-        border-bottom: 2px solid #eef2f6;
-        color: #475569;
-        font-size: 13px;
-        font-weight: 600;
+        border-bottom: 2px solid #94a3b8;
+        color: #000000 !important;
+        font-size: 14px;
+        font-weight: 700 !important;
         padding: 14px 12px;
         vertical-align: middle;
-        background-color: #fff;
+        background-color: #f8fafc;
     }
 
     .form-control-presence {
-        border: 1px solid #00a15d !important;
+        border: 2px solid #94a3b8 !important;
         border-radius: 8px !important;
         text-align: center;
-        font-weight: 600;
-        color: #1e293b;
+        font-weight: 800;
+        font-size: 15px;
+        color: #000000 !important;
         height: 38px;
     }
     .form-control-presence:focus {

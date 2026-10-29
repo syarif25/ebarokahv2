@@ -31,20 +31,20 @@
 
     /* Table Clean Styling */
     #tabel_rek tbody tr {
-        border-bottom: 1px solid #f1f3f5;
+        border-bottom: 1px solid #cbd5e1;
         transition: background-color 0.15s ease;
     }
     #tabel_rek tbody tr:hover {
-        background-color: #f8fafc;
+        background-color: #f1f5f9;
     }
     #tabel_rek thead th {
-        border-bottom: 2px solid #eef2f6;
-        color: #475569;
-        font-size: 13px;
-        font-weight: 600;
+        border-bottom: 2px solid #94a3b8;
+        color: #0f172a !important;
+        font-size: 14px;
+        font-weight: 700 !important;
         padding: 14px 12px;
         vertical-align: middle;
-        background-color: #fff;
+        background-color: #f8fafc;
     }
 
     /* Stepper Input Styling */
@@ -54,7 +54,7 @@
         justify-content: center;
         width: 140px;
         margin: 0 auto;
-        border: 1px solid #e2e8f0;
+        border: 2px solid #94a3b8;
         border-radius: 25px;
         background: #fff;
         overflow: hidden;
@@ -62,16 +62,16 @@
     }
     .stepper-box:focus-within {
         border-color: #00a15d;
-        box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.15);
+        box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.25);
     }
     .stepper-btn {
         width: 34px;
         height: 34px;
         border: none;
         background: transparent;
-        color: #64748b;
-        font-size: 16px;
-        font-weight: bold;
+        color: #0f172a;
+        font-size: 18px;
+        font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -80,20 +80,20 @@
         user-select: none;
     }
     .stepper-btn:hover {
-        background-color: #f1f5f9;
+        background-color: #e2e8f0;
         color: #00a15d;
     }
     .stepper-btn:active {
-        background-color: #e2e8f0;
+        background-color: #cbd5e1;
     }
     .stepper-input {
         width: 60px;
         height: 34px;
         border: none;
         text-align: center;
-        font-size: 14px;
-        font-weight: 600;
-        color: #1e293b;
+        font-size: 16px;
+        font-weight: 800;
+        color: #000000 !important;
         background: transparent;
         outline: none;
         -moz-appearance: textfield;
@@ -217,22 +217,21 @@
             <div class="card-body px-4 pt-2">
                 <div class="table-responsive">
                     <table id="tabel_rek" class="table align-middle" style="width: 100%;">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;" class="text-center text-dark font-weight-bold">No</th>
-                                <th class="text-dark font-weight-bold">Nama Lengkap</th>
-                                <th class="text-dark font-weight-bold">Jabatan</th>
-                                <th style="width: 160px;" class="text-centers">
-                                    <i class="fas fa-check-circle me-1"></i> Hadir
+                            <tr style="border-bottom: 2px solid #64748b;">
+                                <th style="width: 50px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">No</th>
+                                <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Nama Lengkap</th>
+                                <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Jabatan</th>
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-check-circle me-1 text-success"></i> Hadir
                                 </th>
-                                <th style="width: 160px;" class="text-center">
-                                    <i class="fas fa-briefcase me-1"></i> Tugas
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-briefcase me-1 text-primary"></i> Tugas
                                 </th>
-                                <th style="width: 160px;" class="text-center">
-                                    <i class="fas fa-file-signature me-1"></i> Izin
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-file-signature me-1 text-warning"></i> Izin
                                 </th>
-                                <th style="width: 160px;" class="text-center">
-                                    <i class="fas fa-heartbeat me-1"></i> Sakit
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-heartbeat me-1 text-danger"></i> Sakit
                                 </th>
                             </tr>
                         </thead>

@@ -21,20 +21,20 @@
 
     /* Table Clean Styling */
     #tabel_rek tbody tr {
-        border-bottom: 1px solid #f1f3f5;
+        border-bottom: 1px solid #cbd5e1;
         transition: background-color 0.15s ease;
     }
     #tabel_rek tbody tr:hover {
-        background-color: #f8fafc;
+        background-color: #f1f5f9;
     }
     #tabel_rek thead th {
-        border-bottom: 2px solid #eef2f6;
-        color: #475569;
-        font-size: 13px;
-        font-weight: 600;
+        border-bottom: 2px solid #94a3b8;
+        color: #000000 !important;
+        font-size: 14px;
+        font-weight: 700 !important;
         padding: 14px 12px;
         vertical-align: middle;
-        background-color: #fff;
+        background-color: #f8fafc;
     }
 
     /* Stepper Input Styling */
@@ -42,9 +42,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 125px;
+        width: 130px;
         margin: 0 auto;
-        border: 1px solid #e2e8f0;
+        border: 2px solid #94a3b8;
         border-radius: 25px;
         background: #fff;
         overflow: hidden;
@@ -52,16 +52,16 @@
     }
     .stepper-box:focus-within {
         border-color: #00a15d;
-        box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.15);
+        box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.25);
     }
     .stepper-btn {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         border: none;
         background: transparent;
-        color: #64748b;
-        font-size: 15px;
-        font-weight: bold;
+        color: #000000;
+        font-size: 17px;
+        font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -70,20 +70,20 @@
         user-select: none;
     }
     .stepper-btn:hover {
-        background-color: #f1f5f9;
+        background-color: #e2e8f0;
         color: #00a15d;
     }
     .stepper-btn:active {
-        background-color: #e2e8f0;
+        background-color: #cbd5e1;
     }
     .stepper-input {
-        width: 55px;
-        height: 32px;
+        width: 58px;
+        height: 34px;
         border: none;
         text-align: center;
-        font-size: 13px;
-        font-weight: 600;
-        color: #1e293b;
+        font-size: 15px;
+        font-weight: 800;
+        color: #000000 !important;
         background: transparent;
         outline: none;
         -moz-appearance: textfield;
@@ -211,22 +211,22 @@
                 <div class="table-responsive">
                     <table id="tabel_rek" class="table align-middle" style="width: 100%;">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;" class="text-center text-dark font-weight-bold">No</th>
-                                <th class="text-dark font-weight-bold">Nama Lengkap</th>
-                                <th style="width: 90px;" class="text-center text-dark font-weight-bold">SKS / Jam</th>
-                                <th class="text-dark font-weight-bold">Prodi</th>
-                                <th style="width: 140px;" class="text-center">
-                                    <i class="fas fa-check-circle me-1"></i> Hadir Normal<br><small class="text-muted" style="font-size: 10px;">(sesuai domisili)</small>
+                            <tr style="border-bottom: 2px solid #64748b;">
+                                <th style="width: 50px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">No</th>
+                                <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Nama Lengkap</th>
+                                <th style="width: 90px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">SKS / Jam</th>
+                                <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Prodi</th>
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-check-circle me-1 text-success"></i> Hadir Normal<br><small class="text-dark font-weight-bold" style="font-size: 11px;">(sesuai domisili)</small>
                                 </th>
-                                <th style="width: 140px;" class="text-center">
-                                    <i class="fas fa-calendar-check me-1"></i> Hadir 15.000
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-calendar-check me-1 text-primary"></i> Hadir 15.000
                                 </th>
-                                <th style="width: 140px;" class="text-center">
-                                    <i class="fas fa-calendar-check me-1"></i> Hadir 10.000
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-calendar-check me-1 text-info"></i> Hadir 10.000
                                 </th>
-                                <th style="width: 140px;" class="text-center">
-                                    <i class="fas fa-clock me-1"></i> Jam Piket
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
+                                    <i class="fas fa-clock me-1 text-warning"></i> Jam Piket
                                 </th>
                             </tr>
                         </thead>
