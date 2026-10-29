@@ -1209,7 +1209,7 @@
     $('#modalPotongan').modal('show');
     potIndex = 0;
 
-    $.getJSON('{{ url("/kehadiran_pengajar/detailPotongan") }}/' + id + '/' + periodeDate, function(data) {
+    $.getJSON('{{ url("/kehadiran_pengajar/detailPotongan") }}/' + id + '?periode_date=' + encodeURIComponent(periodeDate), function(data) {
       let rows = '';
       if (!data || data.length === 0) {
         rows = '<tr><td colspan="4" class="text-center text-muted">Belum ada potongan untuk pengajar ini.</td></tr>';

@@ -822,11 +822,10 @@ class KehadiranPengajarController extends Controller
         ]);
     }
 
-    /**
-     * Detail Potongan Pengajar
-     */
-    public function detailPotongan($id_pengajar, $periode_date = null)
+    public function detailPotongan(Request $request, $id_pengajar, $periode_date = null)
     {
+        $periodeDate = $request->query('periode_date', $periode_date);
+
         $query = DB::table('potongan_pengajar as pp')
             ->leftJoin('potongan as p', 'p.id_potongan', '=', 'pp.jenis_potongan')
             ->select('pp.id_potongan_pengajar', 'pp.jenis_potongan', 'p.nama_potongan', 'pp.nominal_potongan', 'pp.min_periode_potongan', 'pp.max_periode_potongan')

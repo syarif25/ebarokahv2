@@ -29,7 +29,9 @@ class HitungPengajarService
             $blnNum = $mapBulan[$blnRaw] ?? date('m');
         }
 
-        return $tahun . '-' . $blnNum . '-01';
+        $thnClean = preg_match('/^(\d{4})/', trim((string)$tahun), $m) ? $m[1] : (is_numeric($tahun) ? (int)$tahun : date('Y'));
+
+        return $thnClean . '-' . $blnNum . '-01';
     }
 
     /**
