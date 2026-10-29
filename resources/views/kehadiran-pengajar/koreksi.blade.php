@@ -230,19 +230,19 @@
               <h6 class="dropdown-header text-uppercase font-weight-bold" style="font-size: 0.7rem; letter-spacing: 0.5px;">Tampilkan / Sembunyikan</h6>
               <div class="dropdown-item px-3 py-2">
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input toggle-vis" id="colMaster" data-columns="3,4,5,6,7,8,9,10" checked>
+                  <input type="checkbox" class="custom-control-input toggle-vis" id="colMaster" data-columns="3,4,5,6,7,8,9,10,11" checked>
                   <label class="custom-control-label" style="cursor:pointer;" for="colMaster">Grup Data Master</label>
                 </div>
               </div>
               <div class="dropdown-item px-3 py-2">
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input toggle-vis" id="colKehadiran" data-columns="11,12,13,14,15,16,17,18,19" checked>
+                  <input type="checkbox" class="custom-control-input toggle-vis" id="colKehadiran" data-columns="12,13,14,15,16,17,18,19,20" checked>
                   <label class="custom-control-label" style="cursor:pointer;" for="colKehadiran">Grup Kehadiran</label>
                 </div>
               </div>
               <div class="dropdown-item px-3 py-2">
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input toggle-vis" id="colTunjangan" data-columns="20,21,22,23,24" checked>
+                  <input type="checkbox" class="custom-control-input toggle-vis" id="colTunjangan" data-columns="21,22,23,24,25" checked>
                   <label class="custom-control-label" style="cursor:pointer;" for="colTunjangan">Grup Tunjangan</label>
                 </div>
               </div>
@@ -267,6 +267,7 @@
                 <th rowspan="2" class="text-center bg-white" style="width: 35px;">No</th>
                 <th rowspan="2" class="bg-white" style="min-width: 170px;">Nama Pengajar</th>
                 <th rowspan="2" class="bg-white">Prodi</th>
+                <th rowspan="2" class="text-center header-group-input" style="width: 55px;" title="Ikatan Khidmah (DTY/DTT/GTY/GTT)">IK</th>
                 <th rowspan="2" class="text-center header-group-input">IT</th>
                 <th rowspan="2" class="text-center header-group-input">TMT</th>
                 <th rowspan="2" class="text-center header-group-input">MP</th>
@@ -350,6 +351,11 @@
                 </td>
                 <td class="text-muted align-middle" style="font-size: 0.8rem;">
                   {{ !empty($key->nama_prodi) ? $key->nama_prodi : '-' }}
+                </td>
+                <td class="cell-center align-middle font-weight-bold" style="font-size: 0.82rem;">
+                  <span class="badge {{ in_array($key->kategori ?? '', ['DTY', 'GTY']) ? 'badge-primary' : 'badge-secondary' }} px-2 py-1">
+                    {{ $key->kategori ?? '-' }}
+                  </span>
                 </td>
                 <td class="cell-center align-middle">{{ $key->ijazah_terakhir ?? '-' }}</td>
                 <td class="cell-center align-middle">{{ $tmtDisplay }}</td>
@@ -465,7 +471,7 @@
           </tbody>
           <tfoot>
             <tr class="font-weight-bold bg-light">
-              <td colspan="8" class="text-right text-uppercase px-3">Total Seluruh:</td>
+              <td colspan="9" class="text-right text-uppercase px-3">Total Seluruh:</td>
               <td class="text-right" id="ft-mengajar">Rp {{ number_format($totals['total_mengajar'] ?? 0, 0, ',', '.') }}</td>
               <td class="text-right" id="ft-dty">Rp {{ number_format($totals['total_dty'] ?? 0, 0, ',', '.') }}</td>
               <td class="text-right" id="ft-jafung">Rp {{ number_format($totals['total_jafung'] ?? 0, 0, ',', '.') }}</td>
@@ -808,7 +814,7 @@
         startRender: function (rows, group) {
           var groupName = (group === '-' || group === '' || !group) ? 'LAINNYA / TIDAK ADA PRODI' : group;
           return $('<tr class="bg-light font-weight-bold text-dark"/>')
-            .append('<td colspan="29" class="text-left pl-3 text-uppercase">PRODI: ' + groupName + '</td>');
+            .append('<td colspan="30" class="text-left pl-3 text-uppercase">PRODI: ' + groupName + '</td>');
         }
       }
     });
