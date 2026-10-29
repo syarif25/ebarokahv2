@@ -422,16 +422,18 @@ class KehadiranStrukturalController extends Controller
     /**
      * Detail Potongan per Umana'
      */
-    public function detailPotongan($id_penempatan, $periode_date = null)
+    public function detailPotongan(Request $request, $id_penempatan, $periode_date = null)
     {
+        $periodeDate = $request->query('periode_date', $periode_date);
+
         $query = DB::table('potongan_umana as pu')
             ->leftJoin('potongan as p', 'p.id_potongan', '=', 'pu.jenis_potongan')
             ->select('pu.id_potongan_umana', 'pu.jenis_potongan', 'p.nama_potongan', 'pu.nominal_potongan', 'pu.min_periode_potongan', 'pu.max_periode_potongan')
             ->where('pu.id_penempatan', $id_penempatan);
 
-        if ($periode_date) {
-            $query->where(function($q) use ($periode_date) {
-                $q->whereNull('pu.max_periode_potongan')->orWhere('pu.max_periode_potongan', '>=', $periode_date);
+        if ($periodeDate) {
+            $query->where(function($q) use ($periodeDate) {
+                $q->whereNull('pu.max_periode_potongan')->orWhere('pu.max_periode_potongan', '>=', $periodeDate);
             });
         }
 

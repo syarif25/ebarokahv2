@@ -640,7 +640,7 @@
       </div>
       <div class="modal-body">
         <p class="text-muted small mb-3">
-          Tunjangan Jabatan (Tunjab) dikurangi secara proporsional karena kehadiran efektif kurang dari 50% target wajib hadir bulanan.
+          Tunjangan Jabatan (Tunjab) dikurangi karena kehadiran efektif kurang dari 50% wajib hadir bulanan.
         </p>
 
         <table class="table table-sm table-borderless mb-3">
@@ -658,7 +658,7 @@
               <td>: <span id="punish-wajib">0</span> Hari</td>
             </tr>
             <tr>
-              <th class="pl-0">Kehadiran Efektif</th>
+              <th class="pl-0">Kehadiran </th>
               <td>: <span id="punish-efektif">0</span> Hari <small class="text-muted">(Hadir: <span id="punish-hadir">0</span>, Tugas: <span id="punish-tugas">0</span>, Izin: <span id="punish-izin">0</span>, Sakit: <span id="punish-sakit">0</span>)</small></td>
             </tr>
             <tr>
@@ -685,7 +685,7 @@
           </tbody>
         </table>
         <small class="text-muted d-block text-right">
-          <em>Perhitungan: Tunjab Asli &times; (Kehadiran Efektif &divide; Wajib Hadir)</em>
+          <em>Perhitungan: Tunjab Asli &times; (Kehadiran  &divide; Wajib Hadir)</em>
         </small>
       </div>
       <div class="modal-footer">
@@ -1286,7 +1286,7 @@
   $(document).on('click', '.link-potongan', function(){
     const id = $(this).data('id');
     const nama = $(this).data('nama');
-    const periodeDate = "{{ $periode->tahun }}-{{ sprintf('%02d', $bulan_int) }}-01";
+    const periodeDate = "{{ $thn_int }}-{{ sprintf('%02d', $bulan_int) }}-01";
     
     $('#potonganPegawaiName').text(nama);
     $('#potongan_id_penempatan').val(id);
@@ -1294,7 +1294,7 @@
     $('#modalPotongan').modal('show');
     potonganIndex = 0;
 
-    $.getJSON("{{ url('/kehadiran_struktural/detailPotongan') }}/" + id + '/' + periodeDate, function(data){
+    $.getJSON("{{ url('/kehadiran_struktural/detailPotongan') }}/" + id + "?periode_date=" + encodeURIComponent(periodeDate), function(data){
       let rows = '';
       if(data && data.length > 0){
         data.forEach(item => {
