@@ -623,7 +623,72 @@ class PdfBarokahService
 
         // Isi Data
         $no = 1;
+        $currentProdi = null;
+        $isDikti = ($periode->id_bidang ?? ($periode->lembaga->id_bidang ?? '')) === 'Bidang DIKTI';
+
+        $sub = [
+            'mengajar' => 0, 'dty' => 0, 'jafung' => 0, 'kehadiran' => 0,
+            'hadir_15' => 0, 'hadir_10' => 0, 'piket' => 0, 'tunkel' => 0,
+            'tunjanak' => 0, 'kehormatan' => 0, 'walkes' => 0, 'tambahan' => 0,
+            'jumlah' => 0, 'potongan' => 0, 'diterima' => 0
+        ];
+
         foreach ($rows as $key) {
+            $prodiName = !empty($key->nama_prodi) ? trim($key->nama_prodi) : 'LAINNYA / TIDAK ADA PRODI';
+
+            // Jika DIKTI dan berganti prodi, cetak Subtotal Prodi sebelumnya lalu Header Prodi Baru
+            if ($isDikti && $currentProdi !== $prodiName) {
+                if ($currentProdi !== null) {
+                    $pdf->Cell(1, 7, '', 0, 1);
+                    $pdf->SetFont('arial', 'B', 5);
+                    $pdf->SetFillColor(255, 255, 204); // Kuning muda untuk subtotal
+                    $pdf->Cell(101, 7, 'TOTAL ' . strtoupper($currentProdi), 1, 0, 'C', true);
+                    $pdf->Cell(12, 7, self::formatRupiah($sub['mengajar']), 1, 0, 'C', true);
+                    $pdf->Cell(10, 7, self::formatRupiah($sub['dty']), 1, 0, 'C', true);
+                    $pdf->Cell(12, 7, self::formatRupiah($sub['jafung']), 1, 0, 'C', true);
+                    $pdf->Cell(17, 7, self::formatRupiah($sub['kehadiran']), 1, 0, 'C', true);
+                    $pdf->Cell(17, 7, self::formatRupiah($sub['hadir_15']), 1, 0, 'C', true);
+                    $pdf->Cell(17, 7, self::formatRupiah($sub['hadir_10']), 1, 0, 'C', true);
+                    $pdf->Cell(24, 7, self::formatRupiah($sub['piket']), 1, 0, 'C', true);
+                    $pdf->Cell(12, 7, self::formatRupiah($sub['tunkel']), 1, 0, 'C', true);
+                    $pdf->Cell(12, 7, self::formatRupiah($sub['tunjanak']), 1, 0, 'C', true);
+                    $pdf->Cell(15, 7, self::formatRupiah($sub['kehormatan']), 1, 0, 'C', true);
+                    $pdf->Cell(15, 7, self::formatRupiah($sub['walkes']), 1, 0, 'C', true);
+                    $pdf->Cell(15, 7, self::formatRupiah($sub['tambahan']), 1, 0, 'C', true);
+                    $pdf->Cell(15, 7, self::formatRupiah($sub['jumlah']), 1, 0, 'C', true);
+                    $pdf->Cell(15, 7, self::formatRupiah($sub['potongan']), 1, 0, 'C', true);
+                    $pdf->Cell(20, 7, self::formatRupiah($sub['diterima']), 1, 0, 'C', true);
+                    $pdf->Cell(0, 0, '', 0, 1);
+
+                    // Reset subtotal
+                    foreach ($sub as $k => $v) { $sub[$k] = 0; }
+                }
+
+                $currentProdi = $prodiName;
+                $pdf->Cell(1, 7, '', 0, 1);
+                $pdf->SetFont('arial', 'B', 7);
+                $pdf->SetFillColor(230, 230, 230);
+                $pdf->Cell(329, 7, '  PRODI: ' . strtoupper($prodiName), 1, 0, 'L', true);
+                $pdf->Cell(0, 0, '', 0, 1);
+            }
+
+            // Akumulasi subtotal
+            $sub['mengajar']   += (int)($key->mengajar ?? 0);
+            $sub['dty']        += (int)($key->dty ?? 0);
+            $sub['jafung']     += (int)($key->jafung ?? 0);
+            $sub['kehadiran']  += (int)($key->nominal_kehadiran ?? 0);
+            $sub['hadir_15']   += (int)($key->nominal_hadir_15 ?? 0);
+            $sub['hadir_10']   += (int)($key->nominal_hadir_10 ?? 0);
+            $sub['piket']      += (int)($key->barokah_piket ?? 0);
+            $sub['tunkel']     += (int)($key->tunkel ?? 0);
+            $sub['tunjanak']   += (int)($key->tunja_anak ?? ($key->tun_anak ?? 0));
+            $sub['kehormatan'] += (int)($key->kehormatan ?? 0);
+            $sub['walkes']     += (int)($key->walkes ?? ($key->tunj_walkes ?? 0));
+            $sub['tambahan']   += (int)($key->khusus ?? ($key->tambahan ?? 0));
+            $sub['jumlah']     += (int)($key->jumlah ?? 0);
+            $sub['potongan']   += (int)($key->potongan ?? 0);
+            $sub['diterima']   += (int)($key->diterima ?? 0);
+
             $pdf->Cell(1, 7, '', 0, 1);
             $pdf->SetFont('arial', 'B', 6);
 
@@ -674,6 +739,30 @@ class PdfBarokahService
             $pdf->Cell(15, 7, self::formatRupiah($key->jumlah ?? 0), 1, 0, 'R', $fill);
             $pdf->Cell(15, 7, self::formatRupiah($key->potongan ?? 0), 1, 0, 'R', $fill);
             $pdf->Cell(20, 7, self::formatRupiah($key->diterima ?? 0), 1, 0, 'R', $fill);
+            $pdf->Cell(0, 0, '', 0, 1);
+        }
+
+        // Subtotal prodi terakhir jika DIKTI
+        if ($isDikti && $currentProdi !== null) {
+            $pdf->Cell(1, 7, '', 0, 1);
+            $pdf->SetFont('arial', 'B', 5);
+            $pdf->SetFillColor(255, 255, 204);
+            $pdf->Cell(101, 7, 'TOTAL ' . strtoupper($currentProdi), 1, 0, 'C', true);
+            $pdf->Cell(12, 7, self::formatRupiah($sub['mengajar']), 1, 0, 'C', true);
+            $pdf->Cell(10, 7, self::formatRupiah($sub['dty']), 1, 0, 'C', true);
+            $pdf->Cell(12, 7, self::formatRupiah($sub['jafung']), 1, 0, 'C', true);
+            $pdf->Cell(17, 7, self::formatRupiah($sub['kehadiran']), 1, 0, 'C', true);
+            $pdf->Cell(17, 7, self::formatRupiah($sub['hadir_15']), 1, 0, 'C', true);
+            $pdf->Cell(17, 7, self::formatRupiah($sub['hadir_10']), 1, 0, 'C', true);
+            $pdf->Cell(24, 7, self::formatRupiah($sub['piket']), 1, 0, 'C', true);
+            $pdf->Cell(12, 7, self::formatRupiah($sub['tunkel']), 1, 0, 'C', true);
+            $pdf->Cell(12, 7, self::formatRupiah($sub['tunjanak']), 1, 0, 'C', true);
+            $pdf->Cell(15, 7, self::formatRupiah($sub['kehormatan']), 1, 0, 'C', true);
+            $pdf->Cell(15, 7, self::formatRupiah($sub['walkes']), 1, 0, 'C', true);
+            $pdf->Cell(15, 7, self::formatRupiah($sub['tambahan']), 1, 0, 'C', true);
+            $pdf->Cell(15, 7, self::formatRupiah($sub['jumlah']), 1, 0, 'C', true);
+            $pdf->Cell(15, 7, self::formatRupiah($sub['potongan']), 1, 0, 'C', true);
+            $pdf->Cell(20, 7, self::formatRupiah($sub['diterima']), 1, 0, 'C', true);
             $pdf->Cell(0, 0, '', 0, 1);
         }
 
