@@ -755,15 +755,16 @@
                 <th style="width: 35px;" class="text-center">No</th>
                 <th>Nama</th>
                 <th>Lembaga</th>
+                <th class="text-center">IK</th>
                 <th class="text-center">Sertifikasi</th>
-                <th class="text-center">GTY/DTY</th>
+                <th class="text-center">GTY / DTY</th>
                 <th class="text-center">Tunkel</th>
                 <th class="text-center">Tun Anak</th>
                 <th class="text-center">Kehormatan</th>
               </tr>
             </thead>
             <tbody id="val-tbody-pengajar">
-              <tr><td colspan="8" class="text-center text-muted">Memuat data...</td></tr>
+              <tr><td colspan="9" class="text-center text-muted">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1005,27 +1006,38 @@
             ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1"></i>Ya</span>'
             : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
 
-          const jenisPengajar = item.jenis_pengajar ? `<span class="badge badge-primary px-2 py-1">${item.jenis_pengajar}</span>` : '-';
+          const jenisBadge = item.jenis_pengajar
+            ? `<span class="badge ${['DTY', 'GTY'].includes(item.jenis_pengajar) ? 'badge-primary' : 'badge-secondary'} px-2 py-1">${item.jenis_pengajar}</span>`
+            : '-';
+
+          const isTetap = ['DTY', 'GTY'].includes(item.jenis_pengajar);
+          const isSertif = (sertifVal !== 'Belum' && sertifVal !== 'Belum Sertifikasi');
+          const gtyDtyBadge = isTetap
+            ? (isSertif
+                ? '<span class="badge badge-info px-2 py-1">Serdos/Sergur</span>'
+                : '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1"></i>Dapat</span>')
+            : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
 
           htmlPeng += `<tr>
             <td class="text-center font-weight-bold">${idx + 1}</td>
             <td><strong>${res.umana.nama_lengkap}</strong></td>
             <td><strong>${item.nama_lembaga || '-'}</strong></td>
+            <td class="text-center font-weight-bold">${jenisBadge}</td>
             <td class="text-center">${sertifVal}</td>
-            <td class="text-center">${jenisPengajar}</td>
+            <td class="text-center">${gtyDtyBadge}</td>
             <td class="text-center">${tunkelBadge}</td>
             <td class="text-center">${tunjAnakBadge}</td>
             <td class="text-center">${kehormatanBadge}</td>
           </tr>`;
         });
       } else {
-        htmlPeng = '<tr><td colspan="8" class="text-center text-muted">Umana ini tidak terdaftar memiliki penugasan aktif sebagai Pengajar (Guru / Dosen).</td></tr>';
+        htmlPeng = '<tr><td colspan="9" class="text-center text-muted">Umana ini tidak terdaftar memiliki penugasan aktif sebagai Pengajar (Guru / Dosen).</td></tr>';
       }
       $('#val-tbody-pengajar').html(htmlPeng);
 
     }).fail(function() {
       $('#val-tbody-struktural').html('<tr><td colspan="7" class="text-center text-danger">Gagal menghubungi server.</td></tr>');
-      $('#val-tbody-pengajar').html('<tr><td colspan="8" class="text-center text-danger">Gagal menghubungi server.</td></tr>');
+      $('#val-tbody-pengajar').html('<tr><td colspan="9" class="text-center text-danger">Gagal menghubungi server.</td></tr>');
     });
   });
 
