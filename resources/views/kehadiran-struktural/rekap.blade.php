@@ -217,22 +217,15 @@
             <div class="card-body px-4 pt-2">
                 <div class="table-responsive">
                     <table id="tabel_rek" class="table align-middle" style="width: 100%;">
+                        <thead>
                             <tr style="border-bottom: 2px solid #64748b;">
                                 <th style="width: 50px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">No</th>
                                 <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Nama Lengkap</th>
                                 <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Jabatan</th>
-                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-check-circle me-1 text-success"></i> Hadir
-                                </th>
-                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-briefcase me-1 text-primary"></i> Tugas
-                                </th>
-                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-file-signature me-1 text-warning"></i> Izin
-                                </th>
-                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-heartbeat me-1 text-danger"></i> Sakit
-                                </th>
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Hadir</th>
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Tugas</th>
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Izin</th>
+                                <th style="width: 160px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Sakit</th>
                             </tr>
                         </thead>
                         <tbody>

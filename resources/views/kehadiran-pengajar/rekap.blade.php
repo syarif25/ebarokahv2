@@ -217,17 +217,11 @@
                                 <th style="width: 90px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">SKS / Jam</th>
                                 <th style="color: #000 !important; font-weight: 800; font-size: 14px;">Prodi</th>
                                 <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-check-circle me-1 text-success"></i> Hadir Normal<br><small class="text-dark font-weight-bold" style="font-size: 11px;">(sesuai domisili)</small>
+                                    Hadir Normal<br><small class="text-dark font-weight-bold" style="font-size: 11px;">(sesuai domisili)</small>
                                 </th>
-                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-calendar-check me-1 text-primary"></i> Hadir 15.000
-                                </th>
-                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-calendar-check me-1 text-info"></i> Hadir 10.000
-                                </th>
-                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">
-                                    <i class="fas fa-clock me-1 text-warning"></i> Jam Piket
-                                </th>
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Hadir 15.000</th>
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Hadir 10.000</th>
+                                <th style="width: 140px; color: #000 !important; font-weight: 800; font-size: 14px;" class="text-center">Jam Piket</th>
                             </tr>
                         </thead>
                         <tbody>
