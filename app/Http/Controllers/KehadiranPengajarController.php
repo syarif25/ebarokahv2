@@ -133,12 +133,13 @@ class KehadiranPengajarController extends Controller
         DB::beginTransaction();
         try {
             $kehadiran = KehadiranLembaga::create([
-                'id_lembaga' => $idLembaga,
-                'kategori'   => 'Pengajar',
-                'bulan'      => $bulan,
-                'tahun'      => $tahun,
-                'status'     => 'Belum',
-                'file'       => '',
+                'id_lembaga'   => $idLembaga,
+                'kategori'     => 'Pengajar',
+                'bulan'        => $bulan,
+                'tahun'        => $tahun,
+                'status'       => 'Belum',
+                'jumlah_total' => 0,
+                'file'         => '',
             ]);
 
             // Catat log audit trail (catatan_log dikosongkan sesuai ketentuan user)
