@@ -154,25 +154,29 @@ class KehadiranStrukturalController extends Controller
         $tahunNum = is_numeric($periode->tahun) ? (int)$periode->tahun : (int)substr((string)$periode->tahun, 0, 4);
 
         $pegawaiQuery = Penempatan::with(['umana', 'ketentuan', 'lembaga'])
-            ->where('id_lembaga', $periode->id_lembaga);
+            ->join('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'penempatan.id_ketentuan')
+            ->join('umana as u', 'u.nik', '=', 'penempatan.nik')
+            ->where('penempatan.id_lembaga', $periode->id_lembaga);
 
         if ($bulanNum && $tahunNum) {
             $startDate = sprintf('%04d-%02d-01', $tahunNum, $bulanNum);
             $endDate = date('Y-m-t', strtotime($startDate));
             $pegawaiQuery->where(function($q) use ($startDate, $endDate) {
                 $q->where(function($sub) use ($startDate, $endDate) {
-                    $sub->where('tgl_mulai', '<=', $endDate)
-                        ->where('tgl_selesai', '>=', $startDate);
+                    $sub->where('penempatan.tgl_mulai', '<=', $endDate)
+                        ->where('penempatan.tgl_selesai', '>=', $startDate);
                 })->orWhere(function($sub) {
-                    $sub->whereNull('tgl_selesai')
-                        ->orWhere('tgl_selesai', '0000-00-00');
+                    $sub->whereNull('penempatan.tgl_selesai')
+                        ->orWhere('penempatan.tgl_selesai', '0000-00-00');
                 });
             });
         }
 
-        $pegawai = $pegawaiQuery->get()->sortBy(function($item) {
-            return -($item->ketentuan->barokah ?? 0);
-        });
+        $pegawai = $pegawaiQuery
+            ->select('penempatan.*')
+            ->orderBy('kb.barokah', 'desc')
+            ->orderBy('u.nama_lengkap', 'asc')
+            ->get();
 
         // Ambil data detail kehadiran jika sudah pernah diisi sebelumnya
         $existingKehadiran = \App\Models\Kehadiran::where('id_kehadi', $periode->id_kehadiran_lembaga)
