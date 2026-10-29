@@ -682,7 +682,7 @@
                             const gtyDtyBadge = isTetap
                                 ? (isSertif
                                     ? `<span class="badge badge-info px-2 py-1">${labelSertif}</span>`
-                                    : '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Dapat</span>')
+                                    : '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>')
                                 : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
 
                             htmlPeng += `<tr>
