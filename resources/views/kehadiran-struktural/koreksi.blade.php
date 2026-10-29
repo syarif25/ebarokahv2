@@ -630,76 +630,65 @@
   </div>
 </div>
 
-<!-- Modal Keterangan Punishment Kehadiran -->
+<!-- Modal Keterangan Pengurangan Tunjab (Tunjangan Jabatan) -->
 <div class="modal fade" id="modalPunishment" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-danger text-white py-2">
-        <h5 class="modal-title font-weight-bold" style="font-size: 1.05rem;">
-          <i class="fa fa-exclamation-triangle mr-2"></i> Rincian Pengurangan Tunjab
-        </h5>
-        <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+      <div class="modal-header">
+        <h5 class="modal-title font-weight-bold">Pengurangan Tunjab</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-danger py-2 px-3 mb-3 small">
-          <strong>Aturan Kebijakan:</strong> Tunjangan Jabatan (Tunjab) dipotong jika persentase kehadiran efektif kurang dari <strong>50%</strong> dari target wajib hadir bulanan.
-        </div>
+        <p class="text-muted small mb-3">
+          Tunjangan Jabatan (Tunjab) dikurangi secara proporsional karena kehadiran efektif kurang dari 50% target wajib hadir bulanan.
+        </p>
 
-        <table class="table table-sm table-borderless mb-2">
-          <tr>
-            <td style="width: 140px;" class="text-muted">Nama Umana'</td>
-            <td class="font-weight-bold text-dark">: <span id="punish-nama">-</span></td>
-          </tr>
-          <tr>
-            <td class="text-muted">Jabatan</td>
-            <td>: <span id="punish-jabatan">-</span></td>
-          </tr>
+        <table class="table table-sm table-borderless mb-3">
+          <tbody>
+            <tr>
+              <th style="width: 150px;" class="pl-0">Nama Umana'</th>
+              <td class="font-weight-bold text-dark">: <span id="punish-nama">-</span></td>
+            </tr>
+            <tr>
+              <th class="pl-0">Jabatan</th>
+              <td>: <span id="punish-jabatan">-</span></td>
+            </tr>
+            <tr>
+              <th class="pl-0">Wajib Hadir</th>
+              <td>: <span id="punish-wajib">0</span> Hari</td>
+            </tr>
+            <tr>
+              <th class="pl-0">Kehadiran Efektif</th>
+              <td>: <span id="punish-efektif">0</span> Hari <small class="text-muted">(Hadir: <span id="punish-hadir">0</span>, Tugas: <span id="punish-tugas">0</span>, Izin: <span id="punish-izin">0</span>, Sakit: <span id="punish-sakit">0</span>)</small></td>
+            </tr>
+            <tr>
+              <th class="pl-0">Persentase</th>
+              <td>: <strong class="text-danger" id="punish-persen">0%</strong></td>
+            </tr>
+          </tbody>
         </table>
 
-        <div class="card bg-light border-0 mb-3">
-          <div class="card-body py-2 px-3 small">
-            <h6 class="font-weight-bold text-dark mb-2" style="font-size: 0.85rem;">Rincian Kehadiran:</h6>
-            <div class="row text-center mb-2">
-              <div class="col-4 border-right">
-                <span class="text-muted d-block">Wajib Hadir</span>
-                <strong class="text-primary" id="punish-wajib">0</strong> Hari
-              </div>
-              <div class="col-4 border-right">
-                <span class="text-muted d-block">Kehadiran Efektif</span>
-                <strong class="text-dark" id="punish-efektif">0</strong> Hari
-              </div>
-              <div class="col-4">
-                <span class="text-muted d-block">Persentase</span>
-                <strong class="text-danger" id="punish-persen">0%</strong>
-              </div>
-            </div>
-            <div class="text-muted small" style="font-size: 0.78rem;">
-              Komposisi: Hadir (<span id="punish-hadir">0</span>), Tugas (<span id="punish-tugas">0</span>), Izin (<span id="punish-izin">0</span>), Sakit (<span id="punish-sakit">0</span>).
-            </div>
-          </div>
-        </div>
-
-        <div class="border rounded p-3 bg-white">
-          <h6 class="font-weight-bold text-danger mb-2" style="font-size: 0.85rem;">Perhitungan Nominal Tunjab:</h6>
-          <div class="d-flex justify-content-between mb-1">
-            <span>Tunjab Normal / Asli:</span>
-            <strong class="text-dark" id="punish-tunjab-asli">Rp 0</strong>
-          </div>
-          <div class="d-flex justify-content-between mb-1">
-            <span>Rasio Kehadiran (<span id="punish-rasio-text">0 / 0</span>):</span>
-            <span class="text-danger" id="punish-rasio-persen">0%</span>
-          </div>
-          <hr class="my-2">
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="font-weight-bold text-dark">Tunjab Diterima (Setelah Potongan):</span>
-            <h5 class="mb-0 font-weight-bold text-danger" id="punish-tunjab-diterima">Rp 0</h5>
-          </div>
-          <small class="text-muted d-block mt-2">
-            Rumus: <em>Tunjab Asli &times; (Kehadiran Efektif &divide; Wajib Hadir)</em>
-          </small>
-        </div>
+        <table class="table table-sm table-bordered mb-2">
+          <tbody>
+            <tr>
+              <td class="bg-light">Tunjab Normal / Asli</td>
+              <td class="text-right font-weight-bold" id="punish-tunjab-asli">Rp 0</td>
+            </tr>
+            <tr>
+              <td class="bg-light">Rasio Kehadiran (<span id="punish-rasio-text">0 / 0</span>)</td>
+              <td class="text-right text-danger font-weight-bold" id="punish-rasio-persen">0%</td>
+            </tr>
+            <tr class="table-active">
+              <th class="font-weight-bold">Tunjab Diterima</th>
+              <th class="text-right font-weight-bold text-danger fs-15" id="punish-tunjab-diterima">Rp 0</th>
+            </tr>
+          </tbody>
+        </table>
+        <small class="text-muted d-block text-right">
+          <em>Perhitungan: Tunjab Asli &times; (Kehadiran Efektif &divide; Wajib Hadir)</em>
+        </small>
       </div>
-      <div class="modal-footer py-2">
+      <div class="modal-footer">
         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
       </div>
     </div>
@@ -710,11 +699,9 @@
 <div class="modal fade" id="modalCekValidasiUmana" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header bg-primary text-white py-2">
-        <h5 class="modal-title font-weight-bold" style="font-size: 1.05rem;">
-          <i class="fa fa-id-card mr-2"></i> Validasi Tunjangan Umana'
-        </h5>
-        <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+      <div class="modal-header">
+        <h5 class="modal-title font-weight-bold">Validasi Tunjangan Umana'</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
         <!-- Info Profil Umana' -->
