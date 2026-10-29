@@ -87,6 +87,10 @@
         </a>
       @endif
 
+      <button type="button" class="btn btn-success text-white mr-2 font-weight-bold shadow-sm" id="btnExportExcelStruk">
+        <i class="fa fa-file-excel-o mr-1"></i> Export Excel
+      </button>
+
       <!-- Search & Tampilan Kolom -->
       <div class="d-inline-flex align-items-center">
         <div class="input-group shadow-sm mr-2" style="width: 250px;">
@@ -776,6 +780,10 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 
 <script>
@@ -803,7 +811,34 @@
     ordering: false,
     info: false,
     fixedHeader: true,
-    dom: 't',
+    dom: 'Brt',
+    buttons: [
+      {
+        extend: 'excelHtml5',
+        text: '<i class="fa fa-file-excel-o mr-1"></i> Export Excel',
+        className: 'd-none',
+        title: 'Validasi_Kehadiran_Struktural_{{ preg_replace("/[^A-Za-z0-9_-]/", "_", $periode->lembaga->nama_lembaga ?? "Struktural") }}_{{ $periode->bulan }}_{{ $thn_int }}',
+        footer: true,
+        exportOptions: {
+          columns: ':visible:not(:last-child)', // Sembunyikan kolom aksi
+          format: {
+            body: function (data, row, column, node) {
+              // Hilangkan tag HTML dan format angka teks
+              var clean = $(node).text().trim();
+              clean = clean.replace(/\s+/g, ' ');
+              return clean;
+            },
+            footer: function (data, row, column, node) {
+              return $(node).text().trim().replace(/\s+/g, ' ');
+            }
+          }
+        }
+      }
+    ]
+  });
+
+  $('#btnExportExcelStruk').on('click', function() {
+    dtTblStruk.button('.buttons-excel').trigger();
   });
 
   // Sinkronisasi FixedHeader dengan scroll horizontal .table-responsive

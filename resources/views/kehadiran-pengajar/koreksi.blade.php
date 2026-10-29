@@ -181,6 +181,10 @@
             </a>
           @endif
 
+          <button type="button" class="btn btn-success btn-sm text-white font-weight-bold shadow-sm" id="btnExportExcelPengajar">
+            <i class="fa fa-file-excel-o mr-1"></i> Export Excel
+          </button>
+
           @if($canEdit)
             <button type="button" class="btn btn-primary btn-sm font-weight-bold shadow-sm" onclick="syncTeachers()">
               <i class="fa fa-refresh mr-1"></i> Update Daftar Pengajar
@@ -732,6 +736,10 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/rowgroup/1.4.1/js/dataTables.rowGroup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
 <script src="{{ asset('vendor/sweetalert2/dist/sweetalert2.min.js') }}"></script>
 
 <script>
@@ -767,7 +775,29 @@
       searching: true,
       info: false,
       ordering: false,
-      dom: 't',
+      dom: 'Bt',
+      buttons: [
+        {
+          extend: 'excelHtml5',
+          text: '<i class="fa fa-file-excel-o mr-1"></i> Export Excel',
+          className: 'd-none',
+          title: 'Validasi_Kehadiran_Pengajar_{{ preg_replace("/[^A-Za-z0-9_-]/", "_", $periode->lembaga->nama_lembaga ?? "Pengajar") }}_{{ $periode->bulan }}_{{ $thn_int ?? 2026 }}',
+          footer: true,
+          exportOptions: {
+            columns: ':visible:not(:last-child)', // Abaikan kolom Aksi
+            format: {
+              body: function (data, row, column, node) {
+                var clean = $(node).text().trim();
+                clean = clean.replace(/\s+/g, ' ');
+                return clean;
+              },
+              footer: function (data, row, column, node) {
+                return $(node).text().trim().replace(/\s+/g, ' ');
+              }
+            }
+          }
+        }
+      ],
       rowGroup: {
         dataSrc: 2,
         startRender: function (rows, group) {
@@ -776,6 +806,10 @@
             .append('<td colspan="29" class="text-left pl-3 text-uppercase">PRODI: ' + groupName + '</td>');
         }
       }
+    });
+
+    $('#btnExportExcelPengajar').on('click', function() {
+      table.button('.buttons-excel').trigger();
     });
 
     // Custom Search
