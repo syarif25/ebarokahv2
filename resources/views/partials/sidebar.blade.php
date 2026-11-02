@@ -57,6 +57,8 @@
                     <li><a href="{{ url('/master-data/barokah-kehormatan') }}">Tunjangan Kehormatan Struktural</a></li>
                     <li><a href="{{ url('/master-data/barokah-kehormatan-pengajar') }}">Tunjangan Kehormatan Pengajar</a></li>
                     <li><a href="{{ url('/master-data/bank') }}">Biaya Admin Bank</a></li>
+                    <li><a href="{{ url('/master-data/jenis-kegiatan') }}">Jenis Kegiatan Panitia</a></li>
+                    <li><a href="{{ url('/master-data/barokah-kepanitiaan') }}">Barokah Kepanitiaan</a></li>
                 </ul>
             </li>
 
@@ -115,6 +117,26 @@
                     @endif
                     @if($canSatpam)
                         <li class="{{ Request::is('kehadiran_satpam*') || Request::is('kehadiran-satpam*') ? 'mm-active' : '' }}"><a href="{{ url('/kehadiran-satpam') }}">Satpam</a></li>
+                    @endif
+                </ul>
+            </li>
+            @endif
+
+            {{-- KEPANITIAAN (Sementara khusus SuperAdmin & Evaluasi selama masa uji coba) --}}
+            @if($isSuperAdmin || $isEvaluasi)
+            <li class="{{ Request::is('kepanitiaan*') ? 'mm-active' : '' }}">
+                <a class="has-arrow {{ Request::is('kepanitiaan*') ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ Request::is('kepanitiaan*') ? 'true' : 'false' }}">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">Kepanitiaan</span>
+                </a>
+                <ul aria-expanded="{{ Request::is('kepanitiaan*') ? 'true' : 'false' }}" class="{{ Request::is('kepanitiaan*') ? 'mm-show' : '' }}">
+                    <li class="{{ Request::is('kepanitiaan') || (Request::is('kepanitiaan/*') && !Request::is('kepanitiaan/tarif*')) ? 'mm-active' : '' }}">
+                        <a href="{{ url('/kepanitiaan') }}">Transaksi Panitia</a>
+                    </li>
+                    @if($isSuperAdmin || $isEvaluasi)
+                    <li class="{{ Request::is('kepanitiaan/tarif*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/kepanitiaan/tarif') }}">Master Barokah Panitia</a>
+                    </li>
                     @endif
                 </ul>
             </li>

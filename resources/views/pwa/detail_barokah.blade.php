@@ -94,6 +94,7 @@
         .pill--pengajar{background:#eef3ff;color:#2f5bff}
         .pill--struktural{background:#e7f7ee;color:#118a4e}
         .pill--satpam{background:#fff4e5;color:#c97a00}
+        .pill--kepanitiaan{background:#fef3c7;color:#b45309}
 
         .item-right{display:flex;align-items:center;gap:8px}
         .amount{font-weight:700}
@@ -325,6 +326,54 @@
                         <div class="divider my-2"></div>
                         <div class="d-flex justify-content-between align-items-center">
                         <div class="font-700">Total (Rp)</div><div class="font-700">${fmt(f.total)}</div>
+                        </div>`;
+                } else if (J === 'kepanitiaan') {
+                    let itemsHTML = '';
+                    if (d.nominal_kepanitiaan > 0) {
+                        itemsHTML += rowLine('Kepanitiaan', fmt(f.nominal_kepanitiaan), d.jabatan_panitia ? `Jabatan: ${d.jabatan_panitia}` : '');
+                    }
+                    if (d.nominal_kehadiran > 0) {
+                        itemsHTML += rowLine('Kehadiran', fmt(f.nominal_kehadiran), d.qty_kehadiran > 0 ? `${d.qty_kehadiran} shift/hari` : '');
+                    }
+                    if (d.nominal_konsumsi > 0) {
+                        itemsHTML += rowLine('Konsumsi', fmt(f.nominal_konsumsi), d.qty_konsumsi > 0 ? `${d.qty_konsumsi} hari` : '');
+                    }
+                    if (d.nominal_pemb_soal > 0) {
+                        itemsHTML += rowLine('Pembuatan Soal', fmt(f.nominal_pemb_soal), d.qty_pemb_soal > 0 ? `${d.qty_pemb_soal} paket/MK` : '');
+                    }
+                    if (d.nominal_input_soal > 0) {
+                        itemsHTML += rowLine('Input Soal', fmt(f.nominal_input_soal), d.qty_input_soal > 0 ? `${d.qty_input_soal} paket` : '');
+                    }
+                    if (d.nominal_pengawas > 0) {
+                        itemsHTML += rowLine('Pengawas', fmt(f.nominal_pengawas), d.qty_pengawas > 0 ? `${d.qty_pengawas} sesi/shift` : '');
+                    }
+                    if (d.nominal_penguji > 0) {
+                        itemsHTML += rowLine('Penguji', fmt(f.nominal_penguji), d.qty_penguji > 0 ? `${d.qty_penguji} mhs/sesi` : '');
+                    }
+                    if (d.nominal_korektor > 0) {
+                        itemsHTML += rowLine('Korektor', fmt(f.nominal_korektor), d.qty_korektor > 0 ? `${d.qty_korektor} berkas/mhs` : '');
+                    }
+                    if (d.nominal_input_nilai > 0) {
+                        itemsHTML += rowLine('Input Nilai', fmt(f.nominal_input_nilai), d.qty_input_nilai > 0 ? `${d.qty_input_nilai} mhs` : '');
+                    }
+                    if (d.nominal_pembimbing > 0) {
+                        itemsHTML += rowLine('Pembimbing', fmt(f.nominal_pembimbing), d.qty_pembimbing > 0 ? `${d.qty_pembimbing} mhs` : '');
+                    }
+                    if (d.potongan > 0) {
+                        itemsHTML += rowLine('Potongan', fmt(f.potongan));
+                    }
+
+                    if (!itemsHTML) {
+                        itemsHTML = '<div class="empty">Tidak ada komponen barokah.</div>';
+                    }
+
+                    body.innerHTML = `
+                        <div class="list-compact-native">
+                            ${itemsHTML}
+                        </div>
+                        <div class="divider my-2"></div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="font-700">Total (Rp)</div><div class="font-700">${fmt(f.total)}</div>
                         </div>`;
                 }
             })

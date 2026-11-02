@@ -28,4 +28,14 @@ class Umana extends Authenticatable
         }
         return trim($result) ?: '-';
     }
+
+    public function penempatans()
+    {
+        return $this->hasMany(Penempatan::class, 'nik', 'nik');
+    }
+
+    public function pengajars()
+    {
+        return $this->hasMany(Pengajar::class, 'nik', 'nik');
+    }
 }

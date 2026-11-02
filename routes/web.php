@@ -146,6 +146,30 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | BAROKAH KEPANITIAAN (Sementara khusus SuperAdmin & Evaluasi masa uji coba)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:SuperAdmin,Evaluasi'])->group(function () {
+        Route::get('/kepanitiaan', [App\Http\Controllers\KepanitiaanController::class, 'index']);
+        Route::post('/kepanitiaan/store', [App\Http\Controllers\KepanitiaanController::class, 'store']);
+        Route::post('/kepanitiaan/update/{id}', [App\Http\Controllers\KepanitiaanController::class, 'update']);
+        Route::post('/kepanitiaan/delete/{id}', [App\Http\Controllers\KepanitiaanController::class, 'destroy']);
+        Route::get('/kepanitiaan/{id}/rincian', [App\Http\Controllers\KepanitiaanController::class, 'rincian']);
+        Route::get('/kepanitiaan/{id}/koreksi', function ($id) {
+            return redirect("/kepanitiaan/{$id}/rincian");
+        });
+        Route::post('/kepanitiaan/saveRow', [App\Http\Controllers\KepanitiaanController::class, 'saveRow']);
+        Route::match(['post', 'delete'], '/kepanitiaan/deleteRow/{id}', [App\Http\Controllers\KepanitiaanController::class, 'deleteRow']);
+        Route::post('/kepanitiaan/kirim/{id}', [App\Http\Controllers\KepanitiaanController::class, 'kirim']);
+        Route::post('/kepanitiaan/validasi/{id}', [App\Http\Controllers\KepanitiaanController::class, 'validasi']);
+        Route::post('/kepanitiaan/reset/{id}', [App\Http\Controllers\KepanitiaanController::class, 'reset']);
+        Route::get('/kepanitiaan/searchUmana', [App\Http\Controllers\KepanitiaanController::class, 'searchUmana']);
+        Route::get('/kepanitiaan/cetak/{id}', [App\Http\Controllers\KepanitiaanController::class, 'cetak']);
+        Route::get('/kepanitiaan/tarif', [App\Http\Controllers\BarokahKepanitiaanController::class, 'index']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | POTONGAN STRUKTURAL & PENGAJAR (SuperAdmin & AdminLembaga)
     |--------------------------------------------------------------------------
     */
@@ -307,6 +331,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/master-data/bank/store', [App\Http\Controllers\BankController::class, 'store']);
         Route::post('/master-data/bank/update/{id}', [App\Http\Controllers\BankController::class, 'update']);
         Route::post('/master-data/bank/delete/{id}', [App\Http\Controllers\BankController::class, 'destroy']);
+
+        Route::get('/master-data/barokah-kepanitiaan', [App\Http\Controllers\BarokahKepanitiaanController::class, 'index']);
+        Route::post('/master-data/barokah-kepanitiaan/store', [App\Http\Controllers\BarokahKepanitiaanController::class, 'store']);
+        Route::post('/master-data/barokah-kepanitiaan/update/{id}', [App\Http\Controllers\BarokahKepanitiaanController::class, 'update']);
+        Route::post('/master-data/barokah-kepanitiaan/delete/{id}', [App\Http\Controllers\BarokahKepanitiaanController::class, 'destroy']);
+
+        Route::get('/master-data/jenis-kegiatan', [App\Http\Controllers\JenisKegiatanController::class, 'index']);
+        Route::post('/master-data/jenis-kegiatan/store', [App\Http\Controllers\JenisKegiatanController::class, 'store']);
+        Route::post('/master-data/jenis-kegiatan/update/{id}', [App\Http\Controllers\JenisKegiatanController::class, 'update']);
+        Route::post('/master-data/jenis-kegiatan/delete/{id}', [App\Http\Controllers\JenisKegiatanController::class, 'destroy']);
 
         // Manajemen Umana'
         Route::get('/manajemen-umana/penempatan', [App\Http\Controllers\PenempatanController::class, 'index']);

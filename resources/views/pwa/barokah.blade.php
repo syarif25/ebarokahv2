@@ -47,7 +47,7 @@
             </div>
 
             <div class="col ps-2">
-                <a href="#" onclick="showMaintenanceModal()" class="card card-style rounded-m ms-0 p-3 mb-3">
+                <a href="{{ url('Report/Barokah?k=kepanitiaan') }}" class="card card-style rounded-m ms-0 p-3 mb-3">
                     <i class="fa fa-users color-yellow-light font-40 icon-50"></i>
                     <h4 class="pt-3">Kepanitiaan</h4>
                     <p class="font-11 mt-n2 mb-0 color-highlight">Klik disini untuk detail</p>

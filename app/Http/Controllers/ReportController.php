@@ -338,6 +338,57 @@ class ReportController extends Controller
                         return ['nama' => $r['nama'], 'nominal' => (int)$r['nominal']];
                     }, $items),
                 ];
+                break;
+
+            case 'kepanitiaan':
+                $transaksiId = (int)$lid;
+                $rowDetail = DB::table('kepanitiaan_detail as kd')
+                    ->join('kepanitiaan_transaksi as kt', 'kt.id_kepanitiaan_transaksi', '=', 'kd.id_kepanitiaan_transaksi')
+                    ->where('kd.nik', $nik)
+                    ->where('kt.id_kepanitiaan_transaksi', $transaksiId)
+                    ->first();
+
+                $payload = [
+                    'jabatan_panitia'     => $rowDetail->jabatan_panitia ?? '-',
+                    'nominal_kepanitiaan' => (float)($rowDetail->nominal_kepanitiaan ?? 0),
+                    'qty_kehadiran'       => (float)($rowDetail->qty_kehadiran ?? 0),
+                    'nominal_kehadiran'   => (float)($rowDetail->nominal_kehadiran ?? 0),
+                    'qty_konsumsi'        => (float)($rowDetail->qty_konsumsi ?? 0),
+                    'nominal_konsumsi'    => (float)($rowDetail->nominal_konsumsi ?? 0),
+                    'qty_pemb_soal'       => (float)($rowDetail->qty_pemb_soal ?? 0),
+                    'nominal_pemb_soal'   => (float)($rowDetail->nominal_pemb_soal ?? 0),
+                    'qty_input_soal'      => (float)($rowDetail->qty_input_soal ?? 0),
+                    'nominal_input_soal'  => (float)($rowDetail->nominal_input_soal ?? 0),
+                    'qty_pengawas'        => (float)($rowDetail->qty_pengawas ?? 0),
+                    'nominal_pengawas'    => (float)($rowDetail->nominal_pengawas ?? 0),
+                    'qty_penguji'         => (float)($rowDetail->qty_penguji ?? 0),
+                    'nominal_penguji'     => (float)($rowDetail->nominal_penguji ?? 0),
+                    'qty_korektor'        => (float)($rowDetail->qty_korektor ?? 0),
+                    'nominal_korektor'    => (float)($rowDetail->nominal_korektor ?? 0),
+                    'qty_input_nilai'     => (float)($rowDetail->qty_input_nilai ?? 0),
+                    'nominal_input_nilai' => (float)($rowDetail->nominal_input_nilai ?? 0),
+                    'qty_pembimbing'      => (float)($rowDetail->qty_pembimbing ?? 0),
+                    'nominal_pembimbing'  => (float)($rowDetail->nominal_pembimbing ?? 0),
+                    'total_bruto'         => (float)($rowDetail->total_bruto ?? 0),
+                    'potongan'            => (float)($rowDetail->potongan ?? 0),
+                    'total'               => (float)($rowDetail->total_diterima ?? 0),
+                    'f' => [
+                        'nominal_kepanitiaan' => $fmt($rowDetail->nominal_kepanitiaan ?? 0),
+                        'nominal_kehadiran'   => $fmt($rowDetail->nominal_kehadiran ?? 0),
+                        'nominal_konsumsi'    => $fmt($rowDetail->nominal_konsumsi ?? 0),
+                        'nominal_pemb_soal'   => $fmt($rowDetail->nominal_pemb_soal ?? 0),
+                        'nominal_input_soal'  => $fmt($rowDetail->nominal_input_soal ?? 0),
+                        'nominal_pengawas'    => $fmt($rowDetail->nominal_pengawas ?? 0),
+                        'nominal_penguji'     => $fmt($rowDetail->nominal_penguji ?? 0),
+                        'nominal_korektor'    => $fmt($rowDetail->nominal_korektor ?? 0),
+                        'nominal_input_nilai' => $fmt($rowDetail->nominal_input_nilai ?? 0),
+                        'nominal_pembimbing'  => $fmt($rowDetail->nominal_pembimbing ?? 0),
+                        'total_bruto'         => $fmt($rowDetail->total_bruto ?? 0),
+                        'potongan'            => $fmt($rowDetail->potongan ?? 0),
+                        'total'               => $fmt($rowDetail->total_diterima ?? 0),
+                    ]
+                ];
+                break;
         }
 
         return response()->json([
@@ -664,7 +715,19 @@ class ReportController extends Controller
                     GROUP BY l.nama_lembaga, t.bulan, t.tahun, kl.id_lembaga
                     ORDER BY l.nama_lembaga DESC
                 ";
-                $bind = [$nik, $start, $end];
+            case 'kepanitiaan':
+                $sql = "
+                    SELECT COALESCE(l.nama_lembaga, kt.nama_event) AS nama_lembaga, kt.bulan, kt.tahun,
+                        'Kepanitiaan' AS jenis, SUM(kd.total_diterima) AS nominal,
+                        kt.id_kepanitiaan_transaksi AS id_lembaga
+                    FROM kepanitiaan_detail kd
+                    JOIN kepanitiaan_transaksi kt ON kt.id_kepanitiaan_transaksi = kd.id_kepanitiaan_transaksi
+                    LEFT JOIN lembaga l ON l.id_lembaga = kt.id_lembaga
+                    WHERE kd.nik = ? AND kt.status = 'disetujui'
+                    GROUP BY l.nama_lembaga, kt.nama_event, kt.bulan, kt.tahun, kt.id_kepanitiaan_transaksi
+                    ORDER BY kt.id_kepanitiaan_transaksi DESC
+                ";
+                $bind = [$nik];
                 break;
 
             default: // struktural
