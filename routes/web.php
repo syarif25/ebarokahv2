@@ -251,6 +251,16 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | LAPORAN RINCIAN TRANSFER LEMBAGA (SuperAdmin, Evaluasi, & Kasir)
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware(['role:SuperAdmin,Evaluasi,Kasir'])->group(function () {
+        Route::get('/laporan/rincian-transfer', [App\Http\Controllers\RincianTransferLembagaController::class, 'index'])->name('laporan.rincian-transfer');
+        Route::get('/laporan/rincian-transfer/cetak', [App\Http\Controllers\RincianTransferLembagaController::class, 'cetak'])->name('laporan.rincian-transfer.cetak');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | MASTER DATA, MANAJEMEN, PAYROLL & LOG (Khusus SuperAdmin)
     |--------------------------------------------------------------------------
     */

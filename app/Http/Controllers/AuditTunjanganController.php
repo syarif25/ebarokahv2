@@ -13,10 +13,9 @@ class AuditTunjanganController extends Controller
      */
     public function index(Request $request)
     {
-        $scope = $request->get('scope', 'berlaku');
-        $stats = $this->getStatistics($scope);
+        $stats = $this->getStatistics();
 
-        return view('validasi.audit-tunjangan', compact('stats', 'scope'));
+        return view('validasi.audit-tunjangan', compact('stats'));
     }
 
     /**
@@ -24,15 +23,14 @@ class AuditTunjanganController extends Controller
      */
     public function data(Request $request)
     {
-        $scope = $request->get('scope', 'berlaku');
         $kategoriGanda = $request->get('kategori_ganda', 'all');
 
-        $data = $this->getAuditData($scope, $kategoriGanda);
+        $data = $this->getAuditData($kategoriGanda);
 
         return response()->json([
             'success' => true,
             'data' => $data,
-            'stats' => $this->getStatistics($scope)
+            'stats' => $this->getStatistics()
         ]);
     }
 
@@ -41,31 +39,26 @@ class AuditTunjanganController extends Controller
      */
     public function detail($nik, Request $request)
     {
-        $scope = $request->get('scope', 'berlaku');
         $umana = DB::table('umana')->where('nik', $nik)->first();
         if (!$umana) {
             return response()->json(['status' => false, 'message' => 'Data Umana tidak ditemukan.'], 404);
         }
 
-        $dateFilterP = $scope === 'berlaku' 
-            ? "AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())" 
-            : "";
-        $dateFilterPeng = $scope === 'berlaku' 
-            ? "AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())" 
-            : "";
-
-        // 1. Data Penempatan Struktural
+        // 1. Data Penempatan Struktural yang Benar-Benar Aktif & Berlaku
         $struktural = DB::table('penempatan as p')
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'p.id_lembaga')
             ->leftJoin('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
             ->where('p.nik', $nik)
             ->where('p.status', 'Aktif')
-            ->when($scope === 'berlaku', function ($q) {
-                $q->where(function ($sub) {
-                    $sub->whereNull('p.tgl_selesai')
-                        ->orWhere('p.tgl_selesai', '0000-00-00')
-                        ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
-                });
+            ->where(function ($sub) {
+                $sub->whereNull('p.tgl_mulai')
+                    ->orWhere('p.tgl_mulai', '0000-00-00')
+                    ->orWhere('p.tgl_mulai', '<=', DB::raw('CURDATE()'));
+            })
+            ->where(function ($sub) {
+                $sub->whereNull('p.tgl_selesai')
+                    ->orWhere('p.tgl_selesai', '0000-00-00')
+                    ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
             })
             ->select(
                 'p.id_penempatan',
@@ -81,17 +74,20 @@ class AuditTunjanganController extends Controller
             )
             ->get();
 
-        // 2. Data Penugasan Pengajar
+        // 2. Data Penugasan Pengajar yang Benar-Benar Aktif & Berlaku
         $pengajar = DB::table('pengajar as peng')
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'peng.id_lembaga')
             ->where('peng.nik', $nik)
             ->where('peng.status', 'Aktif')
-            ->when($scope === 'berlaku', function ($q) {
-                $q->where(function ($sub) {
-                    $sub->whereNull('peng.tgl_selesai')
-                        ->orWhere('peng.tgl_selesai', '0000-00-00')
-                        ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
-                });
+            ->where(function ($sub) {
+                $sub->whereNull('peng.tgl_mulai')
+                    ->orWhere('peng.tgl_mulai', '0000-00-00')
+                    ->orWhere('peng.tgl_mulai', '<=', DB::raw('CURDATE()'));
+            })
+            ->where(function ($sub) {
+                $sub->whereNull('peng.tgl_selesai')
+                    ->orWhere('peng.tgl_selesai', '0000-00-00')
+                    ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
             })
             ->select(
                 'peng.id_pengajar',
@@ -128,9 +124,8 @@ class AuditTunjanganController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        $scope = $request->get('scope', 'berlaku');
         $kategoriGanda = $request->get('kategori_ganda', 'all');
-        $data = $this->getAuditData($scope, $kategoriGanda);
+        $data = $this->getAuditData($kategoriGanda);
 
         $filename = "Audit_Tunjangan_Ganda_" . date('Y-m-d_His') . ".csv";
         $headers = [
@@ -161,8 +156,12 @@ class AuditTunjanganController extends Controller
 
             foreach ($data as $idx => $row) {
                 $rincianArr = [];
-                foreach ($row['details'] as $d) {
-                    $rincianArr[] = "[{$d['tipe']}] {$d['lembaga']} ({$d['posisi']}) -> Tunkel: {$d['tunkel']} | Anak: {$d['tunj_anak']} | Kehormatan: {$d['kehormatan']}";
+                foreach ($row['details'] as $det) {
+                    $tunj = [];
+                    if ($det['tunkel'] === 'Ya') $tunj[] = 'Tunkel:Ya';
+                    if ($det['tunj_anak'] === 'Ya') $tunj[] = 'Anak:Ya';
+                    if ($det['kehormatan'] === 'Ya') $tunj[] = 'Kehormatan:Ya';
+                    $rincianArr[] = "[{$det['tipe']}] {$det['lembaga']} ({$det['posisi']}) -> " . implode(', ', $tunj);
                 }
                 $rincianStr = implode(' | ', $rincianArr);
 
@@ -185,17 +184,10 @@ class AuditTunjanganController extends Controller
     }
 
     /**
-     * Hitung Statistik Ringkasan Duplikasi
+     * Hitung Statistik Temuan Tunjangan Ganda Khusus SK yang Aktif dan Masih Berlaku
      */
-    private function getStatistics($scope)
+    private function getStatistics()
     {
-        $dateFilterP = $scope === 'berlaku' 
-            ? "AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())" 
-            : "";
-        $dateFilterPeng = $scope === 'berlaku' 
-            ? "AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())" 
-            : "";
-
         $sql = "
             SELECT 
                 nik,
@@ -205,11 +197,15 @@ class AuditTunjanganController extends Controller
             FROM (
                 SELECT p.nik, p.tunj_kel, p.tunj_anak, p.kehormatan
                 FROM penempatan p
-                WHERE p.status = 'Aktif' $dateFilterP
+                WHERE p.status = 'Aktif'
+                  AND (p.tgl_mulai IS NULL OR p.tgl_mulai = '0000-00-00' OR p.tgl_mulai <= CURDATE())
+                  AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())
                 UNION ALL
                 SELECT peng.nik, peng.tunj_kel, peng.tunj_anak, peng.kehormatan
                 FROM pengajar peng
-                WHERE peng.status = 'Aktif' $dateFilterPeng
+                WHERE peng.status = 'Aktif'
+                  AND (peng.tgl_mulai IS NULL OR peng.tgl_mulai = '0000-00-00' OR peng.tgl_mulai <= CURDATE())
+                  AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())
             ) as u_tunj
             GROUP BY nik
             HAVING count_tunkel > 1 OR count_anak > 1 OR count_kehormatan > 1
@@ -237,17 +233,10 @@ class AuditTunjanganController extends Controller
     }
 
     /**
-     * Ambil Data Detail Umana yang Terindikasi Memiliki Tunjangan Ganda
+     * Ambil Data Detail Umana yang Terindikasi Memiliki Tunjangan Ganda pada SK yang Aktif dan Masih Berlaku
      */
-    private function getAuditData($scope, $kategoriGanda = 'all')
+    private function getAuditData($kategoriGanda = 'all')
     {
-        $dateFilterP = $scope === 'berlaku' 
-            ? "AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())" 
-            : "";
-        $dateFilterPeng = $scope === 'berlaku' 
-            ? "AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())" 
-            : "";
-
         // Filter HAVING sesuai pilihan user
         $havingCondition = "count_tunkel > 1 OR count_anak > 1 OR count_kehormatan > 1";
         if ($kategoriGanda === 'tunkel') {
@@ -267,11 +256,15 @@ class AuditTunjanganController extends Controller
             FROM (
                 SELECT p.nik, p.tunj_kel, p.tunj_anak, p.kehormatan
                 FROM penempatan p
-                WHERE p.status = 'Aktif' $dateFilterP
+                WHERE p.status = 'Aktif'
+                  AND (p.tgl_mulai IS NULL OR p.tgl_mulai = '0000-00-00' OR p.tgl_mulai <= CURDATE())
+                  AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())
                 UNION ALL
                 SELECT peng.nik, peng.tunj_kel, peng.tunj_anak, peng.kehormatan
                 FROM pengajar peng
-                WHERE peng.status = 'Aktif' $dateFilterPeng
+                WHERE peng.status = 'Aktif'
+                  AND (peng.tgl_mulai IS NULL OR peng.tgl_mulai = '0000-00-00' OR peng.tgl_mulai <= CURDATE())
+                  AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())
             ) as u_tunj
             GROUP BY nik
             HAVING $havingCondition
@@ -292,18 +285,21 @@ class AuditTunjanganController extends Controller
             ->get()
             ->keyBy('nik');
 
-        // Ambil semua SK penempatan struktural Umana tersebut
+        // Ambil hanya SK penempatan struktural yang BENAR-BENAR AKTIF & MASIH BERLAKU
         $penempatanRows = DB::table('penempatan as p')
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'p.id_lembaga')
             ->leftJoin('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
             ->whereIn('p.nik', $nikList)
             ->where('p.status', 'Aktif')
-            ->when($scope === 'berlaku', function ($q) {
-                $q->where(function ($sub) {
-                    $sub->whereNull('p.tgl_selesai')
-                        ->orWhere('p.tgl_selesai', '0000-00-00')
-                        ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
-                });
+            ->where(function ($sub) {
+                $sub->whereNull('p.tgl_mulai')
+                    ->orWhere('p.tgl_mulai', '0000-00-00')
+                    ->orWhere('p.tgl_mulai', '<=', DB::raw('CURDATE()'));
+            })
+            ->where(function ($sub) {
+                $sub->whereNull('p.tgl_selesai')
+                    ->orWhere('p.tgl_selesai', '0000-00-00')
+                    ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
             })
             ->select(
                 'p.nik',
@@ -318,17 +314,20 @@ class AuditTunjanganController extends Controller
             ->get()
             ->groupBy('nik');
 
-        // Ambil semua SK penugasan pengajar Umana tersebut
+        // Ambil hanya SK penugasan pengajar yang BENAR-BENAR AKTIF & MASIH BERLAKU
         $pengajarRows = DB::table('pengajar as peng')
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'peng.id_lembaga')
             ->whereIn('peng.nik', $nikList)
             ->where('peng.status', 'Aktif')
-            ->when($scope === 'berlaku', function ($q) {
-                $q->where(function ($sub) {
-                    $sub->whereNull('peng.tgl_selesai')
-                        ->orWhere('peng.tgl_selesai', '0000-00-00')
-                        ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
-                });
+            ->where(function ($sub) {
+                $sub->whereNull('peng.tgl_mulai')
+                    ->orWhere('peng.tgl_mulai', '0000-00-00')
+                    ->orWhere('peng.tgl_mulai', '<=', DB::raw('CURDATE()'));
+            })
+            ->where(function ($sub) {
+                $sub->whereNull('peng.tgl_selesai')
+                    ->orWhere('peng.tgl_selesai', '0000-00-00')
+                    ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
             })
             ->select(
                 'peng.nik',
@@ -354,16 +353,16 @@ class AuditTunjanganController extends Controller
 
             $pelanggaran = [];
             if ($r->count_tunkel > 1) {
-                $pelanggaran[] = "Double Tunkel ({$r->count_tunkel} SK)";
+                $pelanggaran[] = "Tunkel Ganda ({$r->count_tunkel} SK)";
             }
             if ($r->count_anak > 1) {
-                $pelanggaran[] = "Double Tunj. Anak ({$r->count_anak} SK)";
+                $pelanggaran[] = "Tunj. Anak Ganda ({$r->count_anak} SK)";
             }
             if ($r->count_kehormatan > 1) {
-                $pelanggaran[] = "Double Kehormatan ({$r->count_kehormatan} SK)";
+                $pelanggaran[] = "Kehormatan Ganda ({$r->count_kehormatan} SK)";
             }
 
-            // Gabungkan rincian penugasan
+            // Gabungkan rincian penugasan yang masih aktif & berlaku
             $details = [];
             if (isset($penempatanRows[$nik])) {
                 foreach ($penempatanRows[$nik] as $p) {
@@ -399,7 +398,6 @@ class AuditTunjanganController extends Controller
                 'nik' => $nik,
                 'nama_lengkap' => $namaFormatted,
                 'status_sertifikasi' => $u->status_sertifikasi ?? 'Belum',
-                'nomor_hp' => $u->nomor_hp ?? '-',
                 'count_tunkel' => (int)$r->count_tunkel,
                 'count_anak' => (int)$r->count_anak,
                 'count_kehormatan' => (int)$r->count_kehormatan,

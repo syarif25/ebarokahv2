@@ -2,6 +2,79 @@
 
 @section('title', 'Login - E-Barokah')
 
+@push('styles')
+<style>
+    /* Styling Border Hijau Khas E-Barokah */
+    .auth-form .form-control {
+        border: 1.5px solid #00a15d !important;
+        border-radius: 12px;
+        height: 48px;
+        padding: 10px 16px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+    }
+    .auth-form .form-control:focus {
+        border-color: #00874e !important;
+        box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.2) !important;
+        outline: none;
+    }
+    
+    /* Input Group Password Terpadu dengan Border Hijau */
+    .auth-form .input-group {
+        border: 1.5px solid #00a15d !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+        transition: all 0.2s ease;
+        background-color: #ffffff;
+    }
+    .auth-form .input-group:focus-within {
+        border-color: #00874e !important;
+        box-shadow: 0 0 0 3px rgba(0, 161, 93, 0.2) !important;
+    }
+    .auth-form .input-group .form-control {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        height: 48px;
+    }
+    .auth-form .input-group .btn-toggle-eye {
+        border: none !important;
+        background-color: transparent !important;
+        color: #64748b;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .auth-form .input-group .btn-toggle-eye:hover {
+        color: #00a15d;
+    }
+
+    .auth-form .btn-primary {
+        background-color: #00a15d !important;
+        border-color: #00a15d !important;
+        border-radius: 12px !important;
+        height: 48px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .auth-form .btn-primary:hover {
+        background-color: #00874e !important;
+        border-color: #00874e !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 161, 93, 0.3) !important;
+    }
+    .auth-form .custom-checkbox .form-check-input:checked {
+        background-color: #00a15d !important;
+        border-color: #00a15d !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="col-md-6">
     <div class="authincation-content">
@@ -35,7 +108,7 @@
                             <label class="mb-1"><strong>Password</strong></label>
                             <div class="input-group">
                                 <input type="password" class="form-control" name="password" id="inputPassword" placeholder="Masukkan password" required>
-                                <button class="btn btn-outline-light border" type="button" id="btnTogglePassword" style="background-color: #f8fafc; color: #64748b;">
+                                <button class="btn btn-toggle-eye" type="button" id="btnTogglePassword">
                                     <i class="fas fa-eye" id="toggleIcon"></i>
                                 </button>
                             </div>

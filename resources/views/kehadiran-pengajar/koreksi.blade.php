@@ -1157,7 +1157,7 @@
     const isSetuju = (type === 'setuju');
     const title = isSetuju ? 'Setujui Pengajuan (ACC)?' : 'Kembalikan untuk Revisi?';
     const text = isSetuju 
-      ? 'Data akan dikunci ke rekap total barokah pengajar (snapshot).' 
+      ? 'Data akan dikunci ke rekap total barokah pengajar.' 
       : 'Pengajuan akan dikembalikan ke status Revisi agar dapat diperbaiki operator.';
 
     Swal.fire({

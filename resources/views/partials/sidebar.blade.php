@@ -23,8 +23,8 @@
                 </a>
             </li>
 
-            {{-- MENU KHUSUS SDM & KASIR (Sementara Menu Kosong) --}}
-            @if($isSDM || $isKasir)
+            {{-- MENU KHUSUS SDM (Sementara Menu Kosong) --}}
+            @if($isSDM)
                 <li class="mt-3">
                     <div class="px-4 py-3 mx-3 text-center" style="background: rgba(255, 171, 0, 0.1); border-radius: 12px; border: 1px dashed #ffab00;">
                         <i class="fas fa-lock text-warning fs-20 mb-2"></i>
@@ -204,17 +204,23 @@
             </li>
             @endif
         
-            {{-- LAPORAN (SuperAdmin & Evaluasi) --}}
-            @if($isSuperAdmin || $isEvaluasi)
+            {{-- LAPORAN (SuperAdmin, Evaluasi, & Kasir) --}}
+            @if($isSuperAdmin || $isEvaluasi || $isKasir)
             <li class="{{ Request::is('laporan*') || Request::is('Laporan*') ? 'mm-active' : '' }}">
                 <a class="has-arrow {{ Request::is('laporan*') || Request::is('Laporan*') ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ Request::is('laporan*') || Request::is('Laporan*') ? 'true' : 'false' }}">
                     <i class="fas fa-chart-line"></i>
                     <span class="nav-text">Laporan</span>
                 </a>
                 <ul aria-expanded="false" class="{{ Request::is('laporan*') || Request::is('Laporan*') ? 'mm-show' : '' }}">
+                    @if($isSuperAdmin || $isEvaluasi)
                     <li class="{{ Request::is('laporan/per-lembaga*') || Request::is('Laporan_lembaga*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/per-lembaga') }}">Per Lembaga</a>
                     </li>
+                    @endif
+                    <li class="{{ Request::is('laporan/rincian-transfer*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/laporan/rincian-transfer') }}">Rincian Transfer Lembaga</a>
+                    </li>
+                    @if($isSuperAdmin || $isEvaluasi)
                     <li class="{{ Request::is('laporan/rekap-kehadiran-pengajar*') || Request::is('Rekap_kehadiran_pengajar*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/rekap-kehadiran-pengajar') }}">Rekap Kehadiran Pengajar</a>
                     </li>
@@ -227,6 +233,7 @@
                     <li class="{{ Request::is('laporan/waktu-pengajuan*') || Request::is('Laporan_waktu*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/waktu-pengajuan') }}">Waktu Pengajuan</a>
                     </li>
+                    @endif
                 </ul>
             </li>
             @endif

@@ -40,6 +40,29 @@
         .stat-text span { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; }
         .stat-text h3 { font-size: 24px; font-weight: 700; margin: 0; color: #333; }
         
+        table.dataTable.display tbody td, 
+        table.dataTable.display tbody th, 
+        table.dataTable.display thead th {
+            border-left: none !important;
+            border-right: none !important;
+            padding: 1.5rem 1rem !important;
+            vertical-align: middle;
+        }
+        table.dataTable.display thead th {
+            border-top: none !important;
+            border-bottom: 1px solid #eaeaea !important;
+            font-weight: 700;
+        }
+        table.dataTable {
+            border-bottom: none !important;
+        }
+        table.dataTable.no-footer {
+            border-bottom: none !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.2em 0.5em !important;
+        }
+        
         .btn-tambah-pengajar {
             background-color: #d848c9 !important; 
             color: white !important; 
@@ -47,152 +70,21 @@
             padding: 8px 20px;
             border: none;
         }
-        
-        .badge-legend {
-            font-size: 11px;
-            color: #888;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .icon-badge {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-        }
-        .icon-badge-keluarga.active { background-color: #88d4c2; color: #fff; }
-        .icon-badge-anak.active { background-color: #4ade80; color: #fff; }
-        .icon-badge-kehormatan.active { background-color: #fef08a; color: #fff; }
-        .icon-badge-jafung.active { background-color: #f87171; color: #fff; }
-        .icon-badge-walkes.active { background-color: #f472b6; color: #fff; }
-        .icon-badge.inactive { background-color: #d1d5db; color: #fff; }
 
-        .btn-edit-pengajar {
-            background-color: #00a15d !important;
-            color: #fff !important;
-            border-radius: 20px !important;
-            padding: 5px 20px !important;
-            border: none;
-            font-size: 12px;
-        }
-        
-        .badge-kategori {
-            background-color: #d1fae5 !important;
-            color: #047857 !important;
-            border: 1px solid #a7f3d0 !important;
-            border-radius: 20px;
-            padding: 3px 12px;
-            font-size: 11px;
-            font-weight: 700;
-            display: inline-block;
-            margin-top: 4px;
-        }
-
-        .badge-status {
-            background-color: #00a15d;
-            color: #fff;
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-size: 11px;
-        }
-
-        /* Clean Table Style (Seperti Menu Kehadiran - Tebal & Jelas Terbaca) */
-        #table-pengajar.dataTable tbody tr {
-            border-bottom: 1px solid #eef2f6 !important;
-        }
-        #table-pengajar.dataTable, 
-        #table-pengajar.dataTable th, 
-        #table-pengajar.dataTable td {
-            border-top: none !important;
-            border-left: none !important;
-            border-right: none !important;
-        }
-        #table-pengajar.dataTable thead th {
-            border-bottom: 2px solid #e2e8f0 !important;
-            background-color: #ffffff !important;
-            color: #0f172a !important;
-            font-size: 14px !important;
-            font-weight: 800 !important;
-            padding: 14px 10px !important;
-            letter-spacing: normal;
-            text-transform: none;
-        }
-        #table-pengajar.dataTable tbody td {
-            padding: 14px 10px !important;
-            color: #0f172a !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-        }
-        #table-pengajar.dataTable tbody td .text-dark,
-        #table-pengajar.dataTable tbody td a.text-dark {
-            color: #0f172a !important;
-            font-weight: 800 !important;
-        }
-        #table-pengajar.dataTable tbody tr:hover {
-            background-color: #f1f5f9 !important;
-        }
-
-        /* Filter per Kolom (Seperti Menu Kehadiran) */
         .filters th {
-            padding: 6px 8px !important;
-            border-bottom: 2px solid #eef2f6 !important;
-            background-color: #ffffff !important;
+            padding: 8px 10px !important;
+            border-bottom: 1px solid #eaeaea !important;
         }
         .filters th input.form-control {
-            width: 100% !important;
-            padding: 6px 10px !important;
-            font-size: 12px !important;
-            border: 1px solid #e2e8f0 !important;
+            border: 1px solid #00a15d !important;
             border-radius: 8px !important;
-            background-color: #fafafa !important;
-            color: #495057 !important;
-            font-weight: normal !important;
-            height: 36px !important;
-            transition: all 0.2s ease !important;
-        }
-        .filters th input.form-control::placeholder {
-            color: #888888 !important;
-            font-weight: normal !important;
-            opacity: 0.85 !important;
+            background-color: #fff;
+            height: 38px;
+            font-size: 13px;
         }
         .filters th input.form-control:focus {
             border-color: #00a15d !important;
-            background-color: #ffffff !important;
-            outline: none !important;
-            box-shadow: 0 0 0 2px rgba(0, 161, 93, 0.15) !important;
-        }
-
-        /* DataTables Controls (Show entries, pagination, info) */
-        .dataTables_wrapper .dataTables_length,
-        .dataTables_wrapper .dataTables_filter,
-        .dataTables_wrapper .dataTables_info,
-        .dataTables_wrapper .dataTables_paginate {
-            color: #0f172a !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            margin-top: 12px;
-            margin-bottom: 12px;
-        }
-        .dataTables_wrapper .dataTables_length select {
-            border: 1.5px solid #64748b !important;
-            border-radius: 6px !important;
-            color: #0f172a !important;
-            font-weight: 800 !important;
-            padding: 5px 10px !important;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            color: #0f172a !important;
-            font-weight: 700 !important;
-            border-radius: 6px !important;
-        }
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background: #00a15d !important;
-            color: #ffffff !important;
-            border: 1px solid #00a15d !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 161, 93, 0.25) !important;
         }
 
         .link-cek-umana {
@@ -443,52 +335,39 @@
     </div>
     
     <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
-            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+                    <h4 class="card-title">Daftar Guru Dan Dosen</h4>
+                    <button type="button" class="btn btn-sm btn-tambah-pengajar shadow-sm" data-bs-toggle="modal" data-bs-target="#modalPengajar" id="btnTambah">
+                        <i class="fas fa-plus me-1"></i> Tambah Pengajar
+                    </button>
+                </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="card-title text-dark font-weight-bold mb-0">Daftar Guru Dan Dosen</h4>
-                        
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="d-flex gap-2 align-items-center">
-                                <span class="badge-legend text-muted"><i class="fas fa-info-circle"></i></span>
-                                <span class="badge-legend"><span class="icon-badge icon-badge-keluarga active"><i class="fas fa-users"></i></span> Keluarga</span>
-                                <span class="badge-legend"><span class="icon-badge icon-badge-anak active"><i class="fas fa-child"></i></span> Anak</span>
-                                <span class="badge-legend"><span class="icon-badge icon-badge-kehormatan active"><i class="fas fa-star"></i></span> Kehormatan</span>
-                                <span class="badge-legend"><span class="icon-badge icon-badge-jafung active"><i class="fas fa-certificate"></i></span> Jafung</span>
-                                <span class="badge-legend"><span class="icon-badge icon-badge-walkes active"><i class="fas fa-chalkboard-teacher"></i></span> Wali Kelas</span>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-tambah-pengajar shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalPengajar" id="btnTambah">
-                                <span style="background: white; color: #d848c9; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;"><i class="fas fa-plus" style="font-size: 10px;"></i></span> Tambah Pengajar
-                            </button>
-                        </div>
-                    </div>
-                    
                     <div class="table-responsive">
-                        <table class="display table-borderless table-striped" id="table-pengajar" style="min-width: 845px; width:100%">
+                        <table id="table-pengajar" class="display" style="min-width: 845px; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th class="font-weight-bold pb-3 pt-2">No</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Nama Lengkap</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Lembaga</th>
-                                    <th class="font-weight-bold pb-3 pt-2">SKS/Jam</th>
-                                    <th class="font-weight-bold pb-3 pt-2">Prodi</th>
-                                    <th class="font-weight-bold pb-3 pt-2 text-center">Tunjangan</th>
-                                    <th class="font-weight-bold pb-3 pt-2 text-center">Status</th>
-                                    <th class="font-weight-bold pb-3 pt-2 text-center">Aksi</th>
+                                    <th>No</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>Lembaga</th>
+                                    <th>Masa Pengabdian</th>
+                                    <th>Sertifikasi</th>
+                                    <th>Tunjangan</th>
+                                    <th>Aksi</th>
                                 </tr>
                                 <tr class="filters">
                                     <th></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Filter Nama" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Filter Lembaga" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Filter SKS" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Filter Prodi" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Filter Tunjangan" /></th>
-                                    <th><input type="text" class="form-control form-control-sm" placeholder="Filter Status" /></th>
+                                    <th><input type="text" class="form-control form-control-sm" placeholder="Cari Nama" style="width: 100%; min-width: 120px;" /></th>
+                                    <th><input type="text" class="form-control form-control-sm" placeholder="Cari Lembaga" style="width: 100%; min-width: 120px;" /></th>
+                                    <th><input type="text" class="form-control form-control-sm" placeholder="Cari Masa" style="width: 100%; min-width: 100px;" /></th>
+                                    <th><input type="text" class="form-control form-control-sm" placeholder="Cari Sertifikasi" style="width: 100%; min-width: 100px;" /></th>
+                                    <th><input type="text" class="form-control form-control-sm" placeholder="Cari Tunjangan" style="width: 100%; min-width: 100px;" /></th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Data akan dimuat melalui AJAX -->
                             </tbody>
                         </table>
                     </div>
@@ -773,108 +652,140 @@
                 });
             },
             columns: [
-                { data: null, render: function (data, type, row, meta) { return `<span class="font-weight-bold text-dark">${meta.row + 1}</span>`; } },
                 { 
-                    data: 'umana', 
-                    render: function(data, type, row) { 
-                        let rawNama = data ? data.nama_lengkap : (row.nik || '-');
-                        let nama = toTitleCase(rawNama);
-                        if (type === 'filter' || type === 'sort') {
-                            return rawNama + ' ' + nama + ' ' + (row.nik || '');
-                        }
-                        if (!data) return '-';
-                        return `
-                            <a href="javascript:void(0)" class="text-dark font-weight-bold link-cek-umana text-decoration-none" 
-                               data-nik="${row.nik || ''}" 
-                               data-nama="${nama.replace(/"/g, '&quot;')}" 
-                               title="Klik untuk cek validasi tunjangan ganda (Struktural & Pengajar)">
-                               ${nama} <i class="fas fa-info-circle text-primary ms-1" style="font-size: 11px; opacity: 0.7;"></i>
-                            </a>
-                        `; 
-                    }
-                },
-                { 
-                    data: 'lembaga', 
-                    render: function(data, type, row) { 
-                        let lembaga = data ? data.nama_lembaga : '-';
-                        if (type === 'filter' || type === 'sort') {
-                            return lembaga + ' ' + (row.kategori || '');
-                        }
-                        let kategori = row.kategori ? `<br><span class="badge-kategori">${row.kategori}</span>` : '';
-                        return `<span class="font-weight-bold text-dark">${lembaga}</span>${kategori}`;
-                    }
-                },
-                { 
-                    data: 'jumlah_sks', 
-                    render: function(data, type, row) { 
-                        if (type === 'filter' || type === 'sort') return data != null ? data.toString() : '';
-                        return `<span class="font-weight-bold text-dark">${data}</span>`; 
+                    data: null, 
+                    render: function (data, type, row, meta) {
+                        return '<strong>' + (meta.row + 1) + '</strong>';
                     } 
                 },
                 { 
-                    data: 'prodi', 
-                    render: function(data, type, row) { 
-                        let prodiName = data ? data.nama_prodi : '-';
-                        if (type === 'filter' || type === 'sort') return prodiName;
-                        return data ? `<span class="font-weight-bold text-dark">${data.nama_prodi}</span>` : '<span class="font-weight-bold text-dark">-</span>'; 
+                    data: 'umana',
+                    render: function(data, type, row) {
+                        if(!data) return '-';
+                        var gelarDepan = data.gelar_depan ? data.gelar_depan.trim() + ' ' : '';
+                        var gelarBelakang = data.gelar_belakang ? ', ' + data.gelar_belakang.trim() : '';
+                        var rawNama = data.nama_lengkap || '';
+                        var nama = rawNama.toLowerCase().replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+                        var fullNama = (gelarDepan + nama + gelarBelakang).trim();
+                        if (type === 'filter' || type === 'sort') {
+                            return fullNama + ' ' + rawNama + ' ' + (row.nik || '');
+                        }
+                        return `
+                            <a href="javascript:void(0)" class="text-dark font-weight-bold link-cek-umana text-decoration-none" 
+                               data-nik="${row.nik || ''}" 
+                               data-nama="${fullNama.replace(/"/g, '&quot;')}" 
+                               title="Klik untuk cek validasi tunjangan ganda (Struktural & Pengajar)">
+                               <strong>${fullNama}</strong> <i class="fas fa-info-circle text-primary ms-1" style="font-size: 11px; opacity: 0.7;"></i>
+                            </a>
+                        `;
                     }
                 },
                 { 
-                    data: null, 
-                    className: 'text-center',
-                    render: function(data, type, row) { 
+                    data: 'lembaga',
+                    render: function(data, type, row) {
+                        var lembagaNama = data ? data.nama_lembaga : '-';
+                        var kategori = row.kategori ? row.kategori : '-';
+                        var prodiInfo = '';
+                        if (row.prodi && row.prodi.nama_prodi) {
+                            prodiInfo += '<br><small class="text-muted fw-bold">' + row.prodi.nama_prodi + (row.jumlah_sks ? ' (' + row.jumlah_sks + ' SKS/Jam)' : '') + '</small>';
+                        } else if (row.jumlah_sks) {
+                            prodiInfo += ' <small class="text-muted">(' + row.jumlah_sks + ' SKS/Jam)</small>';
+                        }
+                        if (type === 'filter' || type === 'sort') {
+                            return lembagaNama + ' ' + kategori + ' ' + (row.prodi ? row.prodi.nama_prodi : '') + ' ' + (row.jumlah_sks || '');
+                        }
+                        return '<strong>' + lembagaNama + '</strong><br><small class="text-success badge badge-success light badge-sm mt-1">' + kategori + '</small>' + prodiInfo;
+                    }
+                },
+                { 
+                    data: 'tgl_mulai',
+                    render: function(data, type, row) {
+                        var mulai = (data && data !== '0000-00-00') ? data : '-';
+                        var selesai = (row.tgl_selesai && row.tgl_selesai !== '0000-00-00') ? row.tgl_selesai : 'Sekarang';
+                        if (type === 'filter' || type === 'sort') {
+                            return mulai + ' ' + selesai;
+                        }
+                        return '<strong>' + mulai + '<br>Sampai<br>' + selesai + '</strong>';
+                    }
+                },
+                {
+                    data: 'umana',
+                    render: function(data, type, row) {
+                        var rawStatus = (data && data.status_sertifikasi) ? data.status_sertifikasi.trim().toLowerCase() : '';
+                        var status = 'Belum';
+                        var badgeClass = 'badge-danger';
+
+                        if (rawStatus === 'sudah sertifikasi' || rawStatus === 'ya' || rawStatus === 'sudah') {
+                            status = 'Sudah';
+                            badgeClass = 'badge-success';
+                        } else if (rawStatus && rawStatus !== 'belum' && rawStatus !== 'tidak' && rawStatus !== 'tidak ada') {
+                            status = data.status_sertifikasi;
+                            badgeClass = 'badge-info';
+                        }
+                        if (type === 'filter' || type === 'sort') {
+                            return status + ' ' + rawStatus;
+                        }
+                        return '<span class="badge ' + badgeClass + ' rounded-pill">' + status + '</span>';
+                    }
+                },
+                { 
+                    data: null,
+                    render: function(data, type, row) {
                         function isActive(val) {
                             if (!val) return false;
                             val = val.toString().trim().toLowerCase();
                             return val !== '0' && val !== 'tidak' && val !== 'tidak ada' && val !== 'null' && val !== '-';
                         }
-                        
-                        if (type === 'filter') {
-                            let tList = [];
-                            if (isActive(data.tunj_kel)) tList.push('Keluarga');
-                            if (isActive(data.tunj_anak)) tList.push('Anak');
-                            if (isActive(data.kehormatan)) tList.push('Kehormatan');
-                            if (isActive(data.jafung)) tList.push('Jafung');
-                            if (isActive(data.walkes)) tList.push('Wali Kelas');
-                            return tList.join(' ');
-                        }
 
-                        let badges = '<div class="d-flex flex-wrap justify-content-center" style="max-width: 140px; gap: 4px; margin: 0 auto;">';
-                        badges += `<span class="icon-badge icon-badge-keluarga ${isActive(data.tunj_kel) ? 'active' : 'inactive'}" title="Keluarga"><i class="fas fa-users"></i></span>`;
-                        badges += `<span class="icon-badge icon-badge-anak ${isActive(data.tunj_anak) ? 'active' : 'inactive'}" title="Anak"><i class="fas fa-child"></i></span>`;
-                        badges += `<span class="icon-badge icon-badge-kehormatan ${isActive(data.kehormatan) ? 'active' : 'inactive'}" title="Kehormatan"><i class="fas fa-star"></i></span>`;
-                        badges += `<span class="icon-badge icon-badge-jafung ${isActive(data.jafung) ? 'active' : 'inactive'}" title="Jafung"><i class="fas fa-certificate"></i></span>`;
-                        badges += `<span class="icon-badge icon-badge-walkes ${isActive(data.walkes) ? 'active' : 'inactive'}" title="Wali Kelas"><i class="fas fa-chalkboard-teacher"></i></span>`;
-                        badges += '</div>';
+                        var badges = '';
+                        var filterList = [];
+                        if (isActive(row.tunj_kel)) {
+                            badges += '<span class="badge badge-info rounded-pill mb-1 me-1"><i class="fas fa-users me-1"></i> Tunkel</span> ';
+                            filterList.push('Tunkel', 'Keluarga');
+                        }
+                        if (isActive(row.tunj_anak)) {
+                            badges += '<span class="badge badge-danger rounded-pill mb-1 me-1"><i class="fas fa-child me-1"></i> Tunj Anak</span> ';
+                            filterList.push('Tunj Anak', 'Anak');
+                        }
+                        if (isActive(row.kehormatan)) {
+                            badges += '<span class="badge badge-success rounded-pill mb-1 me-1"><i class="fas fa-star me-1"></i> Kehormatan</span> ';
+                            filterList.push('Kehormatan');
+                        }
+                        if (isActive(row.jafung)) {
+                            badges += '<span class="badge badge-primary rounded-pill mb-1 me-1"><i class="fas fa-certificate me-1"></i> Jafung</span> ';
+                            filterList.push('Jafung');
+                        }
+                        if (isActive(row.walkes)) {
+                            badges += '<span class="badge rounded-pill mb-1 me-1 text-white" style="background-color: #d848c9;"><i class="fas fa-chalkboard-teacher me-1"></i> Walkes</span> ';
+                            filterList.push('Walkes', 'Wali Kelas');
+                        }
+                        
+                        if (badges === '') {
+                            badges = '<span class="badge badge-warning rounded-pill mb-1"><i class="fas fa-ban me-1"></i> Tidak Ada</span>';
+                            filterList.push('Tidak Ada');
+                        }
+                        if (type === 'filter' || type === 'sort') {
+                            return filterList.join(' ');
+                        }
                         return badges;
                     }
                 },
                 { 
-                    data: 'status',
-                    className: 'text-center',
-                    render: function(data, type, row) {
-                        if (type === 'filter' || type === 'sort') return data || '';
-                        if (data === 'Aktif') {
-                            return '<span class="badge-status">Aktif</span>';
-                        } else if (data && data.indexOf('Cuti') !== -1) {
-                            return `<span class="badge badge-warning rounded-pill px-3">${data}</span>`;
-                        } else {
-                            return '<span class="badge badge-danger rounded-pill px-3">Tidak Aktif</span>';
-                        }
-                    }
-                },
-                {
                     data: null,
-                    className: 'text-center',
                     render: function(data, type, row) {
                         var itemStr = encodeURIComponent(JSON.stringify(row));
-                        return `
-                            <button type="button" class="btn btn-edit-pengajar shadow-sm" data-item="${itemStr}">Edit</button>
-                        `;
+                        return '<button type="button" class="btn btn-outline-success btn-sm shadow-sm btn-edit-pengajar" style="border-radius: 20px; padding: 5px 15px;" data-item="' + itemStr + '">' +
+                               '<i class="fas fa-edit me-1"></i> Edit' +
+                               '</button>';
                     }
                 }
             ],
-            language: { search: "Search:" }
+            language: {
+                paginate: {
+                    next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
+                    previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>' 
+                }
+            }
         });
 
         // Auto populate Umana info when NIK changes

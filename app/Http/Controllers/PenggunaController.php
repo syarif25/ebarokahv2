@@ -42,6 +42,7 @@ class PenggunaController extends Controller
             'jabatan'  => $validated['jabatan'],
             'lembaga'  => $validated['lembaga'] ?? null,
             'no_hp'    => $validated['no_hp'] ?? null,
+            'foto'     => $request->input('foto', ''),
             'password' => bcrypt($validated['password']),
         ];
         Pengguna::insert($data);
