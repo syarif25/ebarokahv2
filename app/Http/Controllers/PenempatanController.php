@@ -59,7 +59,14 @@ class PenempatanController extends Controller
         }
 
         $data = $request->except(['_token', 'file_sk']);
-        $data['tunj_mp'] = $data['tunj_mp'] ?? 'Tidak';
+        $data['id_lembaga']      = $data['id_lembaga'] ?? '';
+        $data['tunj_kel']        = $data['tunj_kel'] ?? 'Tidak';
+        $data['tunj_anak']       = $data['tunj_anak'] ?? 'Tidak';
+        $data['tunj_mp']         = $data['tunj_mp'] ?? 'Tidak';
+        $data['kehormatan']      = $data['kehormatan'] ?? 'Tidak';
+        $data['kategori_trans']  = $data['kategori_trans'] ?? '';
+        $data['jabatan_lembaga'] = $data['jabatan_lembaga'] ?? '';
+        $data['file_sk']         = '';
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');
@@ -106,7 +113,13 @@ class PenempatanController extends Controller
 
         $penempatan = Penempatan::findOrFail($id);
         $data = $request->except(['_token', '_method', 'file_sk']);
-        $data['tunj_mp'] = $data['tunj_mp'] ?? 'Tidak';
+        $data['id_lembaga']      = $data['id_lembaga'] ?? '';
+        $data['tunj_kel']        = $data['tunj_kel'] ?? 'Tidak';
+        $data['tunj_anak']       = $data['tunj_anak'] ?? 'Tidak';
+        $data['tunj_mp']         = $data['tunj_mp'] ?? 'Tidak';
+        $data['kehormatan']      = $data['kehormatan'] ?? 'Tidak';
+        $data['kategori_trans']  = $data['kategori_trans'] ?? '';
+        $data['jabatan_lembaga'] = $data['jabatan_lembaga'] ?? '';
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');

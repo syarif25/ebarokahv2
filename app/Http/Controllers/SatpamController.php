@@ -74,7 +74,7 @@ class SatpamController extends Controller
         // Stats card
         $totalSatpam    = Satpam::count();
         $totalAktif     = Satpam::where('status', 'Aktif')->count();
-        $totalDanru     = Satpam::where('is_danru', 1)->count();
+        $totalDanru     = Satpam::where('is_danru', '1')->count();
         $totalTidakAktif = Satpam::where('status', '!=', 'Aktif')->count();
 
         $umanas     = Umana::orderBy('nama_lengkap', 'asc')->get();
@@ -130,7 +130,7 @@ class SatpamController extends Controller
             'tgl_mulai'    => $request->tgl_mulai,
             'tgl_selesai'  => $request->tgl_selesai,
             'status'       => $request->status,
-            'is_danru'     => $request->input('is_danru', 0),
+            'is_danru'     => (string) $request->input('is_danru', '0'),
             'tgl_input'    => date('Y-m-d H:i:s'),
             'file_sk'      => '',
         ];
@@ -202,7 +202,7 @@ class SatpamController extends Controller
         $satpam->tgl_mulai    = $request->tgl_mulai;
         $satpam->tgl_selesai  = $request->tgl_selesai;
         $satpam->status       = $request->status;
-        $satpam->is_danru     = $request->input('is_danru', 0);
+        $satpam->is_danru     = (string) $request->input('is_danru', '0');
 
         if ($request->hasFile('file_sk')) {
             $file = $request->file('file_sk');
