@@ -770,17 +770,22 @@ class RincianTransferLembagaController extends Controller
                 $totBri = $totalBarokah;
             }
 
-            if ($totalBarokah > 0 || ($listrik + $kalender + $bpjs + $ditunaikan) > 0) {
+            $totalPotongan = $bpjs + $listrik + $kalender + $ditunaikan;
+            $jumlahTotal   = $totalBarokah + $totalPotongan;
+
+            if ($totalBarokah > 0 || $totalPotongan > 0) {
                 $tableRows[] = (object)[
-                    'id_lembaga'    => $idLembaga,
-                    'nama_lembaga'  => $namaLembaga,
-                    'total_barokah' => $totalBarokah,
-                    'total_bri'     => $totBri,
-                    'total_bsi'     => $totBsi,
-                    'bpjs'          => $bpjs,
-                    'listrik'       => $listrik,
-                    'kalender'      => $kalender,
-                    'ditunaikan'    => $ditunaikan,
+                    'id_lembaga'     => $idLembaga,
+                    'nama_lembaga'   => $namaLembaga,
+                    'total_barokah'  => $totalBarokah,
+                    'total_bri'      => $totBri,
+                    'total_bsi'      => $totBsi,
+                    'bpjs'           => $bpjs,
+                    'listrik'        => $listrik,
+                    'kalender'       => $kalender,
+                    'ditunaikan'     => $ditunaikan,
+                    'total_potongan' => $totalPotongan,
+                    'jumlah_total'   => $jumlahTotal,
                 ];
             }
         }
@@ -805,37 +810,43 @@ class RincianTransferLembagaController extends Controller
     {
         return collect([
             (object)[
-                'id_lembaga'    => 15,
-                'nama_lembaga'  => 'Madrasah Diniyah Sufla SS 1',
-                'total_barokah' => 45190450 + 262301000,
-                'total_bri'     => 33043700 + 170180500,
-                'total_bsi'     => 12146750 + 92120500,
-                'bpjs'          => 24000,
-                'listrik'       => 0,
-                'kalender'      => 25000,
-                'ditunaikan'    => 1350000,
+                'id_lembaga'     => 15,
+                'nama_lembaga'   => 'Madrasah Diniyah Sufla SS 1',
+                'total_barokah'  => 45190450 + 262301000,
+                'total_bri'      => 33043700 + 170180500,
+                'total_bsi'      => 12146750 + 92120500,
+                'bpjs'           => 24000,
+                'listrik'        => 0,
+                'kalender'       => 25000,
+                'ditunaikan'     => 1350000,
+                'total_potongan' => 24000 + 0 + 25000 + 1350000,
+                'jumlah_total'   => (45190450 + 262301000) + (24000 + 0 + 25000 + 1350000),
             ],
             (object)[
-                'id_lembaga'    => 22,
-                'nama_lembaga'  => 'Bendahara',
-                'total_barokah' => 70275750,
-                'total_bri'     => 28424500,
-                'total_bsi'     => 41851250,
-                'bpjs'          => 0,
-                'listrik'       => 127500,
-                'kalender'      => 0,
-                'ditunaikan'    => 1110000,
+                'id_lembaga'     => 22,
+                'nama_lembaga'   => 'Bendahara',
+                'total_barokah'  => 70275750,
+                'total_bri'      => 28424500,
+                'total_bsi'      => 41851250,
+                'bpjs'           => 0,
+                'listrik'        => 127500,
+                'kalender'       => 0,
+                'ditunaikan'     => 1110000,
+                'total_potongan' => 0 + 127500 + 0 + 1110000,
+                'jumlah_total'   => 70275750 + (0 + 127500 + 0 + 1110000),
             ],
             (object)[
-                'id_lembaga'    => 10,
-                'nama_lembaga'  => 'Fakultas Tarbiyah',
-                'total_barokah' => 12303135 + 44400000,
-                'total_bri'     => 10633135 + 32100000,
-                'total_bsi'     => 1670000 + 12300000,
-                'bpjs'          => 1300000,
-                'listrik'       => 950000,
-                'kalender'      => 25000,
-                'ditunaikan'    => 575000,
+                'id_lembaga'     => 10,
+                'nama_lembaga'   => 'Fakultas Tarbiyah',
+                'total_barokah'  => 12303135 + 44400000,
+                'total_bri'      => 10633135 + 32100000,
+                'total_bsi'      => 1670000 + 12300000,
+                'bpjs'           => 1300000,
+                'listrik'        => 950000,
+                'kalender'       => 25000,
+                'ditunaikan'     => 575000,
+                'total_potongan' => 1300000 + 950000 + 25000 + 575000,
+                'jumlah_total'   => (12303135 + 44400000) + (1300000 + 950000 + 25000 + 575000),
             ],
         ]);
     }

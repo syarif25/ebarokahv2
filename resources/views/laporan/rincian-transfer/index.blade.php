@@ -693,7 +693,7 @@
 
                     <!-- DataTable Laporan Rincian Transfer persis seperti laporan per lembaga -->
                     <div class="table-responsive">
-                        <table id="tabel_laporan_transfer" class="display" style="min-width: 900px; width: 100%;">
+                        <table id="tabel_laporan_transfer" class="display" style="min-width: 980px; width: 100%;">
                             <thead>
                                 <tr>
                                     <th style="width: 45px;" class="text-center">No</th>
@@ -705,6 +705,7 @@
                                     <th class="text-end">Listrik</th>
                                     <th class="text-end">Kalender</th>
                                     <th class="text-end">Ditunaikan</th>
+                                    <th class="text-end" style="font-weight: 700; color: #0f172a;">Jumlah Total</th>
                                     <th style="width: 130px;" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
@@ -728,6 +729,9 @@
                                         <td class="text-end font-weight-bold" style="font-size: 13.5px; color: #475569;">{{ number_format($row->listrik, 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="font-size: 13.5px; color: #475569;">{{ number_format($row->kalender, 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="font-size: 14px; color: #0f172a;">{{ number_format($row->ditunaikan, 0, ',', '.') }}</td>
+                                        <td class="text-end font-weight-bold" style="font-size: 14.5px; color: #0f172a;">
+                                            {{ number_format($row->jumlah_total ?? ($row->total_barokah + $row->bpjs + $row->listrik + $row->kalender + $row->ditunaikan), 0, ',', '.') }}
+                                        </td>
                                         <td class="text-center">
                                             <div class="d-inline-flex gap-1 align-items-center">
                                                 <a href="{{ route('laporan.rincian-transfer', [
@@ -750,7 +754,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-5 text-muted">
+                                        <td colspan="11" class="text-center py-5 text-muted">
                                             <i class="fas fa-folder-open fa-2x mb-2 text-secondary d-block"></i>
                                             Tidak ada data transfer barokah pada periode <strong>{{ $bulan }} {{ $tahun }}</strong>.
                                         </td>
@@ -774,6 +778,9 @@
                                         <td class="text-end font-weight-bold" style="font-size: 13.5px; color: #475569;">{{ number_format($tableRekap->sum('listrik'), 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="font-size: 13.5px; color: #475569;">{{ number_format($tableRekap->sum('kalender'), 0, ',', '.') }}</td>
                                         <td class="text-end font-weight-bold" style="font-size: 14px; color: #0f172a;">{{ number_format($tableRekap->sum('ditunaikan'), 0, ',', '.') }}</td>
+                                        <td class="text-end font-weight-bold" style="font-size: 14.5px; color: #0f172a;">
+                                            {{ number_format($tableRekap->sum('jumlah_total') ?: ($tableRekap->sum('total_barokah') + $tableRekap->sum('bpjs') + $tableRekap->sum('listrik') + $tableRekap->sum('kalender') + $tableRekap->sum('ditunaikan')), 0, ',', '.') }}
+                                        </td>
                                         <td class="text-center text-muted font-11">-</td>
                                     </tr>
                                 </tfoot>
