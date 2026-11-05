@@ -157,10 +157,7 @@ class RincianTransferLembagaController extends Controller
         $klRecords = DB::table('kehadiran_lembaga')
             ->where('id_lembaga', $idLembaga)
             ->where('bulan', $bulan)
-            ->where(function ($q) use ($tahun) {
-                $q->where('tahun', $tahun)
-                  ->orWhere('tahun', 'LIKE', "%$tahun%");
-            })
+            ->where('tahun', $tahun)
             ->get()
             ->keyBy('kategori');
 
@@ -187,18 +184,12 @@ class RincianTransferLembagaController extends Controller
                 $w->where('tb.id_kehadiran', $klRecords['Struktural']->id_kehadiran_lembaga)
                   ->orWhere(function ($sub) use ($bulan, $tahun) {
                       $sub->where('tb.bulan', $bulan)
-                          ->where(function ($t) use ($tahun) {
-                              $t->where('tb.tahun', $tahun)
-                                ->orWhere('tb.tahun', 'LIKE', "%$tahun%");
-                          });
+                          ->where('tb.tahun', $tahun);
                   });
             });
         } else {
             $qStruktural->where('tb.bulan', $bulan)
-                ->where(function ($t) use ($tahun) {
-                    $t->where('tb.tahun', $tahun)
-                      ->orWhere('tb.tahun', 'LIKE', "%$tahun%");
-                });
+                ->where('tb.tahun', $tahun);
         }
 
         // Tanggal transfer Struktural diambil dari tabel total_barokah (kolom timestamp)
@@ -269,18 +260,12 @@ class RincianTransferLembagaController extends Controller
                 $w->where('tbp.id_kehadiran_lembaga', $klRecords['Pengajar']->id_kehadiran_lembaga)
                   ->orWhere(function ($sub) use ($bulan, $tahun) {
                       $sub->where('tbp.bulan', $bulan)
-                          ->where(function ($t) use ($tahun) {
-                              $t->where('tbp.tahun', $tahun)
-                                ->orWhere('tbp.tahun', 'LIKE', "%$tahun%");
-                          });
+                          ->where('tbp.tahun', $tahun);
                   });
             });
         } else {
             $qPengajar->where('tbp.bulan', $bulan)
-                ->where(function ($t) use ($tahun) {
-                    $t->where('tbp.tahun', $tahun)
-                      ->orWhere('tbp.tahun', 'LIKE', "%$tahun%");
-                });
+                ->where('tbp.tahun', $tahun);
         }
 
         // Tanggal transfer Pengajar diambil dari tabel total_barokah_pengajar (kolom timestamp)
@@ -601,10 +586,7 @@ class RincianTransferLembagaController extends Controller
         $klList = DB::table('kehadiran_lembaga as kl')
             ->join('lembaga as l', 'kl.id_lembaga', '=', 'l.id_lembaga')
             ->where('kl.bulan', $bulan)
-            ->where(function ($q) use ($tahun) {
-                $q->where('kl.tahun', $tahun)
-                  ->orWhere('kl.tahun', 'LIKE', "%$tahun%");
-            })
+            ->where('kl.tahun', $tahun)
             ->select('kl.id_kehadiran_lembaga', 'kl.id_lembaga', 'l.nama_lembaga', 'kl.kategori', 'kl.jumlah_total')
             ->get();
 
@@ -613,10 +595,7 @@ class RincianTransferLembagaController extends Controller
             ->join('penempatan as p', 'tb.id_penempatan', '=', 'p.id_penempatan')
             ->join('umana as u', 'p.nik', '=', 'u.nik')
             ->where('tb.bulan', $bulan)
-            ->where(function ($q) use ($tahun) {
-                $q->where('tb.tahun', $tahun)
-                  ->orWhere('tb.tahun', 'LIKE', "%$tahun%");
-            })
+            ->where('tb.tahun', $tahun)
             ->select('p.id_lembaga', 'u.nama_bank', DB::raw('SUM(tb.diterima) as nominal'))
             ->groupBy('p.id_lembaga', 'u.nama_bank')
             ->get();
@@ -626,10 +605,7 @@ class RincianTransferLembagaController extends Controller
             ->join('pengajar as p', 'tbp.id_pengajar', '=', 'p.id_pengajar')
             ->join('umana as u', 'p.nik', '=', 'u.nik')
             ->where('tbp.bulan', $bulan)
-            ->where(function ($q) use ($tahun) {
-                $q->where('tbp.tahun', $tahun)
-                  ->orWhere('tbp.tahun', 'LIKE', "%$tahun%");
-            })
+            ->where('tbp.tahun', $tahun)
             ->select('p.id_lembaga', 'u.nama_bank', DB::raw('SUM(tbp.diterima) as nominal'))
             ->groupBy('p.id_lembaga', 'u.nama_bank')
             ->get();

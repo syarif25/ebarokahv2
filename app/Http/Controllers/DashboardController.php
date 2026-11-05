@@ -274,10 +274,7 @@ class DashboardController extends Controller
         $strukturalRaw = DB::table('total_barokah as tb')
             ->join('penempatan as p', 'tb.id_penempatan', '=', 'p.id_penempatan')
             ->where('tb.bulan', $bulan)
-            ->where(function ($q) use ($tahun) {
-                $q->where('tb.tahun', $tahun)
-                  ->orWhere('tb.tahun', 'LIKE', "%$tahun%");
-            })
+            ->where('tb.tahun', $tahun)
             ->select('p.id_lembaga', DB::raw('SUM(tb.diterima) as nominal'))
             ->groupBy('p.id_lembaga')
             ->get();
@@ -286,10 +283,7 @@ class DashboardController extends Controller
             $strukturalRaw = DB::table('kehadiran_lembaga')
                 ->where('kategori', 'Struktural')
                 ->where('bulan', $bulan)
-                ->where(function ($q) use ($tahun) {
-                    $q->where('tahun', $tahun)
-                      ->orWhere('tahun', 'LIKE', "%$tahun%");
-                })
+                ->where('tahun', $tahun)
                 ->select('id_lembaga', DB::raw('SUM(jumlah_total) as nominal'))
                 ->groupBy('id_lembaga')
                 ->get();
@@ -302,10 +296,7 @@ class DashboardController extends Controller
         $pengajarRaw = DB::table('total_barokah_pengajar as tbp')
             ->join('pengajar as p', 'tbp.id_pengajar', '=', 'p.id_pengajar')
             ->where('tbp.bulan', $bulan)
-            ->where(function ($q) use ($tahun) {
-                $q->where('tbp.tahun', $tahun)
-                  ->orWhere('tbp.tahun', 'LIKE', "%$tahun%");
-            })
+            ->where('tbp.tahun', $tahun)
             ->select('p.id_lembaga', DB::raw('SUM(tbp.diterima) as nominal'))
             ->groupBy('p.id_lembaga')
             ->get();
@@ -314,10 +305,7 @@ class DashboardController extends Controller
             $pengajarRaw = DB::table('kehadiran_lembaga')
                 ->where('kategori', 'Pengajar')
                 ->where('bulan', $bulan)
-                ->where(function ($q) use ($tahun) {
-                    $q->where('tahun', $tahun)
-                      ->orWhere('tahun', 'LIKE', "%$tahun%");
-                })
+                ->where('tahun', $tahun)
                 ->select('id_lembaga', DB::raw('SUM(jumlah_total) as nominal'))
                 ->groupBy('id_lembaga')
                 ->get();
@@ -335,9 +323,7 @@ class DashboardController extends Controller
             })
             ->where(function ($q) use ($tahun) {
                 $q->where('tbs.tahun', $tahun)
-                  ->orWhere('tbs.tahun', 'LIKE', "%$tahun%")
-                  ->orWhere('kl.tahun', $tahun)
-                  ->orWhere('kl.tahun', 'LIKE', "%$tahun%");
+                  ->orWhere('kl.tahun', $tahun);
             })
             ->select(DB::raw('COALESCE(kl.id_lembaga, 59) as id_lembaga'), DB::raw('SUM(tbs.diterima) as nominal'))
             ->groupBy(DB::raw('COALESCE(kl.id_lembaga, 59)'))
@@ -347,10 +333,7 @@ class DashboardController extends Controller
             $satpamRaw = DB::table('kehadiran_lembaga')
                 ->where('kategori', 'Satpam')
                 ->where('bulan', $bulan)
-                ->where(function ($q) use ($tahun) {
-                    $q->where('tahun', $tahun)
-                      ->orWhere('tahun', 'LIKE', "%$tahun%");
-                })
+                ->where('tahun', $tahun)
                 ->select('id_lembaga', DB::raw('SUM(jumlah_total) as nominal'))
                 ->groupBy('id_lembaga')
                 ->get();
