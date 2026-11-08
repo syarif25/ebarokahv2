@@ -57,8 +57,8 @@
                     <li><a href="{{ url('/master-data/barokah-kehormatan') }}">Tunjangan Kehormatan Struktural</a></li>
                     <li><a href="{{ url('/master-data/barokah-kehormatan-pengajar') }}">Tunjangan Kehormatan Pengajar</a></li>
                     <li><a href="{{ url('/master-data/bank') }}">Biaya Admin Bank</a></li>
-                    <li><a href="{{ url('/master-data/jenis-kegiatan') }}">Jenis Kegiatan Panitia</a></li>
-                    <li><a href="{{ url('/master-data/barokah-kepanitiaan') }}">Barokah Kepanitiaan</a></li>
+                    <li><a href="{{ url('/master-data/jenis-kegiatan') }}">Jenis Kegiatan Panitia <span class="badge badge-xs badge-outline-warning text-warning ms-1" style="font-size: 8px;">Dev</span></a></li>
+                    <li><a href="{{ url('/master-data/barokah-kepanitiaan') }}">Barokah Kepanitiaan <span class="badge badge-xs badge-outline-warning text-warning ms-1" style="font-size: 8px;">Dev</span></a></li>
                 </ul>
             </li>
 
@@ -127,7 +127,10 @@
             <li class="{{ Request::is('kepanitiaan*') ? 'mm-active' : '' }}">
                 <a class="has-arrow {{ Request::is('kepanitiaan*') ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ Request::is('kepanitiaan*') ? 'true' : 'false' }}">
                     <i class="fas fa-users"></i>
-                    <span class="nav-text">Kepanitiaan</span>
+                    <span class="nav-text">
+                        Kepanitiaan 
+                        <span class="badge badge-xs badge-warning ms-1 text-dark font-weight-bold" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; vertical-align: middle;">Dev</span>
+                    </span>
                 </a>
                 <ul aria-expanded="{{ Request::is('kepanitiaan*') ? 'true' : 'false' }}" class="{{ Request::is('kepanitiaan*') ? 'mm-show' : '' }}">
                     <li class="{{ Request::is('kepanitiaan') || (Request::is('kepanitiaan/*') && !Request::is('kepanitiaan/tarif*')) ? 'mm-active' : '' }}">
@@ -149,7 +152,7 @@
             @endphp
             <li class="{{ $isPotonganActive ? 'mm-active' : '' }}">
                 <a class="has-arrow {{ $isPotonganActive ? 'mm-active' : '' }}" href="javascript:void()" aria-expanded="{{ $isPotonganActive ? 'true' : 'false' }}">
-                    <i class="fas fa-user-check"></i>
+                    <i class="fas fa-cut"></i>
                     <span class="nav-text">Potongan</span>
                 </a>
                 <ul aria-expanded="{{ $isPotonganActive ? 'true' : 'false' }}" class="{{ $isPotonganActive ? 'mm-show' : '' }}">
