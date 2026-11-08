@@ -61,7 +61,7 @@
                     <h2 class="fs-32 font-w700 mb-1 text-success">Rp {{ number_format($dataBulanIni['total_nominal'] ?? 0, 0, ',', '.') }}</h2>
                     <span class="text-muted fs-13"><i class="fas fa-building me-1"></i>{{ $dataBulanIni['total_lembaga'] ?? 0 }} Lembaga Terproses</span>
                 </div>
-                <i class="fas fa-money-check-alt fa-3x text-success" style="opacity: 0.4;"></i>
+                <i class="fas fa-calendar-check fa-3x text-success" style="opacity: 0.4;"></i>
             </div>
         </div>
     </div>

@@ -45,7 +45,7 @@
                     <h2 class="fs-22 font-w700 mb-0 text-success">Rp {{ number_format($barokahBulanIni['total_nominal'] ?? 0, 0, ',', '.') }}</h2>
                     <small class="text-muted">{{ $barokahBulanIni['bulan'] ?? '-' }} {{ $barokahBulanIni['tahun'] ?? '-' }}</small>
                 </div>
-                <i class="fas fa-money-check-alt fa-3x text-success" style="opacity: 0.4;"></i>
+                <i class="fas fa-calendar-check fa-3x text-success" style="opacity: 0.4;"></i>
             </div>
         </div>
     </div>
