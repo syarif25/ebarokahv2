@@ -33,7 +33,85 @@ class DashboardController extends Controller
                 ->where('status', 'aktif')
                 ->count();
 
-            // 2. Status Kehadiran Lembaga Terbaru
+            // 2. Tentukan Periode Siklus Pencairan (Default mundur 1 bulan dari kalender berjalan)
+            $bulanIndo = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+
+            $currentMonthNum = (int)date('n');
+            $currentYear     = (int)date('Y');
+
+            if ($currentMonthNum === 1) {
+                $cycleMonthNum = 12;
+                $cycleYear     = $currentYear - 1;
+            } else {
+                $cycleMonthNum = $currentMonthNum - 1;
+                $cycleYear     = $currentYear;
+            }
+
+            $bulanIni = $bulanIndo[$cycleMonthNum] ?? 'Oktober';
+            $tahunIni = (string)$cycleYear;
+
+            // Cek apakah ada data di kehadiran_lembaga untuk lembaga ini pada siklus tersebut
+            $matchingYear = DB::table('kehadiran_lembaga')
+                ->where('id_lembaga', $lembagaId)
+                ->where('bulan', $bulanIni)
+                ->where(function ($q) use ($tahunIni) {
+                    $q->where('tahun', $tahunIni)
+                      ->orWhere('tahun', 'LIKE', "%$tahunIni%");
+                })
+                ->orderBy('id_kehadiran_lembaga', 'desc')
+                ->value('tahun');
+
+            if ($matchingYear) {
+                $tahunIni = $matchingYear;
+            } else {
+                $latest = DB::table('kehadiran_lembaga')
+                    ->where('id_lembaga', $lembagaId)
+                    ->whereNotNull('bulan')->where('bulan', '!=', '')
+                    ->whereNotNull('tahun')->where('tahun', '!=', '')
+                    ->orderBy('id_kehadiran_lembaga', 'desc')
+                    ->first();
+                if ($latest) {
+                    $bulanIni = $latest->bulan;
+                    $tahunIni = $latest->tahun;
+                }
+            }
+
+            // Tentukan Bulan Lalu
+            $idx = array_search(ucfirst(strtolower($bulanIni)), $bulanIndo);
+            if ($idx === false || $idx === 1) {
+                $prevMonthNum = 12;
+                $cleanY = (int)preg_replace('/[^0-9]/', '', substr((string)$tahunIni, 0, 4));
+                if (!$cleanY) $cleanY = (int)date('Y');
+                $tahunLalu = (string)($cleanY - 1);
+            } else {
+                $prevMonthNum = $idx - 1;
+                $tahunLalu = $tahunIni;
+            }
+            $bulanLalu = $bulanIndo[$prevMonthNum];
+
+            $matchingYearLalu = DB::table('kehadiran_lembaga')
+                ->where('id_lembaga', $lembagaId)
+                ->where('bulan', $bulanLalu)
+                ->where(function ($q) use ($tahunLalu) {
+                    $q->where('tahun', $tahunLalu)
+                      ->orWhere('tahun', 'LIKE', "%$tahunLalu%");
+                })
+                ->orderBy('id_kehadiran_lembaga', 'desc')
+                ->value('tahun');
+
+            if ($matchingYearLalu) {
+                $tahunLalu = $matchingYearLalu;
+            }
+
+            // 3. Hitung Barokah Lembaga (Struktural + Pengajar)
+            $barokahBulanIni  = $this->getBarokahLembagaPeriode($lembagaId, $bulanIni, $tahunIni);
+            $barokahBulanLalu = $this->getBarokahLembagaPeriode($lembagaId, $bulanLalu, $tahunLalu);
+
+            // Status Kehadiran Lembaga Terbaru
             $kehadiranStrukturalTerbaru = KehadiranLembaga::where('id_lembaga', $lembagaId)
                 ->where('kategori', 'Struktural')
                 ->orderBy('id_kehadiran_lembaga', 'desc')
@@ -44,64 +122,14 @@ class DashboardController extends Controller
                 ->orderBy('id_kehadiran_lembaga', 'desc')
                 ->first();
 
-            // 3. Potongan Lembaga
-            $totalPotonganUmana = PotonganUmana::whereHas('penempatan', function ($q) use ($lembagaId) {
-                $q->where('id_lembaga', $lembagaId);
-            })->sum('nominal_potongan');
-
-            $totalPotonganPengajar = PotonganPengajar::whereHas('pengajar', function ($q) use ($lembagaId) {
-                $q->where('id_lembaga', $lembagaId);
-            })->sum('nominal_potongan');
-
-            $totalNominalPotongan = $totalPotonganUmana + $totalPotonganPengajar;
-
-            // 4. Daftar Potongan Terbaru (5 Terakhir)
-            $recentPotonganUmana = PotonganUmana::with(['penempatan.umana', 'potongan'])
-                ->whereHas('penempatan', function ($q) use ($lembagaId) {
-                    $q->where('id_lembaga', $lembagaId);
-                })
-                ->orderBy('id_potongan_umana', 'desc')
-                ->take(5)
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'nama' => $item->penempatan && $item->penempatan->umana ? $item->penempatan->umana->nama_lengkap : '-',
-                        'kategori' => 'Struktural',
-                        'jenis' => $item->potongan ? $item->potongan->nama_potongan : $item->jenis_potongan,
-                        'nominal' => $item->nominal_potongan,
-                        'periode' => $item->min_periode_potongan ? date('M Y', strtotime($item->min_periode_potongan)) : '-'
-                    ];
-                });
-
-            $recentPotonganPengajar = PotonganPengajar::with(['pengajar.umana', 'potongan'])
-                ->whereHas('pengajar', function ($q) use ($lembagaId) {
-                    $q->where('id_lembaga', $lembagaId);
-                })
-                ->orderBy('id_potongan_pengajar', 'desc')
-                ->take(5)
-                ->get()
-                ->map(function ($item) {
-                    return [
-                        'nama' => $item->pengajar && $item->pengajar->umana ? $item->pengajar->umana->nama_lengkap : '-',
-                        'kategori' => 'Pengajar',
-                        'jenis' => $item->potongan ? $item->potongan->nama_potongan : $item->jenis_potongan,
-                        'nominal' => $item->nominal_potongan,
-                        'periode' => $item->min_periode_potongan ? date('M Y', strtotime($item->min_periode_potongan)) : '-'
-                    ];
-                });
-
-            $recentPotongan = collect($recentPotonganUmana)
-                ->concat($recentPotonganPengajar)
-                ->take(5);
-
             return view('dashboard.admin_lembaga', compact(
                 'lembaga',
                 'totalStruktural',
                 'totalPengajar',
+                'barokahBulanIni',
+                'barokahBulanLalu',
                 'kehadiranStrukturalTerbaru',
-                'kehadiranPengajarTerbaru',
-                'totalNominalPotongan',
-                'recentPotongan'
+                'kehadiranPengajarTerbaru'
             ));
         }
 
@@ -292,6 +320,64 @@ class DashboardController extends Controller
             'kategoriTransfer',
             'totalDenganRekening'
         ));
+    }
+
+    /**
+     * Hitung akumulasi barokah Struktural dan Pengajar khusus satu Lembaga
+     */
+    private function getBarokahLembagaPeriode($lembagaId, $bulan, $tahun)
+    {
+        // 1. Struktural
+        $klStruktural = DB::table('kehadiran_lembaga')
+            ->where('id_lembaga', $lembagaId)
+            ->where('kategori', 'Struktural')
+            ->where('bulan', $bulan)
+            ->where(function ($q) use ($tahun) {
+                $q->where('tahun', $tahun)
+                  ->orWhere('tahun', 'LIKE', "%$tahun%");
+            })
+            ->first();
+
+        $nomStruktural = 0;
+        if ($klStruktural) {
+            $nomStruktural = (float)DB::table('total_barokah')
+                ->where('id_kehadiran', $klStruktural->id_kehadiran_lembaga)
+                ->sum('diterima');
+            if ($nomStruktural == 0) {
+                $nomStruktural = (float)$klStruktural->jumlah_total;
+            }
+        }
+
+        // 2. Pengajar
+        $klPengajar = DB::table('kehadiran_lembaga')
+            ->where('id_lembaga', $lembagaId)
+            ->where('kategori', 'Pengajar')
+            ->where('bulan', $bulan)
+            ->where(function ($q) use ($tahun) {
+                $q->where('tahun', $tahun)
+                  ->orWhere('tahun', 'LIKE', "%$tahun%");
+            })
+            ->first();
+
+        $nomPengajar = 0;
+        if ($klPengajar) {
+            $nomPengajar = (float)DB::table('total_barokah_pengajar')
+                ->where('id_kehadiran', $klPengajar->id_kehadiran_lembaga)
+                ->sum('diterima');
+            if ($nomPengajar == 0) {
+                $nomPengajar = (float)$klPengajar->jumlah_total;
+            }
+        }
+
+        return [
+            'bulan'         => $bulan,
+            'tahun'         => $tahun,
+            'struktural'    => $nomStruktural,
+            'pengajar'      => $nomPengajar,
+            'total_nominal' => $nomStruktural + $nomPengajar,
+            'status_struktural' => $klStruktural ? $klStruktural->status : null,
+            'status_pengajar'   => $klPengajar ? $klPengajar->status : null,
+        ];
     }
 
     /**
