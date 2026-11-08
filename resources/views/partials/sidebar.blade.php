@@ -276,6 +276,14 @@
                 </a>
             </li>
             @endif
+
+            {{-- MENU KELUAR / LOGOUT (Dapat diakses oleh semua pengguna) --}}
+            <li>
+                <a href="{{ route('logout') }}" aria-expanded="false" class="text-danger font-w600" onclick="return confirm('Apakah Anda yakin ingin keluar dari sistem?');">
+                    <i class="fas fa-sign-out-alt text-danger"></i>
+                    <span class="nav-text text-danger">Keluar</span>
+                </a>
+            </li>
         </ul>
         <div class="copyright">
             <p><strong>E-Barokah P2S3</strong> © 2026 All Rights Reserved</p>

@@ -238,6 +238,20 @@ class HitungBarokahService
             ->where('tahun', $tahunInt)
             ->sum('jumlah_hari');
 
+        // Tanggal Awal & Akhir Bulan Kehadiran untuk Validasi Masa Potongan & Komponen
+        $mapBulan = [
+            'januari' => '01', 'februari' => '02', 'maret' => '03', 'april' => '04',
+            'mei' => '05', 'juni' => '06', 'juli' => '07', 'agustus' => '08',
+            'september' => '09', 'oktober' => '10', 'november' => '11', 'desember' => '12'
+        ];
+        $blnRaw = strtolower(trim((string)$bulanString));
+        $blnNum = is_numeric($blnRaw) ? str_pad((int)$blnRaw, 2, '0', STR_PAD_LEFT) : ($mapBulan[$blnRaw] ?? date('m'));
+        $cleanY = (int)preg_replace('/[^0-9]/', '', substr((string)$tahunInt, 0, 4));
+        if (!$cleanY) $cleanY = (int)date('Y');
+
+        $periodeDate = sprintf('%04d-%02d-01', $cleanY, (int)$blnNum);
+        $lastDay = date('Y-m-t', strtotime($periodeDate));
+
         // Komponen bulan lalu (dari total_barokah jika ada)
         $komponenSebelumnya = [];
         $lastPeriode = DB::select("
@@ -347,17 +361,18 @@ class HitungBarokahService
                 SELECT SUM(nominal_tbk) AS jumlah_tbk 
                 FROM t_beban_kerja 
                 WHERE id_penempatan = ? 
-                AND (max_periode IS NULL OR max_periode >= CURDATE())
-            ", [$r->id_penempatan]);
+                AND (max_periode IS NULL OR max_periode >= ?)
+            ", [$r->id_penempatan, $periodeDate]);
             $r->tbk = (int)($tbkRow[0]->jumlah_tbk ?? 0);
 
-            // Potongan
+            // Potongan (Sama persis dengan Pengajar: min_periode <= akhir bulan DAN max_periode >= awal bulan)
             $potonganRow = DB::select("
                 SELECT SUM(nominal_potongan) AS jumlah 
                 FROM potongan_umana 
                 WHERE id_penempatan = ? 
-                AND (max_periode_potongan IS NULL OR max_periode_potongan >= CURDATE())
-            ", [$r->id_penempatan]);
+                AND (min_periode_potongan IS NULL OR min_periode_potongan <= ?)
+                AND (max_periode_potongan IS NULL OR max_periode_potongan >= ?)
+            ", [$r->id_penempatan, $lastDay, $periodeDate]);
             $r->potongan = (int)($potonganRow[0]->jumlah ?? 0);
 
             // Subtotal Barokah Kotor
