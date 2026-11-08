@@ -458,5 +458,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/log/potongan-umana/store', [App\Http\Controllers\LogPotonganUmanaController::class, 'store']);
         Route::post('/log/potongan-umana/update/{id}', [App\Http\Controllers\LogPotonganUmanaController::class, 'update']);
         Route::match(['get', 'post', 'delete'], '/log/potongan-umana/delete/{id}', [App\Http\Controllers\LogPotonganUmanaController::class, 'destroy']);
+
+        // Log Anomali Data SK & Pembersihan
+        Route::get('/log/anomali-sk', [App\Http\Controllers\LogAnomaliSkController::class, 'index']);
+        Route::get('/log/anomali-sk/data', [App\Http\Controllers\LogAnomaliSkController::class, 'data']);
+        Route::post('/log/anomali-sk/destroy/{tipe}/{id}', [App\Http\Controllers\LogAnomaliSkController::class, 'destroy']);
+        Route::post('/log/anomali-sk/deactivate/{tipe}/{id}', [App\Http\Controllers\LogAnomaliSkController::class, 'deactivate']);
+        Route::post('/log/anomali-sk/clean-residu', [App\Http\Controllers\LogAnomaliSkController::class, 'cleanAllResidu']);
+        Route::post('/log/anomali-sk/deactivate-expired', [App\Http\Controllers\LogAnomaliSkController::class, 'deactivateExpiredAll']);
     });
 });

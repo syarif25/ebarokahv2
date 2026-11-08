@@ -264,6 +264,9 @@
                     <li class="{{ Request::is('log/potongan-satpam*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/log/potongan-satpam') }}">Potongan Satpam</a>
                     </li>
+                    <li class="{{ Request::is('log/anomali-sk*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/log/anomali-sk') }}" class="text-danger font-w600"><i class="fas fa-tools text-danger me-1"></i> Anomali & Pembersihan SK</a>
+                    </li>
                 </ul>
             </li>
 

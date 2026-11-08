@@ -50,16 +50,15 @@ class AuditTunjanganController extends Controller
             ->leftJoin('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
             ->where('p.nik', $nik)
             ->where('p.status', 'Aktif')
-            ->where(function ($sub) {
-                $sub->whereNull('p.tgl_mulai')
-                    ->orWhere('p.tgl_mulai', '0000-00-00')
-                    ->orWhere('p.tgl_mulai', '<=', DB::raw('CURDATE()'));
-            })
-            ->where(function ($sub) {
-                $sub->whereNull('p.tgl_selesai')
-                    ->orWhere('p.tgl_selesai', '0000-00-00')
-                    ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
-            })
+            ->whereNotNull('p.id_lembaga')
+            ->where('p.id_lembaga', '!=', '')
+            ->where('p.id_lembaga', '!=', '0')
+            ->whereNotNull('p.tgl_mulai')
+            ->where('p.tgl_mulai', '!=', '0000-00-00')
+            ->where('p.tgl_mulai', '<=', DB::raw('CURDATE()'))
+            ->whereNotNull('p.tgl_selesai')
+            ->where('p.tgl_selesai', '!=', '0000-00-00')
+            ->where('p.tgl_selesai', '>=', DB::raw('CURDATE()'))
             ->select(
                 'p.id_penempatan',
                 'l.nama_lembaga',
@@ -79,16 +78,15 @@ class AuditTunjanganController extends Controller
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'peng.id_lembaga')
             ->where('peng.nik', $nik)
             ->where('peng.status', 'Aktif')
-            ->where(function ($sub) {
-                $sub->whereNull('peng.tgl_mulai')
-                    ->orWhere('peng.tgl_mulai', '0000-00-00')
-                    ->orWhere('peng.tgl_mulai', '<=', DB::raw('CURDATE()'));
-            })
-            ->where(function ($sub) {
-                $sub->whereNull('peng.tgl_selesai')
-                    ->orWhere('peng.tgl_selesai', '0000-00-00')
-                    ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
-            })
+            ->whereNotNull('peng.id_lembaga')
+            ->where('peng.id_lembaga', '!=', '')
+            ->where('peng.id_lembaga', '!=', '0')
+            ->whereNotNull('peng.tgl_mulai')
+            ->where('peng.tgl_mulai', '!=', '0000-00-00')
+            ->where('peng.tgl_mulai', '<=', DB::raw('CURDATE()'))
+            ->whereNotNull('peng.tgl_selesai')
+            ->where('peng.tgl_selesai', '!=', '0000-00-00')
+            ->where('peng.tgl_selesai', '>=', DB::raw('CURDATE()'))
             ->select(
                 'peng.id_pengajar',
                 'l.nama_lembaga',
@@ -198,14 +196,16 @@ class AuditTunjanganController extends Controller
                 SELECT p.nik, p.tunj_kel, p.tunj_anak, p.kehormatan
                 FROM penempatan p
                 WHERE p.status = 'Aktif'
-                  AND (p.tgl_mulai IS NULL OR p.tgl_mulai = '0000-00-00' OR p.tgl_mulai <= CURDATE())
-                  AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())
+                  AND p.id_lembaga IS NOT NULL AND p.id_lembaga != '' AND p.id_lembaga != '0'
+                  AND p.tgl_mulai IS NOT NULL AND p.tgl_mulai != '0000-00-00' AND p.tgl_mulai <= CURDATE()
+                  AND p.tgl_selesai IS NOT NULL AND p.tgl_selesai != '0000-00-00' AND p.tgl_selesai >= CURDATE()
                 UNION ALL
                 SELECT peng.nik, peng.tunj_kel, peng.tunj_anak, peng.kehormatan
                 FROM pengajar peng
                 WHERE peng.status = 'Aktif'
-                  AND (peng.tgl_mulai IS NULL OR peng.tgl_mulai = '0000-00-00' OR peng.tgl_mulai <= CURDATE())
-                  AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())
+                  AND peng.id_lembaga IS NOT NULL AND peng.id_lembaga != '' AND peng.id_lembaga != '0'
+                  AND peng.tgl_mulai IS NOT NULL AND peng.tgl_mulai != '0000-00-00' AND peng.tgl_mulai <= CURDATE()
+                  AND peng.tgl_selesai IS NOT NULL AND peng.tgl_selesai != '0000-00-00' AND peng.tgl_selesai >= CURDATE()
             ) as u_tunj
             GROUP BY nik
             HAVING count_tunkel > 1 OR count_anak > 1 OR count_kehormatan > 1
@@ -257,14 +257,16 @@ class AuditTunjanganController extends Controller
                 SELECT p.nik, p.tunj_kel, p.tunj_anak, p.kehormatan
                 FROM penempatan p
                 WHERE p.status = 'Aktif'
-                  AND (p.tgl_mulai IS NULL OR p.tgl_mulai = '0000-00-00' OR p.tgl_mulai <= CURDATE())
-                  AND (p.tgl_selesai IS NULL OR p.tgl_selesai = '0000-00-00' OR p.tgl_selesai >= CURDATE())
+                  AND p.id_lembaga IS NOT NULL AND p.id_lembaga != '' AND p.id_lembaga != '0'
+                  AND p.tgl_mulai IS NOT NULL AND p.tgl_mulai != '0000-00-00' AND p.tgl_mulai <= CURDATE()
+                  AND p.tgl_selesai IS NOT NULL AND p.tgl_selesai != '0000-00-00' AND p.tgl_selesai >= CURDATE()
                 UNION ALL
                 SELECT peng.nik, peng.tunj_kel, peng.tunj_anak, peng.kehormatan
                 FROM pengajar peng
                 WHERE peng.status = 'Aktif'
-                  AND (peng.tgl_mulai IS NULL OR peng.tgl_mulai = '0000-00-00' OR peng.tgl_mulai <= CURDATE())
-                  AND (peng.tgl_selesai IS NULL OR peng.tgl_selesai = '0000-00-00' OR peng.tgl_selesai >= CURDATE())
+                  AND peng.id_lembaga IS NOT NULL AND peng.id_lembaga != '' AND peng.id_lembaga != '0'
+                  AND peng.tgl_mulai IS NOT NULL AND peng.tgl_mulai != '0000-00-00' AND peng.tgl_mulai <= CURDATE()
+                  AND peng.tgl_selesai IS NOT NULL AND peng.tgl_selesai != '0000-00-00' AND peng.tgl_selesai >= CURDATE()
             ) as u_tunj
             GROUP BY nik
             HAVING $havingCondition
@@ -291,16 +293,15 @@ class AuditTunjanganController extends Controller
             ->leftJoin('ketentuan_barokah as kb', 'kb.id_ketentuan', '=', 'p.id_ketentuan')
             ->whereIn('p.nik', $nikList)
             ->where('p.status', 'Aktif')
-            ->where(function ($sub) {
-                $sub->whereNull('p.tgl_mulai')
-                    ->orWhere('p.tgl_mulai', '0000-00-00')
-                    ->orWhere('p.tgl_mulai', '<=', DB::raw('CURDATE()'));
-            })
-            ->where(function ($sub) {
-                $sub->whereNull('p.tgl_selesai')
-                    ->orWhere('p.tgl_selesai', '0000-00-00')
-                    ->orWhere('p.tgl_selesai', '>=', DB::raw('CURDATE()'));
-            })
+            ->whereNotNull('p.id_lembaga')
+            ->where('p.id_lembaga', '!=', '')
+            ->where('p.id_lembaga', '!=', '0')
+            ->whereNotNull('p.tgl_mulai')
+            ->where('p.tgl_mulai', '!=', '0000-00-00')
+            ->where('p.tgl_mulai', '<=', DB::raw('CURDATE()'))
+            ->whereNotNull('p.tgl_selesai')
+            ->where('p.tgl_selesai', '!=', '0000-00-00')
+            ->where('p.tgl_selesai', '>=', DB::raw('CURDATE()'))
             ->select(
                 'p.nik',
                 'p.id_penempatan',
@@ -319,16 +320,15 @@ class AuditTunjanganController extends Controller
             ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'peng.id_lembaga')
             ->whereIn('peng.nik', $nikList)
             ->where('peng.status', 'Aktif')
-            ->where(function ($sub) {
-                $sub->whereNull('peng.tgl_mulai')
-                    ->orWhere('peng.tgl_mulai', '0000-00-00')
-                    ->orWhere('peng.tgl_mulai', '<=', DB::raw('CURDATE()'));
-            })
-            ->where(function ($sub) {
-                $sub->whereNull('peng.tgl_selesai')
-                    ->orWhere('peng.tgl_selesai', '0000-00-00')
-                    ->orWhere('peng.tgl_selesai', '>=', DB::raw('CURDATE()'));
-            })
+            ->whereNotNull('peng.id_lembaga')
+            ->where('peng.id_lembaga', '!=', '')
+            ->where('peng.id_lembaga', '!=', '0')
+            ->whereNotNull('peng.tgl_mulai')
+            ->where('peng.tgl_mulai', '!=', '0000-00-00')
+            ->where('peng.tgl_mulai', '<=', DB::raw('CURDATE()'))
+            ->whereNotNull('peng.tgl_selesai')
+            ->where('peng.tgl_selesai', '!=', '0000-00-00')
+            ->where('peng.tgl_selesai', '>=', DB::raw('CURDATE()'))
             ->select(
                 'peng.nik',
                 'peng.id_pengajar',
