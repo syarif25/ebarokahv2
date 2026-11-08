@@ -15,7 +15,7 @@
                 <div>
                     <h4 class="fs-18 font-w600 mb-2 text-nowrap">Jumlah Struktural</h4>
                     <h2 class="fs-32 font-w700 mb-0 text-primary">{{ number_format($totalStruktural ?? 0, 0, ',', '.') }}</h2>
-                    <small class="text-muted">Staf Aktif</small>
+                    <small class="text-muted">Struktural Aktif</small>
                 </div>
                 <i class="fas fa-user-tie fa-3x text-primary" style="opacity: 0.5;"></i>
             </div>
