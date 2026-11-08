@@ -362,7 +362,7 @@ class DashboardController extends Controller
         $nomPengajar = 0;
         if ($klPengajar) {
             $nomPengajar = (float)DB::table('total_barokah_pengajar')
-                ->where('id_kehadiran', $klPengajar->id_kehadiran_lembaga)
+                ->where('id_kehadiran_lembaga', $klPengajar->id_kehadiran_lembaga)
                 ->sum('diterima');
             if ($nomPengajar == 0) {
                 $nomPengajar = (float)$klPengajar->jumlah_total;
