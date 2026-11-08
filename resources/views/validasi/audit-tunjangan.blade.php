@@ -26,21 +26,30 @@
             box-shadow: 0 4px 15px rgba(0, 161, 93, 0.15);
         }
 
-        /* Clean Table Style identik dengan menu Validasi & Kehadiran */
-        #table-audit.dataTable tbody tr {
-            border-bottom: 1px solid #f1f1f1;
-        }
-        #table-audit.dataTable, #table-audit.dataTable th, #table-audit.dataTable td {
+        /* Table Style dengan Garis Pembatas Jelas Antar Data Umana */
+        #table-audit.dataTable {
+            border-collapse: collapse !important;
             border-top: none;
             border-left: none;
             border-right: none;
+        }
+        #table-audit.dataTable tbody > tr > td {
+            border-top: none !important;
+            border-left: none !important;
+            border-right: none !important;
+            border-bottom: 2px solid #cbd5e1 !important; /* Garis pembatas tegas antara Umana 1, 2, dst */
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
             vertical-align: middle;
         }
+        #table-audit.dataTable tbody > tr:hover {
+            background-color: #f8fafc !important;
+        }
         #table-audit.dataTable thead th {
-            border-bottom: 2px solid #f1f1f1;
+            border-bottom: 2px solid #94a3b8 !important;
             background-color: #fff;
-            color: #333;
-            font-weight: 600;
+            color: #1e293b;
+            font-weight: 700;
         }
 
         /* Filter Kolom Styling bawaan */
