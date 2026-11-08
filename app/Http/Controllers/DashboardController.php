@@ -120,27 +120,42 @@ class DashboardController extends Controller
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
         ];
 
-        // 1. Tentukan Periode "Bulan Ini"
-        $currentMonthNum = (int)date('n');
-        $currentYear     = (int)date('Y');
-        $bulanIni        = $bulanIndo[$currentMonthNum] ?? 'November';
-        $tahunIni        = (string)$currentYear;
-
+        // 1. Tentukan Periode "Bulan Ini" (Default mengikuti siklus pencairan: kalender berjalan memproses bulan sebelumnya)
         if ($request->filled('bulan') && $request->filled('tahun')) {
             $bulanIni = $request->bulan;
             $tahunIni = $request->tahun;
         } else {
-            // Cek apakah bulan berjalan ada data di database
-            $hasCurrentData = DB::table('kehadiran_lembaga')
+            // SIKLUS BAROKAH:
+            // Barokah yang dicairkan/direkap pada bulan kalender berjalan adalah data kehadiran bulan sebelumnya.
+            // Contoh: Kalender berjalan bulan November memproses Barokah bulan Oktober.
+            $currentMonthNum = (int)date('n');
+            $currentYear     = (int)date('Y');
+
+            if ($currentMonthNum === 1) {
+                $cycleMonthNum = 12;
+                $cycleYear     = $currentYear - 1;
+            } else {
+                $cycleMonthNum = $currentMonthNum - 1;
+                $cycleYear     = $currentYear;
+            }
+
+            $bulanIni = $bulanIndo[$cycleMonthNum] ?? 'Oktober';
+            $tahunIni = (string)$cycleYear;
+
+            // Cek apakah ada data di kehadiran_lembaga untuk siklus tersebut (cocokkan tahun persis atau format tahun ajaran)
+            $matchingYear = DB::table('kehadiran_lembaga')
                 ->where('bulan', $bulanIni)
                 ->where(function ($q) use ($tahunIni) {
                     $q->where('tahun', $tahunIni)
                       ->orWhere('tahun', 'LIKE', "%$tahunIni%");
                 })
-                ->exists();
+                ->orderBy('id_kehadiran_lembaga', 'desc')
+                ->value('tahun');
 
-            if (!$hasCurrentData) {
-                // Gunakan periode terbaru yang memiliki data di kehadiran_lembaga
+            if ($matchingYear) {
+                $tahunIni = $matchingYear;
+            } else {
+                // Fallback jika belum ada data untuk siklus ini, gunakan periode terbaru dari database
                 $latest = DB::table('kehadiran_lembaga')
                     ->whereNotNull('bulan')->where('bulan', '!=', '')
                     ->whereNotNull('tahun')->where('tahun', '!=', '')
@@ -165,6 +180,20 @@ class DashboardController extends Controller
             $tahunLalu = $tahunIni;
         }
         $bulanLalu = $bulanIndo[$prevMonthNum];
+
+        // Pastikan format tahunLalu sesuai dengan data kehadiran_lembaga bila tersedia
+        $matchingYearLalu = DB::table('kehadiran_lembaga')
+            ->where('bulan', $bulanLalu)
+            ->where(function ($q) use ($tahunLalu) {
+                $q->where('tahun', $tahunLalu)
+                  ->orWhere('tahun', 'LIKE', "%$tahunLalu%");
+            })
+            ->orderBy('id_kehadiran_lembaga', 'desc')
+            ->value('tahun');
+
+        if ($matchingYearLalu) {
+            $tahunLalu = $matchingYearLalu;
+        }
 
         // 3. Ambil Data Barokah (Struktural + Pengajar + Satpam) & Lembaga
         $dataBulanIni  = $this->getBarokahDataPeriode($bulanIni, $tahunIni);
