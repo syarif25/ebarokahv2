@@ -121,7 +121,7 @@
             <i class="fas fa-tools text-warning fs-20 me-3"></i>
             <div>
                 <strong class="text-dark">Fitur Dalam Pengembangan (Beta / Masa Uji Coba)</strong>
-                <p class="mb-0 text-muted" style="font-size: 13px;">Modul Transaksi & Validasi Kepanitiaan ini sedang dalam tahap pengembangan dan integrasi acuan. Mohon berhati-hati saat melakukan input data percobaan.</p>
+                <p class="mb-0 text-muted" style="font-size: 13px;">Modul Transaksi & Validasi Kepanitiaan ini sedang dalam tahap pengembangan. Mohon berhati-hati saat melakukan input data percobaan.</p>
             </div>
             <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
