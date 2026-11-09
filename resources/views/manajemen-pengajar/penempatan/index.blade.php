@@ -457,7 +457,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Jumlah SKS/JAM</label>
-                            <input type="number" class="input-pill-green text-center" name="jumlah_sks" id="jumlah_sks" value="0" required min="0" step="any" placeholder="0">
+                            <input type="text" inputmode="decimal" class="input-pill-green text-center" name="jumlah_sks" id="jumlah_sks" value="0" required placeholder="0" oninput="this.value = this.value.replace(/[^0-9.,]/g, '')">
                         </div>
                     </div>
 
