@@ -172,6 +172,12 @@
             dropdownParent: $('#modalTbk'),
             theme: 'bootstrap-5'
         });
+
+        $('#jenis_tbk').select2({
+            dropdownParent: $('#modalTbk'),
+            tags: true,
+            theme: 'bootstrap-5'
+        });
         
         const formatRupiah = (number) => {
             return new Intl.NumberFormat('id-ID', {
@@ -183,8 +189,27 @@
         
         const formatDate = (dateString) => {
             if(!dateString) return '-';
-            const [year, month, day] = dateString.split('-');
-            return `${day}-${month}-${year}`;
+            const clean = dateString.toString().substring(0, 10);
+            const parts = clean.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return dateString;
+        };
+
+        const formatInputDate = (dateString) => {
+            if(!dateString) return '';
+            const str = dateString.toString().trim();
+            // YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+                return str.substring(0, 10);
+            }
+            // DD-MM-YYYY
+            if (/^\d{2}-\d{2}-\d{4}/.test(str)) {
+                const parts = str.split('-');
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+            return str;
         };
 
         var table = $('#table-tbk').DataTable({
@@ -221,7 +246,7 @@
                     render: function(data) {
                         return `
                             <div class="d-flex flex-column gap-1" style="width: max-content;">
-                                <button class="btn btn-outline-success btn-sm btn-edit-tbk shadow-sm" data-item='${JSON.stringify(data)}'>Edit</button>
+                                <button type="button" class="btn btn-outline-success btn-sm btn-edit-tbk shadow-sm">Edit</button>
                                 <button class="btn btn-outline-danger btn-sm btn-delete-tbk shadow-sm" data-id="${data.id_tbk}">Hapus</button>
                             </div>
                         `;
@@ -306,14 +331,31 @@
 
         // Edit
         $('#table-tbk tbody').on('click', '.btn-edit-tbk', function() {
-            var data = $(this).data('item');
+            var tr = $(this).closest('tr');
+            var data = table.row(tr).data();
+            if (!data) return;
             
             $('#inputId').val(data.id_tbk);
+
+            // Handle id_penempatan jika belum ada di list option (misal penempatan non-aktif)
+            if (data.id_penempatan && $('#id_penempatan option[value="' + data.id_penempatan + '"]').length === 0) {
+                var pNama = (data.penempatan && data.penempatan.umana ? data.penempatan.umana.nama_lengkap : 'Penempatan #' + data.id_penempatan) + 
+                            (data.penempatan && data.penempatan.lembaga ? ' - ' + data.penempatan.lembaga.nama_lembaga : '');
+                $('#id_penempatan').append(new Option(pNama, data.id_penempatan, true, true));
+            }
             $('#id_penempatan').val(data.id_penempatan).trigger('change');
+
+            // Handle jenis_tbk jika custom/tidak ada di option default
+            if (data.jenis_tbk && $('#jenis_tbk option[value="' + data.jenis_tbk + '"]').length === 0) {
+                $('#jenis_tbk').append(new Option(data.jenis_tbk, data.jenis_tbk, true, true));
+            }
             $('#jenis_tbk').val(data.jenis_tbk).trigger('change');
-            $('#nominal_tbk').val(formatInputRupiah(data.nominal_tbk));
-            $('#min_periode').val(data.min_periode);
-            $('#max_periode').val(data.max_periode);
+
+            var nom = Math.round(parseFloat(data.nominal_tbk) || 0);
+            $('#nominal_tbk').val(formatInputRupiah(nom));
+
+            $('#min_periode').val(formatInputDate(data.min_periode));
+            $('#max_periode').val(formatInputDate(data.max_periode));
             
             $('#modalTitle').text('Edit Tunjangan Beban Kerja');
             $('#modalTbk').modal('show');
