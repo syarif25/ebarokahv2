@@ -336,15 +336,29 @@ class DashboardController extends Controller
                 $q->where('tahun', $tahun)
                   ->orWhere('tahun', 'LIKE', "%$tahun%");
             })
+            ->orderBy('id_kehadiran_lembaga', 'desc')
             ->first();
 
         $nomStruktural = 0;
         if ($klStruktural) {
-            $nomStruktural = (float)DB::table('total_barokah')
-                ->where('id_kehadiran', $klStruktural->id_kehadiran_lembaga)
-                ->sum('diterima');
+            // Gunakan HitungBarokahService agar nominal sinkron 100% dengan halaman Cek Barokah / Koreksi
+            $calc = \App\Services\HitungBarokahService::hitungPeriode($klStruktural->id_kehadiran_lembaga);
+            $nomStruktural = (float)($calc['totals']['grand_total'] ?? 0);
+
+            if ($nomStruktural == 0) {
+                $nomStruktural = (float)DB::table('total_barokah')
+                    ->where('id_kehadiran', $klStruktural->id_kehadiran_lembaga)
+                    ->sum('diterima');
+            }
             if ($nomStruktural == 0) {
                 $nomStruktural = (float)$klStruktural->jumlah_total;
+            }
+
+            // Sinkronkan jumlah_total pada kehadiran_lembaga jika berbeda
+            if ($nomStruktural > 0 && (float)$klStruktural->jumlah_total != $nomStruktural) {
+                DB::table('kehadiran_lembaga')
+                    ->where('id_kehadiran_lembaga', $klStruktural->id_kehadiran_lembaga)
+                    ->update(['jumlah_total' => $nomStruktural]);
             }
         }
 
@@ -357,6 +371,7 @@ class DashboardController extends Controller
                 $q->where('tahun', $tahun)
                   ->orWhere('tahun', 'LIKE', "%$tahun%");
             })
+            ->orderBy('id_kehadiran_lembaga', 'desc')
             ->first();
 
         $nomPengajar = 0;
