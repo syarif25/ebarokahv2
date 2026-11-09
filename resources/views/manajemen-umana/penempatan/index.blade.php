@@ -213,14 +213,21 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
+                                    <label class="form-label">Tunj MP</label>
+                                    <select class="form-control" id="tunj_mp" name="tunj_mp">
+                                        <option value="Tidak">Tidak</option>
+                                        <option value="Ya">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
                                     <label class="form-label">Kehormatan</label>
                                     <select class="form-control" id="kehormatan" name="kehormatan">
                                         <option value="Tidak">Tidak</option>
                                         <option value="Ya">Ya</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Transport/Kehadiran</label>
+                                <div class="col-md-2">
+                                    <label class="form-label">Transport</label>
                                     <select class="form-control select2" id="kategori_trans" name="kategori_trans">
                                         <option value="">-- Pilih --</option>
                                         @foreach($transports as $t)
@@ -228,7 +235,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label class="form-label">Status</label>
                                     <input type="text" class="form-control" id="status" name="status" value="Aktif" required>
                                 </div>
@@ -281,11 +288,12 @@
                         <th class="text-center">Sertifikasi</th>
                         <th class="text-center">Tunkel</th>
                         <th class="text-center">Tunj Anak</th>
+                        <th class="text-center">Tunj MP</th>
                         <th class="text-center">Kehormatan</th>
                       </tr>
                     </thead>
                     <tbody id="val-tbody-struktural">
-                      <tr><td colspan="7" class="text-center text-muted">Memuat data...</td></tr>
+                      <tr><td colspan="8" class="text-center text-muted">Memuat data...</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -426,6 +434,9 @@
                             if(row.tunj_anak === 'Ya' || row.tunj_anak === '1') {
                                 badges += '<span class="badge badge-danger rounded-pill mb-1 me-1"><i class="fas fa-child me-1"></i> Tunj Anak</span> ';
                             }
+                            if(row.tunj_mp === 'Ya' || row.tunj_mp === '1') {
+                                badges += '<span class="badge badge-primary rounded-pill mb-1 me-1"><i class="fas fa-business-time me-1"></i> Tunj MP</span> ';
+                            }
                             if(row.kehormatan === 'Ya' || row.kehormatan === '1') {
                                 badges += '<span class="badge badge-success rounded-pill mb-1 me-1"><i class="fas fa-star me-1"></i> Kehormatan</span> ';
                             }
@@ -484,6 +495,7 @@
                 $('#nik').val('').trigger('change');
                 $('#id_ketentuan').val('').trigger('change');
                 $('#id_lembaga').val('').trigger('change');
+                $('#tunj_mp').val('Tidak');
             });
 
             // Modal Edit
@@ -503,6 +515,7 @@
                 // Normal select
                 $('#tunj_kel').val(data.tunj_kel);
                 $('#tunj_anak').val(data.tunj_anak);
+                $('#tunj_mp').val(data.tunj_mp || 'Tidak');
                 $('#kehormatan').val(data.kehormatan);
                 
                 // Select2
@@ -605,14 +618,14 @@
                 }
 
                 $('#val-umana-nama').text(toTitleCase(namaDefault));
-                $('#val-tbody-struktural').html('<tr><td colspan="7" class="text-center text-muted">Memuat data penempatan struktural...</td></tr>');
+                $('#val-tbody-struktural').html('<tr><td colspan="8" class="text-center text-muted">Memuat data penempatan struktural...</td></tr>');
                 $('#val-tbody-pengajar').html('<tr><td colspan="8" class="text-center text-muted">Memuat data penugasan pengajar...</td></tr>');
 
                 $('#modalCekValidasiUmana').modal('show');
 
                 $.getJSON("{{ url('/kehadiran_struktural/cekValidasiUmana') }}/" + nik, function(res) {
                     if(!res || !res.status) {
-                        $('#val-tbody-struktural').html('<tr><td colspan="7" class="text-center text-danger">Gagal memuat data.</td></tr>');
+                        $('#val-tbody-struktural').html('<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>');
                         $('#val-tbody-pengajar').html('<tr><td colspan="8" class="text-center text-danger">Gagal memuat data.</td></tr>');
                         return;
                     }
@@ -635,6 +648,10 @@
                                 ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
                                 : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
 
+                            const tunjMpBadge = (item.tunj_mp === 'Ya')
+                                ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
+                                : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
+
                             const kehormatanBadge = (item.kehormatan === 'Ya')
                                 ? '<span class="badge badge-success px-2 py-1"><i class="fa fa-check mr-1 me-1"></i>Ya</span>'
                                 : '<span class="badge badge-secondary px-2 py-1">Tidak</span>';
@@ -646,11 +663,12 @@
                                 <td class="text-center">${sertifVal}</td>
                                 <td class="text-center">${tunkelBadge}</td>
                                 <td class="text-center">${tunjAnakBadge}</td>
+                                <td class="text-center">${tunjMpBadge}</td>
                                 <td class="text-center">${kehormatanBadge}</td>
                             </tr>`;
                         });
                     } else {
-                        htmlStruk = '<tr><td colspan="7" class="text-center text-muted">Tidak memiliki data penempatan struktural lain.</td></tr>';
+                        htmlStruk = '<tr><td colspan="8" class="text-center text-muted">Tidak memiliki data penempatan struktural lain.</td></tr>';
                     }
                     $('#val-tbody-struktural').html(htmlStruk);
 
@@ -702,7 +720,7 @@
                     }
                     $('#val-tbody-pengajar').html(htmlPeng);
                 }).fail(function() {
-                    $('#val-tbody-struktural').html('<tr><td colspan="7" class="text-center text-danger">Gagal memanggil data server.</td></tr>');
+                    $('#val-tbody-struktural').html('<tr><td colspan="8" class="text-center text-danger">Gagal memanggil data server.</td></tr>');
                     $('#val-tbody-pengajar').html('<tr><td colspan="9" class="text-center text-danger">Gagal memanggil data server.</td></tr>');
                 });
             });
