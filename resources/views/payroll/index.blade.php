@@ -394,6 +394,7 @@
                     render: function (data, type, row, meta) {
                         return meta.row + 1;
                     },
+                    orderable: false,
                     className: 'font-weight-bold text-muted text-center' 
                 },
                 { 
@@ -433,7 +434,7 @@
                     className: 'text-nowrap'
                 }
             ],
-            order: [[0, 'asc']],
+            order: [],
             pageLength: 10,
             language: {
                 search: "Search:",

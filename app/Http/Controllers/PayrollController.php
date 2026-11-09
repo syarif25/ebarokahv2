@@ -28,11 +28,24 @@ class PayrollController extends Controller
      */
     public function dataList(Request $request)
     {
-        // Ambil data kehadiran lembaga yang siap ditransfer atau sudah ditransfer
-        $query = KehadiranLembaga::with('lembaga')
-            ->whereNotIn('status', ['Belum', 'Sudah', 'Terkirim']);
-
-        $list = $query->orderBy('id_kehadiran_lembaga', 'desc')->get();
+        // Ambil data kehadiran lembaga yang siap ditransfer atau sudah ditransfer.
+        // Prioritaskan yang baru di-ACC (status 'acc' / Belum ditransfer) di paling atas,
+        // diurutkan berdasarkan waktu ACC / update terbaru, baru diikuti data yang sudah selesai ditransfer.
+        $list = KehadiranLembaga::with('lembaga')
+            ->whereNotIn('status', ['Belum', 'Sudah', 'Terkirim'])
+            ->select('kehadiran_lembaga.*')
+            ->selectSub(function ($q) {
+                $q->from('log_riwayat_barokah')
+                    ->whereColumn('log_riwayat_barokah.id_kehadiran_lembaga', 'kehadiran_lembaga.id_kehadiran_lembaga')
+                    ->whereRaw("LOWER(status_aksi) = 'acc'")
+                    ->orderBy('id_log', 'desc')
+                    ->select('waktu_eksekusi')
+                    ->limit(1);
+            }, 'waktu_acc')
+            ->orderByRaw("CASE WHEN status = 'acc' THEN 0 ELSE 1 END ASC")
+            ->orderByRaw("COALESCE(waktu_acc, tgl_input) DESC")
+            ->orderBy('id_kehadiran_lembaga', 'desc')
+            ->get();
 
         // Hitung agregat log WA per id_kehadiran_lembaga
         $waCounts = DB::table('wa_log')
