@@ -162,7 +162,7 @@ class HitungPengajarService
             if ($rowRank) $rank = (int)$rowRank->nominal;
         }
 
-        $jumlah_sks    = (int)($key->jumlah_sks ?? 0);
+        $jumlah_sks    = (float)($key->jumlah_sks ?? 0);
         $jumlah_piket  = (int)($key->jumlah_hadir_piket ?? 0);
         $mengajar      = (int)round($rank * $jumlah_sks);
         if ($status_aktif == 'Cuti 50%')  $mengajar = (int)round($mengajar * 0.5);

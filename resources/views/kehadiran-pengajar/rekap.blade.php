@@ -235,7 +235,7 @@
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark font-weight-bold px-2 py-1" style="border: 1px solid #cbd5e1; font-size: 12px;">
-                                        {{ $p->jumlah_sks ?? 0 }}
+                                        {{ (float)($p->jumlah_sks ?? 0) }}
                                     </span>
                                 </td>
                                 <td>

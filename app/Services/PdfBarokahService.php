@@ -722,7 +722,7 @@ class PdfBarokahService
             }
             $pdf->Cell(8, 7, $tmtDisplay, 1, 0, 'C', $fill);
             $pdf->Cell(5, 7, (string)($key->mp ?? 0), 1, 0, 'C', $fill);
-            $pdf->Cell(12, 7, (string)($key->jumlah_sks ?? 0), 1, 0, 'C', $fill);
+            $pdf->Cell(12, 7, (string)(float)($key->jumlah_sks ?? 0), 1, 0, 'C', $fill);
             $pdf->Cell(10, 7, self::formatRupiah($key->rank ?? 0), 1, 0, 'R', $fill);
             $pdf->Cell(12, 7, self::formatRupiah($key->mengajar ?? 0), 1, 0, 'R', $fill);
             $pdf->Cell(10, 7, $isSerti ? $labelSerti : self::formatRupiah($key->dty ?? 0), 1, 0, $isSerti ? 'C' : 'R', $fill);

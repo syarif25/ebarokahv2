@@ -61,6 +61,11 @@ class PengajarController extends Controller
             $request->merge(['id_lembaga' => $user->lembaga]);
         }
 
+        // Normalisasi koma ke titik jika user menginput pecahan dengan koma (contoh: 12,5 -> 12.5)
+        if ($request->has('jumlah_sks')) {
+            $request->merge(['jumlah_sks' => str_replace(',', '.', (string)$request->jumlah_sks)]);
+        }
+
         $request->validate([
             'nik' => 'required',
             'kategori' => 'required',
@@ -72,6 +77,7 @@ class PengajarController extends Controller
         ]);
 
         $data = $request->all();
+        $data['jumlah_sks'] = (float)str_replace(',', '.', (string)$request->jumlah_sks);
         // Set default values for optional and tunjangan fields
         $data['id_prodi'] = $request->id_prodi ?: null;
         $data['kategori_trans'] = $request->kategori_trans ?: null;
@@ -97,6 +103,11 @@ class PengajarController extends Controller
             $request->merge(['id_lembaga' => $user->lembaga]);
         }
 
+        // Normalisasi koma ke titik jika user menginput pecahan dengan koma (contoh: 12,5 -> 12.5)
+        if ($request->has('jumlah_sks')) {
+            $request->merge(['jumlah_sks' => str_replace(',', '.', (string)$request->jumlah_sks)]);
+        }
+
         $request->validate([
             'nik' => 'required',
             'kategori' => 'required',
@@ -111,6 +122,7 @@ class PengajarController extends Controller
         }
         
         $data = $request->all();
+        $data['jumlah_sks'] = (float)str_replace(',', '.', (string)$request->jumlah_sks);
         $data['id_prodi'] = $request->id_prodi ?: null;
         $data['kategori_trans'] = $request->kategori_trans ?: null;
         if (!empty($request->tgl_mulai)) $data['tgl_mulai'] = $request->tgl_mulai;

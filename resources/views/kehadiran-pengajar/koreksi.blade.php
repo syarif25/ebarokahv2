@@ -360,7 +360,7 @@
                 <td class="cell-center align-middle">{{ $key->ijazah_terakhir ?? '-' }}</td>
                 <td class="cell-center align-middle">{{ $tmtDisplay }}</td>
                 <td class="cell-center align-middle">{{ $key->mp ?? 0 }} Thn</td>
-                <td class="cell-center align-middle font-weight-bold">{{ $key->jumlah_sks ?? 0 }}</td>
+                <td class="cell-center align-middle font-weight-bold">{{ (float)($key->jumlah_sks ?? 0) }}</td>
                 <td class="cell-right text-muted align-middle">Rp {{ number_format($key->rank ?? 0, 0, ',', '.') }}</td>
                 <td class="cell-right align-middle {{ in_array('mengajar', $changed) ? 'text-danger font-weight-bold' : 'font-weight-bold text-dark' }}">
                   Rp {{ number_format($key->mengajar ?? 0, 0, ',', '.') }}

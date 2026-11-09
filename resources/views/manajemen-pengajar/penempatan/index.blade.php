@@ -457,7 +457,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Jumlah SKS/JAM</label>
-                            <input type="number" class="input-pill-green text-center" name="jumlah_sks" id="jumlah_sks" value="0" required min="0">
+                            <input type="number" class="input-pill-green text-center" name="jumlah_sks" id="jumlah_sks" value="0" required min="0" step="any" placeholder="0">
                         </div>
                     </div>
 
@@ -686,13 +686,14 @@
                         var lembagaNama = data ? data.nama_lembaga : '-';
                         var kategori = row.kategori ? row.kategori : '-';
                         var prodiInfo = '';
+                        var sksNum = row.jumlah_sks ? parseFloat(row.jumlah_sks) : 0;
                         if (row.prodi && row.prodi.nama_prodi) {
-                            prodiInfo += '<br><small class="text-muted fw-bold">' + row.prodi.nama_prodi + (row.jumlah_sks ? ' (' + row.jumlah_sks + ' SKS/Jam)' : '') + '</small>';
-                        } else if (row.jumlah_sks) {
-                            prodiInfo += ' <small class="text-muted">(' + row.jumlah_sks + ' SKS/Jam)</small>';
+                            prodiInfo += '<br><small class="text-muted fw-bold">' + row.prodi.nama_prodi + (sksNum ? ' (' + sksNum + ' SKS/Jam)' : '') + '</small>';
+                        } else if (sksNum) {
+                            prodiInfo += ' <small class="text-muted">(' + sksNum + ' SKS/Jam)</small>';
                         }
                         if (type === 'filter' || type === 'sort') {
-                            return lembagaNama + ' ' + kategori + ' ' + (row.prodi ? row.prodi.nama_prodi : '') + ' ' + (row.jumlah_sks || '');
+                            return lembagaNama + ' ' + kategori + ' ' + (row.prodi ? row.prodi.nama_prodi : '') + ' ' + (sksNum || '');
                         }
                         return '<strong>' + lembagaNama + '</strong><br><small class="text-success badge badge-success light badge-sm mt-1">' + kategori + '</small>' + prodiInfo;
                     }
@@ -845,6 +846,9 @@
             var formData = new FormData(this);
             disabled.prop('disabled', true);
 
+            var sksVal = String($('#jumlah_sks').val() || '0').replace(',', '.');
+            formData.set('jumlah_sks', sksVal);
+
             formData.append('_token', '{{ csrf_token() }}');
 
             $.ajax({
@@ -912,7 +916,7 @@
             $('#status').val(data.status || 'Aktif');
             $('#id_lembaga').val(data.id_lembaga).trigger('change');
             $('#id_prodi').val(data.id_prodi || '').trigger('change');
-            $('#jumlah_sks').val(data.jumlah_sks != null ? data.jumlah_sks : 0);
+            $('#jumlah_sks').val(data.jumlah_sks != null ? parseFloat(data.jumlah_sks) : 0);
             $('#tgl_mulai').val(data.tgl_mulai || '{{ date("Y-01-01") }}');
             $('#tgl_selesai').val(data.tgl_selesai || '{{ date("2040-01-01") }}');
             

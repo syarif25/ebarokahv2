@@ -144,7 +144,7 @@ class LogKehadiranPengajarController extends Controller
                 $sub = [];
                 if ($item->nik) $sub[] = e($item->nik);
                 if ($kategori) $sub[] = e($kategori);
-                if ($item->jumlah_sks) $sub[] = (int)$item->jumlah_sks . ' SKS';
+                if ($item->jumlah_sks) $sub[] = (float)$item->jumlah_sks . ' SKS';
                 $namaHtml .= '<br><small class="text-muted">' . implode(' &bull; ', $sub) . '</small>';
             }
             $namaHtml .= '</div>';

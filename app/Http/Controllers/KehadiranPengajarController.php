@@ -367,7 +367,7 @@ class KehadiranPengajarController extends Controller
                 $calc = [
                     'id_pengajar'        => $s->id_pengajar,
                     'id_kehadiran_pengajar' => $s->id_kehadiran_pengajar,
-                    'jumlah_sks'         => (int)$s->jumlah_sks,
+                    'jumlah_sks'         => (float)$s->jumlah_sks,
                     'mp'                 => (int)$s->mp,
                     'rank'               => (int)$s->rank,
                     'mengajar'           => (int)$s->mengajar,
@@ -676,7 +676,7 @@ class KehadiranPengajarController extends Controller
                         'id_kehadiran_lembaga' => $id,
                         'bulan'                => $periode->bulan,
                         'tahun'                => $periode->tahun,
-                        'jumlah_sks'           => (int)$r->jumlah_sks,
+                        'jumlah_sks'           => (float)$r->jumlah_sks,
                         'rank'                 => (int)$r->rank,
                         'mengajar'             => (int)$r->mengajar,
                         'mp'                   => (int)$r->mp,
