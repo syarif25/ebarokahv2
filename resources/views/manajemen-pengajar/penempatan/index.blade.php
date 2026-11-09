@@ -447,7 +447,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Kategori</label>
-                            <select class="form-control input-underline" name="kategori" id="kategori" required>
+                            <select class="form-control input-pill-green" name="kategori" id="kategori" required>
                                 <option value="">-- Kategori --</option>
                                 <option value="GTY">GTY (Guru Tetap Yayasan)</option>
                                 <option value="GTT">GTT (Guru Tidak Tetap)</option>
@@ -465,28 +465,28 @@
                     <div class="row gx-3 gy-3 mb-3">
                         <div class="col-md-2">
                             <label class="form-label-custom">Tunkel</label>
-                            <select class="form-control input-underline" name="tunj_kel" id="tunj_kel">
+                            <select class="form-control input-pill-green text-center" name="tunj_kel" id="tunj_kel">
                                 <option value="Tidak">Tidak</option>
                                 <option value="Ya">Ya</option>
                             </select>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Tunj Anak</label>
-                            <select class="form-control input-underline" name="tunj_anak" id="tunj_anak">
+                            <select class="form-control input-pill-green text-center" name="tunj_anak" id="tunj_anak">
                                 <option value="Tidak">Tidak</option>
                                 <option value="Ya">Ya</option>
                             </select>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Kehormatan</label>
-                            <select class="form-control input-underline" name="kehormatan" id="kehormatan">
+                            <select class="form-control input-pill-green text-center" name="kehormatan" id="kehormatan">
                                 <option value="Tidak">Tidak</option>
                                 <option value="Ya">Ya</option>
                             </select>
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Wali Kelas</label>
-                            <select class="form-control input-underline" name="walkes" id="walkes">
+                            <select class="form-control input-pill-green" name="walkes" id="walkes">
                                 <option value="Tidak">Tidak</option>
                                 <option value="Ya">Ya</option>
                                 <option value="walkes_sklh">Wali Kelas Sekolah</option>
@@ -495,7 +495,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label-custom">Jafung</label>
-                            <select class="form-control input-underline" name="jafung" id="jafung">
+                            <select class="form-control input-pill-green text-center" name="jafung" id="jafung">
                                 <option value="Tidak">Tidak</option>
                                 <option value="Ya">Ya</option>
                             </select>
@@ -515,7 +515,7 @@
                     <div class="row gx-3 gy-3 align-items-end mt-1">
                         <div class="col-md-9">
                             <label class="form-label-custom">Transport/Kehadiran</label>
-                            <select class="form-control select2 select2-underline" name="kategori_trans" id="kategori_trans" style="width: 100%;">
+                            <select class="form-control select2 select2-pill-green" name="kategori_trans" id="kategori_trans" style="width: 100%;">
                                 <option value="">-- Tanpa Transport / Pilih Rute Transport --</option>
                                 @foreach($transports as $t)
                                     <option value="{{ $t->id_transport }}">
@@ -924,17 +924,16 @@
             
             $('#kategori_trans').val(data.kategori_trans || '').trigger('change');
             
-            // Kunci inputan agar tidak bisa diubah saat edit:
-            // nik, nama, ijazah, tmt guru, tmt dosen, lembaga, tunkel, tun anak, kehormatan, wali kelas, jafung, transport
+            // Kunci NIK agar identitas Umana tidak tertukar saat edit
             $('#nik').prop('disabled', true);
-            $('#id_lembaga').prop('disabled', true);
-            $('#kategori').prop('disabled', true);
-            $('#tunj_kel').prop('disabled', true);
-            $('#tunj_anak').prop('disabled', true);
-            $('#kehormatan').prop('disabled', true);
-            $('#walkes').prop('disabled', true);
-            $('#jafung').prop('disabled', true);
-            $('#kategori_trans').prop('disabled', true);
+            $('#id_lembaga').prop('disabled', false);
+            $('#kategori').prop('disabled', false);
+            $('#tunj_kel').prop('disabled', false);
+            $('#tunj_anak').prop('disabled', false);
+            $('#kehormatan').prop('disabled', false);
+            $('#walkes').prop('disabled', false);
+            $('#jafung').prop('disabled', false);
+            $('#kategori_trans').prop('disabled', false);
             
             $('#modalPengajar').modal('show');
         });
