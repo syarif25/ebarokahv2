@@ -287,11 +287,33 @@
                     const subK3 = (d.j_dinihari > 0)
                         ? `${d.j_dinihari} kali × ${fmt(d.k3_unit).replace('Rp. ','')}` : '';
 
+                    const potItems = Array.isArray(d.potongan_items) ? d.potongan_items : [];
+                    const potDetailHTML = potItems.length
+                        ? `<div class="pt-1 pb-2" style="margin:.25rem .25rem 0 .25rem">
+                            ${potItems.map(it => {
+                            const name = String(it.nama || '').replace(/[&<>"']/g, s=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s]));
+                            return `<div style="font-size:12px;color:#b91c1c;font-weight:500;">~ ${name} : ${fmt(it.nominal).replace('Rp. ','')}</div>`;
+                            }).join('')}
+                        </div>`
+                        : '';
+
+                    let danruHTML = '';
+                    if (d.danru > 0) {
+                        danruHTML = rowLine('Tunjangan Danru', fmt(f.danru));
+                    }
+
+                    let potonganHTML = '';
+                    if (d.potongan > 0 || potItems.length > 0) {
+                        potonganHTML = rowLine('Potongan', fmt(f.potongan)) + potDetailHTML;
+                    }
+
                     body.innerHTML = `
                         <div class="list-compact-native">
                         ${rowLine('Kehadiran Hari Kerja', fmt(f.k1_total), subK1)}
                         ${rowLine('Kehadiran Shift', fmt(f.k2_total), subK2)}
                         ${rowLine('Kehadiran Dini Hari', fmt(f.k3_total), subK3)}
+                        ${danruHTML}
+                        ${potonganHTML}
                         </div>
                         <div class="divider my-2"></div>
                         <div class="d-flex justify-content-between align-items-center">

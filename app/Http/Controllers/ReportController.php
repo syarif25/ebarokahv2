@@ -267,7 +267,8 @@ class ReportController extends Controller
                 break;
 
             case 'satpam':
-                $data = $this->breakdown_satpam_by_month($nik, $start, $end, $lid, $specM, $specY);
+                $data  = $this->breakdown_satpam_by_month($nik, $start, $end, $lid, $specM, $specY);
+                $items = $this->list_potongan_satpam_by_month($nik, $start, $end, $lid, $specM, $specY);
 
                 $payload = [
                     'k1_total'   => (int)($data['k1_total'] ?? 0),
@@ -279,6 +280,8 @@ class ReportController extends Controller
                     'k1_unit'    => (int)($data['k1_unit'] ?? 0),
                     'k2_unit'    => (int)($data['k2_unit'] ?? 0),
                     'k3_unit'    => (int)($data['k3_unit'] ?? 0),
+                    'danru'      => (int)($data['danru'] ?? 0),
+                    'potongan'   => (int)($data['potongan'] ?? 0),
                     'total'      => (int)($data['total'] ?? 0),
                     'f' => [
                         'k1_total' => $fmt($data['k1_total'] ?? 0),
@@ -287,9 +290,14 @@ class ReportController extends Controller
                         'k1_unit'  => $fmt($data['k1_unit'] ?? 0),
                         'k2_unit'  => $fmt($data['k2_unit'] ?? 0),
                         'k3_unit'  => $fmt($data['k3_unit'] ?? 0),
+                        'danru'    => $fmt($data['danru'] ?? 0),
+                        'potongan' => $fmt($data['potongan'] ?? 0),
                         'total'    => $fmt($data['total'] ?? 0),
                     ],
-                    'potongan_items' => [],
+                    'potongan_items' => array_map(
+                        fn($r) => ['nama' => $r['nama'], 'nominal' => (int)$r['nominal']],
+                        $items
+                    ),
                 ];
                 break;
 
@@ -923,6 +931,8 @@ class ReportController extends Controller
                             / NULLIF(SUM(t.jumlah_dinihari),0))
             END                                                            AS k3_unit,
 
+            COALESCE(SUM(t.nominal_danru),0)                               AS danru,
+            COALESCE(SUM(t.potongan),0)                                    AS potongan,
             COALESCE(SUM(t.diterima),0)                                    AS total
             FROM total_barokah_satpam t
             JOIN satpam sp ON sp.id_satpam = t.id_satpam
@@ -938,141 +948,238 @@ class ReportController extends Controller
 
     public function list_potongan_pengajar_by_month($nik, $startTs, $endTs, $id_lembaga = null, $specM = null, $specY = null)
     {
-        // Cari baris slip total_barokah_pengajar yang sesuai untuk mendapatkan tanggal payroll dan id_pengajar presisi
-        $whereL = '';
-        $bindL = [$nik, $startTs, $endTs];
+        $targetM = $specM ? (int)$specM : (int)date('n', strtotime($startTs));
+        $targetY = $specY ? (int)$specY : (int)date('Y', strtotime($startTs));
+        $periodeDate = sprintf('%04d-%02d-01', $targetY, $targetM);
+        $lastDay = date('Y-m-t', strtotime($periodeDate));
+
+        $nmBulan = $this->nama_bulan_id($targetM);
+        $nmTahun = $this->tahun_ajaran($targetM, $targetY);
+
+        $slipQuery = DB::table('total_barokah_pengajar as tbp')
+            ->join('pengajar as pg', 'pg.id_pengajar', '=', 'tbp.id_pengajar')
+            ->where('pg.nik', $nik);
+
         if (!empty($id_lembaga)) {
-            $whereL .= ' AND pg.id_lembaga = ? ';
-            $bindL[] = $id_lembaga;
-        }
-        if (!empty($specM) && !empty($specY)) {
-            $nmBulan = $this->nama_bulan_id($specM);
-            $nmTahun = $this->tahun_ajaran($specM, $specY);
-            $whereL .= ' AND tbp.bulan = ? AND tbp.tahun = ? ';
-            $bindL[] = $nmBulan;
-            $bindL[] = $nmTahun;
+            $slipQuery->where('pg.id_lembaga', $id_lembaga);
         }
 
-        $slip = DB::selectOne("
-            SELECT tbp.id_pengajar, tbp.timestamp, tbp.potongan
-            FROM total_barokah_pengajar tbp
-            JOIN pengajar pg ON pg.id_pengajar = tbp.id_pengajar
-            WHERE pg.nik = ? AND tbp.`timestamp` >= ? AND tbp.`timestamp` < ? {$whereL}
-            ORDER BY tbp.id_total_barokah_pengajar DESC
-            LIMIT 1
-        ", $bindL);
+        $slip = (clone $slipQuery)
+            ->where('tbp.bulan', $nmBulan)
+            ->where(function ($q) use ($targetY, $nmTahun) {
+                $q->where('tbp.tahun', (string)$targetY)
+                  ->orWhere('tbp.tahun', 'like', $targetY . '%')
+                  ->orWhere('tbp.tahun', $nmTahun);
+            })
+            ->select('tbp.id_pengajar', 'tbp.timestamp', 'tbp.potongan', 'tbp.bulan', 'tbp.tahun')
+            ->orderBy('tbp.id_total_barokah_pengajar', 'desc')
+            ->first();
 
-        if ($slip && !empty($slip->timestamp)) {
-            $payrollDate = date('Y-m-d', strtotime($slip->timestamp));
-            $sql = "
-                SELECT p.nama_potongan AS nama, SUM(pp.nominal_potongan) AS nominal
-                FROM potongan_pengajar pp
-                JOIN potongan p ON p.id_potongan = pp.jenis_potongan
-                WHERE pp.id_pengajar = ?
-                  AND (pp.min_periode_potongan IS NULL OR pp.min_periode_potongan <= ?)
-                  AND (pp.max_periode_potongan IS NULL OR pp.max_periode_potongan >= ?)
-                GROUP BY p.nama_potongan
-                ORDER BY p.nama_potongan ASC
-            ";
-            $results = DB::select($sql, [$slip->id_pengajar, $payrollDate, $payrollDate]);
-            return array_map(fn($r) => (array)$r, $results);
+        if (!$slip) {
+            $slip = (clone $slipQuery)
+                ->where('tbp.timestamp', '>=', $startTs)
+                ->where('tbp.timestamp', '<', $endTs)
+                ->select('tbp.id_pengajar', 'tbp.timestamp', 'tbp.potongan', 'tbp.bulan', 'tbp.tahun')
+                ->orderBy('tbp.id_total_barokah_pengajar', 'desc')
+                ->first();
         }
 
-        // Fallback jika slip belum tercatat di total_barokah_pengajar
-        $bind  = [$nik, $endTs, $startTs];
-        $extra = '';
-        if (!empty($id_lembaga)) {
-            $extra = ' AND pg.id_lembaga = ? ';
-            $bind[] = $id_lembaga;
+        $idPengajar = $slip->id_pengajar ?? null;
+        if (!$idPengajar) {
+            $pg = DB::table('pengajar')
+                ->where('nik', $nik)
+                ->when(!empty($id_lembaga), fn($q) => $q->where('id_lembaga', $id_lembaga))
+                ->orderBy('id_pengajar', 'desc')
+                ->first();
+            $idPengajar = $pg->id_pengajar ?? null;
         }
+
+        if (!$idPengajar) {
+            return [];
+        }
+
+        $slipDate = !empty($slip->timestamp) ? date('Y-m-d', strtotime($slip->timestamp)) : $periodeDate;
 
         $sql = "
-            SELECT nama, SUM(nominal) AS nominal
-            FROM (
-                SELECT p.nama_potongan AS nama, pp.nominal_potongan AS nominal
-                FROM potongan_pengajar pp
-                JOIN potongan p  ON p.id_potongan = pp.jenis_potongan
-                JOIN pengajar pg ON pg.id_pengajar = pp.id_pengajar
-                WHERE pg.nik = ?
-                  AND (pp.min_periode_potongan IS NULL OR pp.min_periode_potongan <  ?)
-                  AND (pp.max_periode_potongan IS NULL OR pp.max_periode_potongan >= ?)
-                  {$extra}
-            ) t
-            GROUP BY nama
+            SELECT 
+                COALESCE(NULLIF(p.nama_potongan, ''), CONCAT('Potongan #', pp.jenis_potongan)) AS nama,
+                SUM(pp.nominal_potongan) AS nominal
+            FROM potongan_pengajar pp
+            LEFT JOIN potongan p ON p.id_potongan = pp.jenis_potongan
+            WHERE pp.id_pengajar = ?
+              AND (
+                  (
+                      (pp.min_periode_potongan IS NULL OR pp.min_periode_potongan = '0000-00-00' OR pp.min_periode_potongan <= ?)
+                      AND (pp.max_periode_potongan IS NULL OR pp.max_periode_potongan = '0000-00-00' OR pp.max_periode_potongan >= ?)
+                  )
+                  OR
+                  (
+                      (pp.min_periode_potongan IS NULL OR pp.min_periode_potongan = '0000-00-00' OR pp.min_periode_potongan <= ?)
+                      AND (pp.max_periode_potongan IS NULL OR pp.max_periode_potongan = '0000-00-00' OR pp.max_periode_potongan >= ?)
+                  )
+              )
+            GROUP BY pp.jenis_potongan, p.nama_potongan
             ORDER BY nama ASC
         ";
 
-        $results = DB::select($sql, $bind);
+        $results = DB::select($sql, [$idPengajar, $lastDay, $periodeDate, $slipDate, $slipDate]);
         return array_map(fn($r) => (array)$r, $results);
     }
 
     public function list_potongan_struktural_by_month($nik, $startTs, $endTs, $id_lembaga = null, $specM = null, $specY = null)
     {
-        // Cari baris slip total_barokah yang sesuai untuk mendapatkan tanggal payroll dan id_penempatan presisi
-        $whereL = '';
-        $bindL = [$nik, $startTs, $endTs];
+        $targetM = $specM ? (int)$specM : (int)date('n', strtotime($startTs));
+        $targetY = $specY ? (int)$specY : (int)date('Y', strtotime($startTs));
+        $periodeDate = sprintf('%04d-%02d-01', $targetY, $targetM);
+        $lastDay = date('Y-m-t', strtotime($periodeDate));
+
+        $nmBulan = $this->nama_bulan_id($targetM);
+        $nmTahun = $this->tahun_ajaran($targetM, $targetY);
+
+        $slipQuery = DB::table('total_barokah as t')
+            ->join('penempatan as p', 'p.id_penempatan', '=', 't.id_penempatan')
+            ->where('p.nik', $nik);
+
         if (!empty($id_lembaga)) {
-            $whereL .= ' AND p.id_lembaga = ? ';
-            $bindL[] = $id_lembaga;
-        }
-        if (!empty($specM) && !empty($specY)) {
-            $nmBulan = $this->nama_bulan_id($specM);
-            $nmTahun = $this->tahun_ajaran($specM, $specY);
-            $whereL .= ' AND t.bulan = ? AND t.tahun = ? ';
-            $bindL[] = $nmBulan;
-            $bindL[] = $nmTahun;
+            $slipQuery->where('p.id_lembaga', $id_lembaga);
         }
 
-        $slip = DB::selectOne("
-            SELECT t.id_penempatan, t.timestamp, t.potongan
-            FROM total_barokah t
-            JOIN penempatan p ON p.id_penempatan = t.id_penempatan
-            WHERE p.nik = ? AND t.`timestamp` >= ? AND t.`timestamp` < ? {$whereL}
-            ORDER BY t.id_total_barokah DESC
-            LIMIT 1
-        ", $bindL);
+        $slip = (clone $slipQuery)
+            ->where('t.bulan', $nmBulan)
+            ->where(function ($q) use ($targetY, $nmTahun) {
+                $q->where('t.tahun', (string)$targetY)
+                  ->orWhere('t.tahun', 'like', $targetY . '%')
+                  ->orWhere('t.tahun', $nmTahun);
+            })
+            ->select('t.id_penempatan', 't.timestamp', 't.potongan', 't.bulan', 't.tahun')
+            ->orderBy('t.id_total_barokah', 'desc')
+            ->first();
 
-        if ($slip && !empty($slip->timestamp)) {
-            $payrollDate = date('Y-m-d', strtotime($slip->timestamp));
-            $sql = "
-                SELECT p.nama_potongan AS nama, SUM(pu.nominal_potongan) AS nominal
-                FROM potongan_umana pu
-                JOIN potongan p ON p.id_potongan = pu.jenis_potongan
-                WHERE pu.id_penempatan = ?
-                  AND (pu.min_periode_potongan IS NULL OR pu.min_periode_potongan <= ?)
-                  AND (pu.max_periode_potongan IS NULL OR pu.max_periode_potongan >= ?)
-                GROUP BY p.nama_potongan
-                ORDER BY p.nama_potongan ASC
-            ";
-            $results = DB::select($sql, [$slip->id_penempatan, $payrollDate, $payrollDate]);
-            return array_map(fn($r) => (array)$r, $results);
+        if (!$slip) {
+            $slip = (clone $slipQuery)
+                ->where('t.timestamp', '>=', $startTs)
+                ->where('t.timestamp', '<', $endTs)
+                ->select('t.id_penempatan', 't.timestamp', 't.potongan', 't.bulan', 't.tahun')
+                ->orderBy('t.id_total_barokah', 'desc')
+                ->first();
         }
 
-        // Fallback jika baris total_barokah tidak ditemukan
-        $bind  = [$nik, $endTs, $startTs];
-        $extra = '';
-        if (!empty($id_lembaga)) {
-            $extra = ' AND pen.id_lembaga = ? ';
-            $bind[] = $id_lembaga;
+        $idPenempatan = $slip->id_penempatan ?? null;
+        if (!$idPenempatan) {
+            $pen = DB::table('penempatan')
+                ->where('nik', $nik)
+                ->when(!empty($id_lembaga), fn($q) => $q->where('id_lembaga', $id_lembaga))
+                ->orderBy('id_penempatan', 'desc')
+                ->first();
+            $idPenempatan = $pen->id_penempatan ?? null;
         }
+
+        if (!$idPenempatan) {
+            return [];
+        }
+
+        $slipDate = !empty($slip->timestamp) ? date('Y-m-d', strtotime($slip->timestamp)) : $periodeDate;
 
         $sql = "
-            SELECT nama, SUM(nominal) AS nominal
-            FROM (
-                SELECT p.nama_potongan AS nama, pu.nominal_potongan AS nominal
-                FROM potongan_umana pu
-                JOIN potongan p    ON p.id_potongan = pu.jenis_potongan
-                JOIN penempatan pen ON pen.id_penempatan = pu.id_penempatan
-                WHERE pen.nik = ?
-                  AND (pu.min_periode_potongan IS NULL OR pu.min_periode_potongan <  ?)
-                  AND (pu.max_periode_potongan IS NULL OR pu.max_periode_potongan >= ?)
-                  {$extra}
-            ) t
-            GROUP BY nama
+            SELECT 
+                COALESCE(NULLIF(p.nama_potongan, ''), CONCAT('Potongan #', pu.jenis_potongan)) AS nama,
+                SUM(pu.nominal_potongan) AS nominal
+            FROM potongan_umana pu
+            LEFT JOIN potongan p ON p.id_potongan = pu.jenis_potongan
+            WHERE pu.id_penempatan = ?
+              AND (
+                  (
+                      (pu.min_periode_potongan IS NULL OR pu.min_periode_potongan = '0000-00-00' OR pu.min_periode_potongan <= ?)
+                      AND (pu.max_periode_potongan IS NULL OR pu.max_periode_potongan = '0000-00-00' OR pu.max_periode_potongan >= ?)
+                  )
+                  OR
+                  (
+                      (pu.min_periode_potongan IS NULL OR pu.min_periode_potongan = '0000-00-00' OR pu.min_periode_potongan <= ?)
+                      AND (pu.max_periode_potongan IS NULL OR pu.max_periode_potongan = '0000-00-00' OR pu.max_periode_potongan >= ?)
+                  )
+              )
+            GROUP BY pu.jenis_potongan, p.nama_potongan
             ORDER BY nama ASC
         ";
 
-        $results = DB::select($sql, $bind);
+        $results = DB::select($sql, [$idPenempatan, $lastDay, $periodeDate, $slipDate, $slipDate]);
+        return array_map(fn($r) => (array)$r, $results);
+    }
+
+    public function list_potongan_satpam_by_month($nik, $startTs, $endTs, $id_lembaga = null, $specM = null, $specY = null)
+    {
+        $targetM = $specM ? (int)$specM : (int)date('n', strtotime($startTs));
+        $targetY = $specY ? (int)$specY : (int)date('Y', strtotime($startTs));
+        $periodeDate = sprintf('%04d-%02d-01', $targetY, $targetM);
+        $lastDay = date('Y-m-t', strtotime($periodeDate));
+
+        $nmBulan = $this->nama_bulan_id($targetM);
+        $nmTahun = $this->tahun_ajaran($targetM, $targetY);
+
+        $slipQuery = DB::table('total_barokah_satpam as tbs')
+            ->join('satpam as sp', 'sp.id_satpam', '=', 'tbs.id_satpam')
+            ->leftJoin('kehadiran_lembaga as kl', 'kl.id_kehadiran_lembaga', '=', 'tbs.id_kehadiran_lembaga')
+            ->where('sp.nik', $nik);
+
+        if (!empty($id_lembaga)) {
+            $slipQuery->where('kl.id_lembaga', $id_lembaga);
+        }
+
+        $slip = (clone $slipQuery)
+            ->where('tbs.bulan', $nmBulan)
+            ->where(function ($q) use ($targetY, $nmTahun) {
+                $q->where('tbs.tahun', (string)$targetY)
+                  ->orWhere('tbs.tahun', 'like', $targetY . '%')
+                  ->orWhere('tbs.tahun', $nmTahun);
+            })
+            ->select('tbs.id_satpam', 'tbs.tgl_input', 'tbs.potongan', 'tbs.bulan', 'tbs.tahun')
+            ->orderBy('tbs.id_total_barokah_satpam', 'desc')
+            ->first();
+
+        if (!$slip) {
+            $slip = (clone $slipQuery)
+                ->where('tbs.tgl_input', '>=', $startTs)
+                ->where('tbs.tgl_input', '<', $endTs)
+                ->select('tbs.id_satpam', 'tbs.tgl_input', 'tbs.potongan', 'tbs.bulan', 'tbs.tahun')
+                ->orderBy('tbs.id_total_barokah_satpam', 'desc')
+                ->first();
+        }
+
+        $idSatpam = $slip->id_satpam ?? null;
+        if (!$idSatpam) {
+            $sp = DB::table('satpam')->where('nik', $nik)->orderBy('id_satpam', 'desc')->first();
+            $idSatpam = $sp->id_satpam ?? null;
+        }
+
+        if (!$idSatpam) {
+            return [];
+        }
+
+        $slipDate = !empty($slip->tgl_input) ? date('Y-m-d', strtotime($slip->tgl_input)) : $periodeDate;
+
+        $sql = "
+            SELECT 
+                COALESCE(NULLIF(p.nama_potongan, ''), CONCAT('Potongan #', ps.jenis_potongan)) AS nama,
+                SUM(ps.nominal_potongan) AS nominal
+            FROM potongan_satpam ps
+            LEFT JOIN potongan p ON p.id_potongan = ps.jenis_potongan
+            WHERE ps.id_satpam = ?
+              AND (
+                  (
+                      (ps.min_periode_potongan IS NULL OR ps.min_periode_potongan = '0000-00-00' OR ps.min_periode_potongan <= ?)
+                      AND (ps.max_periode_potongan IS NULL OR ps.max_periode_potongan = '0000-00-00' OR ps.max_periode_potongan >= ?)
+                  )
+                  OR
+                  (
+                      (ps.min_periode_potongan IS NULL OR ps.min_periode_potongan = '0000-00-00' OR ps.min_periode_potongan <= ?)
+                      AND (ps.max_periode_potongan IS NULL OR ps.max_periode_potongan = '0000-00-00' OR ps.max_periode_potongan >= ?)
+                  )
+              )
+            GROUP BY ps.jenis_potongan, p.nama_potongan
+            ORDER BY nama ASC
+        ";
+
+        $results = DB::select($sql, [$idSatpam, $lastDay, $periodeDate, $slipDate, $slipDate]);
         return array_map(fn($r) => (array)$r, $results);
     }
 }
