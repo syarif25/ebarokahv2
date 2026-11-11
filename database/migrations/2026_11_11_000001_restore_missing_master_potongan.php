@@ -42,3 +42,4 @@ return new class extends Migration
         // Tetap dipertahankan agar tidak menghilangkan referensi historis
     }
 };
+
