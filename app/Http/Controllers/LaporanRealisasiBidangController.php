@@ -24,6 +24,7 @@ class LaporanRealisasiBidangController extends Controller
                 $trimmed = trim($b);
                 if ($trimmed === 'Bidang DIKJAR') return 'Bidang DIKDASMEN';
                 if ($trimmed === 'Bidang DIKJAR-M') return 'Bidang DIKDASMEN-M';
+                if ($trimmed === 'Bidang Kepesantrenan dan PU') return 'Bidang PU';
                 return $trimmed;
             })
             ->unique()
@@ -78,12 +79,16 @@ class LaporanRealisasiBidangController extends Controller
                 if ($bidang === 'Bidang DIKDASMEN-M' || $bidang === 'Bidang DIKJAR-M') {
                     return $q->whereIn('l.id_bidang', ['Bidang DIKDASMEN-M', 'Bidang DIKJAR-M']);
                 }
+                if ($bidang === 'Bidang PU' || $bidang === 'Bidang Kepesantrenan dan PU') {
+                    return $q->whereIn('l.id_bidang', ['Bidang PU', 'Bidang Kepesantrenan dan PU']);
+                }
                 return $q->where('l.id_bidang', $bidang);
             })
             ->select(
                 DB::raw('CASE 
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR", "Bidang DIKDASMEN") THEN "Bidang DIKDASMEN"
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR-M", "Bidang DIKDASMEN-M") THEN "Bidang DIKDASMEN-M"
+                    WHEN TRIM(l.id_bidang) = "Bidang Kepesantrenan dan PU" THEN "Bidang PU"
                     ELSE COALESCE(NULLIF(TRIM(l.id_bidang), ""), "Lainnya") 
                 END as nama_bidang'),
                 DB::raw('COUNT(DISTINCT p.nik) as jml_umana'),
@@ -115,6 +120,9 @@ class LaporanRealisasiBidangController extends Controller
                 if ($bidang === 'Bidang DIKDASMEN-M' || $bidang === 'Bidang DIKJAR-M') {
                     return $q->whereIn('l.id_bidang', ['Bidang DIKDASMEN-M', 'Bidang DIKJAR-M']);
                 }
+                if ($bidang === 'Bidang PU' || $bidang === 'Bidang Kepesantrenan dan PU') {
+                    return $q->whereIn('l.id_bidang', ['Bidang PU', 'Bidang Kepesantrenan dan PU']);
+                }
                 return $q->where('l.id_bidang', $bidang);
             })
             ->select(
@@ -123,6 +131,7 @@ class LaporanRealisasiBidangController extends Controller
                 DB::raw('CASE 
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR", "Bidang DIKDASMEN") THEN "Bidang DIKDASMEN"
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR-M", "Bidang DIKDASMEN-M") THEN "Bidang DIKDASMEN-M"
+                    WHEN TRIM(l.id_bidang) = "Bidang Kepesantrenan dan PU" THEN "Bidang PU"
                     ELSE COALESCE(NULLIF(TRIM(l.id_bidang), ""), "Lainnya") 
                 END as nama_bidang'),
                 DB::raw('COUNT(DISTINCT p.nik) as jml_umana'),
@@ -255,12 +264,16 @@ class LaporanRealisasiBidangController extends Controller
                 if ($bidang === 'Bidang DIKDASMEN-M' || $bidang === 'Bidang DIKJAR-M') {
                     return $q->whereIn('l.id_bidang', ['Bidang DIKDASMEN-M', 'Bidang DIKJAR-M']);
                 }
+                if ($bidang === 'Bidang PU' || $bidang === 'Bidang Kepesantrenan dan PU') {
+                    return $q->whereIn('l.id_bidang', ['Bidang PU', 'Bidang Kepesantrenan dan PU']);
+                }
                 return $q->where('l.id_bidang', $bidang);
             })
             ->select(
                 DB::raw('CASE 
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR", "Bidang DIKDASMEN") THEN "Bidang DIKDASMEN"
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR-M", "Bidang DIKDASMEN-M") THEN "Bidang DIKDASMEN-M"
+                    WHEN TRIM(l.id_bidang) = "Bidang Kepesantrenan dan PU" THEN "Bidang PU"
                     ELSE COALESCE(NULLIF(TRIM(l.id_bidang), ""), "Lainnya") 
                 END as nama_bidang'),
                 DB::raw('COUNT(DISTINCT p.nik) as jml_umana'),
@@ -292,6 +305,9 @@ class LaporanRealisasiBidangController extends Controller
                 if ($bidang === 'Bidang DIKDASMEN-M' || $bidang === 'Bidang DIKJAR-M') {
                     return $q->whereIn('l.id_bidang', ['Bidang DIKDASMEN-M', 'Bidang DIKJAR-M']);
                 }
+                if ($bidang === 'Bidang PU' || $bidang === 'Bidang Kepesantrenan dan PU') {
+                    return $q->whereIn('l.id_bidang', ['Bidang PU', 'Bidang Kepesantrenan dan PU']);
+                }
                 return $q->where('l.id_bidang', $bidang);
             })
             ->select(
@@ -300,6 +316,7 @@ class LaporanRealisasiBidangController extends Controller
                 DB::raw('CASE 
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR", "Bidang DIKDASMEN") THEN "Bidang DIKDASMEN"
                     WHEN TRIM(l.id_bidang) IN ("Bidang DIKJAR-M", "Bidang DIKDASMEN-M") THEN "Bidang DIKDASMEN-M"
+                    WHEN TRIM(l.id_bidang) = "Bidang Kepesantrenan dan PU" THEN "Bidang PU"
                     ELSE COALESCE(NULLIF(TRIM(l.id_bidang), ""), "Lainnya") 
                 END as nama_bidang'),
                 DB::raw('COUNT(DISTINCT p.nik) as jml_umana'),
