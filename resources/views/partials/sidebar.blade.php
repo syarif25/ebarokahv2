@@ -216,6 +216,12 @@
                     <li class="{{ Request::is('laporan/per-lembaga*') || Request::is('Laporan_lembaga*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/per-lembaga') }}">Per Lembaga</a>
                     </li>
+                    <li class="{{ Request::is('laporan/realisasi-bidang*') || Request::is('Laporan_realisasi_bidang*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/laporan/realisasi-bidang') }}">Realisasi Struktural</a>
+                    </li>
+                    <li class="{{ Request::is('laporan/realisasi-pengajar*') || Request::is('Laporan_realisasi_pengajar*') ? 'mm-active' : '' }}">
+                        <a href="{{ url('/laporan/realisasi-pengajar') }}">Realisasi Pengajar</a>
+                    </li>
                     @endif
                     <li class="{{ Request::is('laporan/rincian-transfer*') ? 'mm-active' : '' }}">
                         <a href="{{ url('/laporan/rincian-transfer') }}">Rincian Transfer Lembaga</a>

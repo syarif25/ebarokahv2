@@ -227,6 +227,16 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/laporan/per-lembaga/cetak/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'cetak']);
         Route::get('/laporan/per-lembaga/export-excel/{id}', [App\Http\Controllers\LaporanLembagaController::class, 'exportExcel']);
 
+        // Laporan Realisasi Barokah Per Bidang (Struktural)
+        Route::get('/laporan/realisasi-bidang', [App\Http\Controllers\LaporanRealisasiBidangController::class, 'index'])->name('laporan.realisasi-bidang');
+        Route::get('/laporan/realisasi-bidang/export-excel', [App\Http\Controllers\LaporanRealisasiBidangController::class, 'exportExcel'])->name('laporan.realisasi-bidang.export-excel');
+        Route::get('/Laporan_realisasi_bidang', function() { return redirect('/laporan/realisasi-bidang'); });
+
+        // Laporan Realisasi Barokah Per Bidang (Pengajar)
+        Route::get('/laporan/realisasi-pengajar', [App\Http\Controllers\LaporanRealisasiPengajarController::class, 'index'])->name('laporan.realisasi-pengajar');
+        Route::get('/laporan/realisasi-pengajar/export-excel', [App\Http\Controllers\LaporanRealisasiPengajarController::class, 'exportExcel'])->name('laporan.realisasi-pengajar.export-excel');
+        Route::get('/Laporan_realisasi_pengajar', function() { return redirect('/laporan/realisasi-pengajar'); });
+
         // Rekap Kehadiran Pengajar
         Route::get('/laporan/rekap-kehadiran-pengajar', [App\Http\Controllers\RekapKehadiranPengajarController::class, 'index']);
         Route::get('/Rekap_kehadiran_pengajar', function() { return redirect('/laporan/rekap-kehadiran-pengajar'); });

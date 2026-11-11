@@ -92,18 +92,18 @@ class HitungPengajarService
         if (isset($tahun_acuan_map['Pengurus']))     $tahun_default = $tahun_acuan_map['Pengurus'];
         if (isset($tahun_acuan_map['Kantor Pusat'])) $tahun_default = $tahun_acuan_map['Kantor Pusat'];
 
-        $tahun_madrasah = $tahun_acuan_map['Bidang DIKJAR-M'] ?? $tahun_default;
-        $tahun_sekolah  = $tahun_acuan_map['Bidang DIKJAR']   ?? $tahun_default;
+        $tahun_madrasah = $tahun_acuan_map['Bidang DIKDASMEN-M'] ?? $tahun_acuan_map['Bidang DIKJAR-M'] ?? $tahun_default;
+        $tahun_sekolah  = $tahun_acuan_map['Bidang DIKDASMEN'] ?? $tahun_acuan_map['Bidang DIKJAR'] ?? $tahun_default;
         $tahun_pt       = $tahun_acuan_map['Bidang DIKTI']    ?? $tahun_default;
 
         $id_bidang      = $key->id_bidang ?? '';
         $kategori       = $key->kategori ?? '';
 
         // Masa Pengabdian (MP)
-        if (($kategori == 'GTY' || $kategori == 'GTT') && $id_bidang == 'Bidang DIKJAR-M') {
+        if (($kategori == 'GTY' || $kategori == 'GTT') && in_array($id_bidang, ['Bidang DIKDASMEN-M', 'Bidang DIKJAR-M'])) {
             $tmt = !empty($key->tmt_guru) ? strtotime($key->tmt_guru) : time();
             $mp = $tahun_madrasah - (int)date('Y', $tmt);
-        } elseif (($kategori == 'GTY' || $kategori == 'GTT') && $id_bidang == 'Bidang DIKJAR') {
+        } elseif (($kategori == 'GTY' || $kategori == 'GTT') && in_array($id_bidang, ['Bidang DIKDASMEN', 'Bidang DIKJAR'])) {
             $tmt = !empty($key->tmt_guru) ? strtotime($key->tmt_guru) : time();
             $mp = $tahun_sekolah - (int)date('Y', $tmt);
         } elseif (($kategori == 'DTY' || $kategori == 'DTT') && isset($key->nama_lembaga) && $key->nama_lembaga == "Ma'had Aly Sukorejo") {

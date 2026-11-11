@@ -127,8 +127,8 @@
                         <select class="form-control" id="inputBidang" required>
                             <option value="">-- Pilih Bidang --</option>
                             <option value="Bidang DIKTI">Bidang DIKTI</option>
-                            <option value="Bidang DIKJAR">Bidang DIKJAR</option>
-                            <option value="Bidang DIKJAR-M">Bidang DIKJAR-M</option>
+                            <option value="Bidang DIKDASMEN">Bidang DIKDASMEN</option>
+                            <option value="Bidang DIKDASMEN-M">Bidang DIKDASMEN-M</option>
                             <option value="Bidang Kepesantrenan dan PU">Bidang Kepesantrenan dan PU</option>
                             <option value="Bidang KAMTIB">Bidang KAMTIB</option>
                             <option value="Bidang Usaha">Bidang Usaha</option>
