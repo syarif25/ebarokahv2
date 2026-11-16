@@ -144,14 +144,7 @@ class LaporanPerUmanaController extends Controller
 
         $unionQuery = $qStruktural->unionAll($qPengajar)->unionAll($qSatpam);
 
-        $monthOrderSql = "CASE bulan 
-            WHEN 'Januari' THEN 1 WHEN 'Februari' THEN 2 WHEN 'Maret' THEN 3
-            WHEN 'April' THEN 4 WHEN 'Mei' THEN 5 WHEN 'Juni' THEN 6
-            WHEN 'Juli' THEN 7 WHEN 'Agustus' THEN 8 WHEN 'September' THEN 9
-            WHEN 'Oktober' THEN 10 WHEN 'November' THEN 11 WHEN 'Desember' THEN 12
-            ELSE 0 END";
-
-        $rekap = DB::query()->fromSub($unionQuery, 'gabungan')
+        $rekapRaw = DB::query()->fromSub($unionQuery, 'gabungan')
             ->select(
                 'bulan',
                 'tahun',
@@ -162,9 +155,9 @@ class LaporanPerUmanaController extends Controller
                 DB::raw('SUM(nominal_struktural + nominal_pengajar + nominal_satpam) as grand_total')
             )
             ->groupBy('tahun', 'bulan')
-            ->orderBy('tahun', 'desc')
-            ->orderByRaw($monthOrderSql . ' DESC')
             ->get();
+
+        $rekap = $rekapRaw->sortByDesc(fn($item) => $this->getPeriodSortKey($item->bulan, $item->tahun))->values();
 
         // 3. Riwayat Khusus Struktural (Data Lengkap)
         $struktural = DB::table('total_barokah as tb')
@@ -172,12 +165,9 @@ class LaporanPerUmanaController extends Controller
             ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
             ->leftJoin('ketentuan_barokah as kb', 'p.id_ketentuan', '=', 'kb.id_ketentuan')
             ->leftJoin('kehadiran as k', function ($join) {
-                $join->on('k.id_penempatan', '=', 'tb.id_penempatan');
-            })
-            ->leftJoin('kehadiran_lembaga as kl', function ($join) {
-                $join->on('kl.id_kehadiran_lembaga', '=', 'k.id_kehadi')
-                     ->on('kl.bulan', '=', 'tb.bulan')
-                     ->on('kl.tahun', '=', 'tb.tahun');
+                $join->on('k.id_penempatan', '=', 'tb.id_penempatan')
+                     ->on('k.bulan', '=', 'tb.bulan')
+                     ->on('k.tahun', '=', 'tb.tahun');
             })
             ->where('p.nik', $nik)
             ->select(
@@ -188,7 +178,7 @@ class LaporanPerUmanaController extends Controller
                 'kb.nama_jabatan',
                 'tb.tunjab',
                 'tb.mp',
-                DB::raw('COALESCE(k.jumlah_hadir, 0) as jumlah_hadir'),
+                DB::raw('MAX(COALESCE(k.jumlah_hadir, 0)) as jumlah_hadir'),
                 'tb.nominal_kehadiran',
                 'tb.tunkel',
                 'tb.tunj_anak',
@@ -200,13 +190,13 @@ class LaporanPerUmanaController extends Controller
             )
             ->groupBy(
                 'tb.id_total_barokah', 'tb.bulan', 'tb.tahun', 'l.nama_lembaga',
-                'kb.nama_jabatan', 'tb.tunjab', 'tb.mp', 'k.jumlah_hadir',
+                'kb.nama_jabatan', 'tb.tunjab', 'tb.mp',
                 'tb.nominal_kehadiran', 'tb.tunkel', 'tb.tunj_anak', 'tb.tbk',
                 'tb.tmp', 'tb.kehormatan', 'tb.potongan', 'tb.diterima'
             )
-            ->orderBy('tb.tahun', 'desc')
-            ->orderByRaw(str_replace('CASE bulan', 'CASE tb.bulan', $monthOrderSql) . ' DESC')
-            ->get();
+            ->get()
+            ->sortByDesc(fn($item) => $this->getPeriodSortKey($item->bulan, $item->tahun))
+            ->values();
 
         // 4. Riwayat Khusus Pengajar (Data Lengkap)
         $pengajar = DB::table('total_barokah_pengajar as tbp')
@@ -233,9 +223,9 @@ class LaporanPerUmanaController extends Controller
                 'tbp.potongan',
                 'tbp.diterima'
             )
-            ->orderBy('tbp.tahun', 'desc')
-            ->orderByRaw(str_replace('CASE bulan', 'CASE tbp.bulan', $monthOrderSql) . ' DESC')
-            ->get();
+            ->get()
+            ->sortByDesc(fn($item) => $this->getPeriodSortKey($item->bulan, $item->tahun))
+            ->values();
 
         // 5. Riwayat Khusus Satpam (Data Lengkap)
         $satpam = DB::table('total_barokah_satpam as tbs')
@@ -257,9 +247,9 @@ class LaporanPerUmanaController extends Controller
                 'tbs.potongan',
                 'tbs.diterima'
             )
-            ->orderBy('tbs.tahun', 'desc')
-            ->orderByRaw(str_replace('CASE bulan', 'CASE tbs.bulan', $monthOrderSql) . ' DESC')
-            ->get();
+            ->get()
+            ->sortByDesc(fn($item) => $this->getPeriodSortKey($item->bulan, $item->tahun))
+            ->values();
 
         return view('laporan.per-umana.rincian', compact(
             'umanaInfo',
@@ -280,6 +270,7 @@ class LaporanPerUmanaController extends Controller
         $jenis = strtolower($request->query('k', 'struktural'));
         $bulan = $request->query('bulan');
         $tahun = $request->query('tahun');
+        $cleanTahun = trim(preg_replace('/tahun/i', '', (string)$tahun));
         $idLembaga = $request->query('id_lembaga');
 
         if (!$nik || !$bulan || !$tahun) {
@@ -291,7 +282,11 @@ class LaporanPerUmanaController extends Controller
                 ->join('penempatan as p', 'tb.id_penempatan', '=', 'p.id_penempatan')
                 ->where('p.nik', $nik)
                 ->where('tb.bulan', $bulan)
-                ->where('tb.tahun', $tahun);
+                ->where(function ($q) use ($tahun, $cleanTahun) {
+                    $q->where('tb.tahun', $tahun)
+                      ->orWhere('tb.tahun', $cleanTahun)
+                      ->orWhere('tb.tahun', 'Tahun ' . $cleanTahun);
+                });
 
             if ($idLembaga) {
                 $query->where('p.id_lembaga', $idLembaga);
@@ -315,7 +310,11 @@ class LaporanPerUmanaController extends Controller
                 ->join('kehadiran_lembaga as kl', 'k.id_kehadi', '=', 'kl.id_kehadiran_lembaga')
                 ->where('p.nik', $nik)
                 ->where('kl.bulan', $bulan)
-                ->where('kl.tahun', $tahun);
+                ->where(function ($q) use ($tahun, $cleanTahun) {
+                    $q->where('kl.tahun', $tahun)
+                      ->orWhere('kl.tahun', $cleanTahun)
+                      ->orWhere('kl.tahun', 'Tahun ' . $cleanTahun);
+                });
             if ($idLembaga) {
                 $qHadir->where('p.id_lembaga', $idLembaga);
             }
@@ -353,7 +352,11 @@ class LaporanPerUmanaController extends Controller
                 ->join('pengajar as p', 'tbp.id_pengajar', '=', 'p.id_pengajar')
                 ->where('p.nik', $nik)
                 ->where('tbp.bulan', $bulan)
-                ->where('tbp.tahun', $tahun);
+                ->where(function ($q) use ($tahun, $cleanTahun) {
+                    $q->where('tbp.tahun', $tahun)
+                      ->orWhere('tbp.tahun', $cleanTahun)
+                      ->orWhere('tbp.tahun', 'Tahun ' . $cleanTahun);
+                });
 
             if ($idLembaga) {
                 $query->where('p.id_lembaga', $idLembaga);
@@ -422,7 +425,11 @@ class LaporanPerUmanaController extends Controller
                 ->join('satpam as s', 'tbs.id_satpam', '=', 's.id_satpam')
                 ->where('s.nik', $nik)
                 ->where('tbs.bulan', $bulan)
-                ->where('tbs.tahun', $tahun)
+                ->where(function ($q) use ($tahun, $cleanTahun) {
+                    $q->where('tbs.tahun', $tahun)
+                      ->orWhere('tbs.tahun', $cleanTahun)
+                      ->orWhere('tbs.tahun', 'Tahun ' . $cleanTahun);
+                })
                 ->select(
                     DB::raw('COALESCE(SUM(tbs.jumlah_hari),0) as j_hari'),
                     DB::raw('COALESCE(SUM(tbs.nominal_transport * tbs.jumlah_hari),0) as k1_total'),
@@ -460,5 +467,46 @@ class LaporanPerUmanaController extends Controller
         }
 
         return response()->json(['ok' => false, 'message' => 'Kategori tidak valid']);
+    }
+
+    /**
+     * Helper untuk menghasilkan sort key kronologis (terbaru ke terlama)
+     * Format tahun bisa berupa tahun tunggal (2026) atau tahun ajaran (2024/2025).
+     */
+    protected function getPeriodSortKey($bulan, $tahun)
+    {
+        $monthMap = [
+            'januari' => 1, 'februari' => 2, 'maret' => 3, 'april' => 4,
+            'mei' => 5, 'juni' => 6, 'juli' => 7, 'agustus' => 8,
+            'september' => 9, 'oktober' => 10, 'november' => 11, 'desember' => 12
+        ];
+
+        $b = strtolower(trim((string)$bulan));
+        $m = $monthMap[$b] ?? 0;
+        $cleanTahun = trim(preg_replace('/tahun/i', '', (string)$tahun));
+        preg_match_all('/\d{4}/', $cleanTahun, $matches);
+        $years = $matches[0] ?? [];
+
+        if (count($years) >= 2) {
+            $y1 = (int)$years[0];
+            $y2 = (int)$years[1];
+            if ($m >= 7) {
+                // Semester ganjil (Juli - Desember) masuk ke tahun pertama
+                $calYear = $y1;
+            } elseif ($m === 6) {
+                // Kasus transisi Juni pada tahun ajaran
+                $calYear = ($y1 === 2025) ? $y1 : $y2;
+                return sprintf('%04d%02d_%d', $calYear, $m, ($y1 === 2025 ? 2 : 1));
+            } else {
+                // Semester genap (Januari - Mei) masuk ke tahun kedua
+                $calYear = $y2;
+            }
+        } elseif (count($years) === 1) {
+            $calYear = (int)$years[0];
+        } else {
+            $calYear = 2000;
+        }
+
+        return sprintf('%04d%02d_0', $calYear, $m);
     }
 }
