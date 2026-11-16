@@ -73,7 +73,7 @@ class PengajarController extends Controller
             'id_lembaga' => 'required',
             'jumlah_sks' => 'required|numeric',
             'tgl_mulai' => 'required|date',
-            'tgl_selesai' => 'required|date'
+            'tgl_selesai' => 'nullable|date'
         ]);
 
         $data = $request->all();
@@ -113,7 +113,9 @@ class PengajarController extends Controller
             'kategori' => 'required',
             'status' => 'required',
             'id_lembaga' => 'required',
-            'jumlah_sks' => 'required|numeric'
+            'jumlah_sks' => 'required|numeric',
+            'tgl_mulai' => 'required|date',
+            'tgl_selesai' => 'nullable|date'
         ]);
 
         $pengajar = Pengajar::findOrFail($id);
@@ -125,8 +127,8 @@ class PengajarController extends Controller
         $data['jumlah_sks'] = (float)str_replace(',', '.', (string)$request->jumlah_sks);
         $data['id_prodi'] = $request->id_prodi ?: null;
         $data['kategori_trans'] = $request->kategori_trans ?: null;
-        if (!empty($request->tgl_mulai)) $data['tgl_mulai'] = $request->tgl_mulai;
-        if (!empty($request->tgl_selesai)) $data['tgl_selesai'] = $request->tgl_selesai;
+        $data['tgl_mulai'] = $request->tgl_mulai ?: ($pengajar->tgl_mulai ?: date('Y-01-01'));
+        $data['tgl_selesai'] = $request->tgl_selesai ?: date('2040-01-01');
         $data['tunj_kel'] = $request->tunj_kel ?: 'Tidak';
         $data['tunj_anak'] = $request->tunj_anak ?: 'Tidak';
         $data['kehormatan'] = $request->kehormatan ?: 'Tidak';

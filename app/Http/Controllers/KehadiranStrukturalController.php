@@ -547,7 +547,11 @@ class KehadiranStrukturalController extends Controller
             $statusNew = ($actionType === 'revisi') ? 'Revisi' : 'acc';
 
             // Bersihkan snapshot total_barokah periode ini jika ada
-            DB::table('total_barokah')->where('id_kehadiran', $id)->delete();
+            DB::table('total_barokah')
+                ->where('id_kehadiran', $id)
+                ->where('bulan', $res['periode']->bulan)
+                ->where('tahun', $res['periode']->tahun)
+                ->delete();
 
             // Jika disetujui (ACC), buat snapshot ke tabel total_barokah
             if ($actionType !== 'revisi') {
@@ -649,14 +653,22 @@ class KehadiranStrukturalController extends Controller
         try {
             if ($mode === 'kehadiran') {
                 \App\Models\Kehadiran::where('id_kehadi', $id)->delete();
-                DB::table('total_barokah')->where('id_kehadiran', $id)->delete();
+                DB::table('total_barokah')
+                    ->where('id_kehadiran', $id)
+                    ->where('bulan', $periode->bulan)
+                    ->where('tahun', $periode->tahun)
+                    ->delete();
                 $periode->update([
                     'status'       => 'Belum',
                     'jumlah_total' => 0,
                 ]);
                 $catatan = 'Reset total: data input kehadiran dan rekap barokah dihapus, status kembali ke Belum.';
             } else {
-                DB::table('total_barokah')->where('id_kehadiran', $id)->delete();
+                DB::table('total_barokah')
+                    ->where('id_kehadiran', $id)
+                    ->where('bulan', $periode->bulan)
+                    ->where('tahun', $periode->tahun)
+                    ->delete();
                 $periode->update([
                     'status'       => 'Sudah',
                     'jumlah_total' => 0,

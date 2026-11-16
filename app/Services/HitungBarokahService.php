@@ -88,6 +88,9 @@ class HitungBarokahService
                 })
                 ->leftJoin('transport as t', 't.id_transport', '=', 'p.kategori_trans')
                 ->where('tb.id_kehadiran', $idKehadiranLembaga)
+                ->where('p.id_lembaga', $periodeModel->id_lembaga)
+                ->where('tb.bulan', $periodeModel->bulan)
+                ->where('tb.tahun', $periodeModel->tahun)
                 ->select(
                     'tb.*',
                     'p.id_lembaga', 'l.nama_lembaga', 'l.id_bidang',
@@ -288,7 +291,7 @@ class HitungBarokahService
 
         // Catatan khusus Umana saat ini jika sudah tersimpan di total_barokah
         $catatanKhusus = [];
-        $tbCurrent = DB::select("SELECT id_penempatan, catatan_khusus_umana FROM total_barokah WHERE id_kehadiran = ?", [$idKehadiranLembaga]);
+        $tbCurrent = DB::select("SELECT id_penempatan, catatan_khusus_umana FROM total_barokah WHERE id_kehadiran = ? AND bulan = ? AND tahun = ?", [$idKehadiranLembaga, $periodeModel->bulan, $periodeModel->tahun]);
         foreach ($tbCurrent as $tc) {
             $catatanKhusus[$tc->id_penempatan] = $tc->catatan_khusus_umana;
         }

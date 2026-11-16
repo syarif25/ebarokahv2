@@ -511,9 +511,9 @@
                         </div>
                     </div>
 
-                    <!-- Row 4: Transport/Kehadiran & Tombol Simpan -->
-                    <div class="row gx-3 gy-3 align-items-end mt-1">
-                        <div class="col-md-9">
+                    <!-- Row 4: Transport/Kehadiran & Masa Aktif -->
+                    <div class="row gx-3 gy-3 align-items-end mt-1 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label-custom">Transport/Kehadiran</label>
                             <select class="form-control select2 select2-pill-green" name="kategori_trans" id="kategori_trans" style="width: 100%;">
                                 <option value="">-- Tanpa Transport / Pilih Rute Transport --</option>
@@ -524,14 +524,22 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3 text-end">
-                            <button type="submit" class="btn btn-simpan-modal w-100">Simpan</button>
+                        <div class="col-md-3">
+                            <label class="form-label-custom">Tanggal Mulai <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control input-pill-green" name="tgl_mulai" id="tgl_mulai" value="{{ date('Y-01-01') }}" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label-custom">Tanggal Selesai</label>
+                            <input type="date" class="form-control input-pill-green" name="tgl_selesai" id="tgl_selesai" value="{{ date('2040-01-01') }}">
                         </div>
                     </div>
 
-                    <!-- Hidden inputs for fallback / defaults if required -->
-                    <input type="hidden" name="tgl_mulai" id="tgl_mulai" value="{{ date('Y-01-01') }}">
-                    <input type="hidden" name="tgl_selesai" id="tgl_selesai" value="{{ date('2040-01-01') }}">
+                    <!-- Row 5: Tombol Simpan -->
+                    <div class="row mt-2">
+                        <div class="col-12 text-end">
+                            <button type="submit" class="btn btn-simpan-modal" style="min-width: 180px;">Simpan</button>
+                        </div>
+                    </div>
 
                 </div>
             </form>
@@ -827,6 +835,8 @@
 
             $('.select2').val('').trigger('change');
             $('#jumlah_sks').val(0);
+            $('#tgl_mulai').val('{{ date("Y-01-01") }}').prop('disabled', false);
+            $('#tgl_selesai').val('{{ date("2040-01-01") }}').prop('disabled', false);
             $('#status').val('Aktif');
             $('#tunj_kel').val('Tidak');
             $('#tunj_anak').val('Tidak');
@@ -917,8 +927,10 @@
             $('#id_lembaga').val(data.id_lembaga).trigger('change');
             $('#id_prodi').val(data.id_prodi || '').trigger('change');
             $('#jumlah_sks').val(data.jumlah_sks != null ? parseFloat(data.jumlah_sks) : 0);
-            $('#tgl_mulai').val(data.tgl_mulai || '{{ date("Y-01-01") }}');
-            $('#tgl_selesai').val(data.tgl_selesai || '{{ date("2040-01-01") }}');
+            var tglMulai = (data.tgl_mulai && data.tgl_mulai !== '0000-00-00') ? data.tgl_mulai : '{{ date("Y-01-01") }}';
+            var tglSelesai = (data.tgl_selesai && data.tgl_selesai !== '0000-00-00') ? data.tgl_selesai : '{{ date("2040-01-01") }}';
+            $('#tgl_mulai').val(tglMulai).prop('disabled', false);
+            $('#tgl_selesai').val(tglSelesai).prop('disabled', false);
             
             $('#tunj_kel').val(data.tunj_kel == 'Ya' ? 'Ya' : 'Tidak');
             $('#tunj_anak').val(data.tunj_anak == 'Ya' ? 'Ya' : 'Tidak');
