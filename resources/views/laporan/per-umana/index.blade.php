@@ -340,13 +340,20 @@
             },
             columns: [
                 { 
-                    data: 'no', 
-                    className: 'text-center font-weight-bold text-muted' 
+                    data: null, 
+                    className: 'text-center font-weight-bold text-muted',
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
                 },
                 { 
-                    data: 'nama_html',
-                    render: function(data) {
-                        return data;
+                    data: 'nama_lengkap',
+                    render: function(data, type, row) {
+                        if (type === 'sort' || type === 'filter') {
+                            return data || '';
+                        }
+                        return row.nama_html;
                     }
                 },
                 { 
@@ -364,14 +371,25 @@
                     className: 'text-center' 
                 },
                 { 
-                    data: 'kategori_html', 
-                    className: 'text-center' 
+                    data: 'kategori', 
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        if (type === 'sort' || type === 'filter') {
+                            return data || '';
+                        }
+                        return row.kategori_html;
+                    }
                 },
                 { 
-                    data: 'nominal', 
+                    data: 'nominal_raw', 
+                    type: 'num',
                     className: 'text-end',
-                    render: function(data) {
-                        return `<span class="font-weight-bold" style="color: #16a34a; font-size: 14px;">Rp ${data}</span>`;
+                    render: function(data, type, row) {
+                        var num = parseFloat(data || 0);
+                        if (type === 'sort' || type === 'type') {
+                            return num;
+                        }
+                        return `<span class="font-weight-bold" style="color: #16a34a; font-size: 14px;">Rp ${num.toLocaleString('id-ID')}</span>`;
                     }
                 },
                 { 

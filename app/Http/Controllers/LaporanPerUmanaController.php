@@ -229,9 +229,11 @@ class LaporanPerUmanaController extends Controller
                 'lembaga' => e($item->daftar_lembaga ?: '-'),
                 'bulan' => e($bulan),
                 'tahun' => e($cleanTahun),
+                'kategori' => e($item->daftar_kategori ?: '-'),
                 'kategori_html' => $badgesKategori ?: '-',
                 'nominal' => number_format((float)$item->grand_total, 0, ',', '.'),
                 'nominal_rp' => 'Rp ' . number_format((float)$item->grand_total, 0, ',', '.'),
+                'nominal_raw' => (float)$item->grand_total,
                 'aksi' => '<a href="' . url('/laporan/per-umana/rincian/' . $item->nik) . '" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm font-weight-bold" style="border-color: #ef4444; color: #ef4444;">
                     <i class="fas fa-list-alt me-1"></i> Rincian
                 </a>'
