@@ -350,10 +350,13 @@
                 { 
                     data: 'nama_lengkap',
                     render: function(data, type, row) {
-                        if (type === 'sort' || type === 'filter') {
+                        if (type === 'sort') {
                             return data || '';
                         }
-                        return row.nama_html;
+                        if (type === 'filter') {
+                            return (data || '') + ' ' + (row.nik || '');
+                        }
+                        return row.nama_html || `<strong class="text-dark">${data}</strong>`;
                     }
                 },
                 { 

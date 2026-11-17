@@ -225,7 +225,7 @@ class LaporanPerUmanaController extends Controller
                 'no' => $no++,
                 'nama_lengkap' => $nama,
                 'nik' => $item->nik,
-                'nama_html' => '<div><strong class="text-dark">' . e($nama) . '</strong><br><small class="text-muted"><i class="fas fa-id-card me-1"></i>' . e($item->nik) . '</small></div>',
+                'nama_html' => '<strong class="text-dark">' . e($nama) . '</strong>',
                 'lembaga' => e($item->daftar_lembaga ?: '-'),
                 'bulan' => e($bulan),
                 'tahun' => e($cleanTahun),
