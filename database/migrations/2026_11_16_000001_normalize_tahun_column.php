@@ -39,3 +39,4 @@ return new class extends Migration
         // Data cleaning / normalization tidak perlu di-reverse ke format typo
     }
 };
+

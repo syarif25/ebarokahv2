@@ -8,64 +8,319 @@ use Illuminate\Support\Facades\DB;
 class LaporanPerUmanaController extends Controller
 {
     /**
-     * Halaman Utama: Daftar Barokah Per Umana
+     * Halaman Utama: Daftar Barokah Per Umana (Opsi A: Berbasis Periode & Lembaga)
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('laporan.per-umana.index');
+        // 1. Ambil daftar tahun unik dari ketiga tabel barokah
+        $tahunT1 = DB::table('total_barokah')->whereNotNull('tahun')->where('tahun', '!=', '')->distinct()->pluck('tahun');
+        $tahunT2 = DB::table('total_barokah_pengajar')->whereNotNull('tahun')->where('tahun', '!=', '')->distinct()->pluck('tahun');
+        $tahunT3 = DB::table('total_barokah_satpam')->whereNotNull('tahun')->where('tahun', '!=', '')->distinct()->pluck('tahun');
+
+        $daftarTahun = $tahunT1->concat($tahunT2)->concat($tahunT3)->unique()->values();
+        $daftarTahun = $daftarTahun->sort(function ($a, $b) {
+            return $this->getPeriodSortKey('Desember', $b) <=> $this->getPeriodSortKey('Desember', $a);
+        })->values();
+
+        // 2. Daftar Bulan
+        $daftarBulan = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        // 3. Daftar Lembaga
+        $daftarLembaga = DB::table('lembaga')->orderBy('nama_lembaga', 'asc')->get(['id_lembaga', 'nama_lembaga']);
+
+        // 4. Default Periode Terbaru
+        $latest = DB::table('total_barokah')->orderBy('id_total_barokah', 'desc')->first(['bulan', 'tahun']);
+        $defaultBulan = $latest ? $latest->bulan : 'Oktober';
+        $defaultTahun = $latest ? $latest->tahun : ($daftarTahun->first() ?: date('Y'));
+
+        $selectedBulan = $request->input('bulan', $defaultBulan);
+        $selectedTahun = $request->input('tahun', $defaultTahun);
+        $selectedLembaga = $request->input('id_lembaga', '');
+
+        return view('laporan.per-umana.index', compact(
+            'daftarTahun',
+            'daftarBulan',
+            'daftarLembaga',
+            'selectedBulan',
+            'selectedTahun',
+            'selectedLembaga'
+        ));
     }
 
     /**
-     * DataTables Server-Side / JSON untuk Daftar Umana
+     * DataTables Server-Side / JSON untuk Daftar Barokah Per Umana (Periode Terpilih)
      */
     public function data(Request $request)
     {
-        $query = DB::table('umana')
-            ->select('umana.nik', 'umana.nama_lengkap', 'umana.nomor_hp', 'umana.alamat_domisili')
-            ->whereExists(function ($sub) {
-                $sub->select(DB::raw(1))
-                    ->from('penempatan')
-                    ->whereColumn('penempatan.nik', 'umana.nik');
-            })
-            ->orWhereExists(function ($sub) {
-                $sub->select(DB::raw(1))
-                    ->from('pengajar')
-                    ->whereColumn('pengajar.nik', 'umana.nik');
-            })
-            ->orWhereExists(function ($sub) {
-                $sub->select(DB::raw(1))
-                    ->from('satpam')
-                    ->whereColumn('satpam.nik', 'umana.nik');
+        $latest = DB::table('total_barokah')->orderBy('id_total_barokah', 'desc')->first(['bulan', 'tahun']);
+        $defaultBulan = $latest ? $latest->bulan : 'Oktober';
+        $defaultTahun = $latest ? $latest->tahun : date('Y');
+
+        $bulan = $request->input('bulan', $defaultBulan);
+        $tahun = $request->input('tahun', $defaultTahun);
+        $idLembaga = $request->input('id_lembaga');
+
+        $cleanTahun = trim(preg_replace('/tahun/i', '', (string)$tahun));
+
+        // 1. Query Struktural
+        $q1 = DB::table('total_barokah as tb')
+            ->join('penempatan as p', 'tb.id_penempatan', '=', 'p.id_penempatan')
+            ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
+            ->where('tb.bulan', $bulan)
+            ->where(function ($q) use ($tahun, $cleanTahun) {
+                $q->where('tb.tahun', $tahun)
+                  ->orWhere('tb.tahun', $cleanTahun)
+                  ->orWhere('tb.tahun', 'Tahun ' . $cleanTahun);
             });
 
-        // Filter pencarian global atau spesifik
+        if ($idLembaga) {
+            $q1->where('p.id_lembaga', $idLembaga);
+        }
+
+        $q1->select(
+            'p.nik',
+            'l.id_lembaga',
+            'l.nama_lembaga',
+            DB::raw("'Struktural' as kategori"),
+            'tb.diterima as nominal_struktural',
+            DB::raw('0 as nominal_pengajar'),
+            DB::raw('0 as nominal_satpam'),
+            'tb.diterima as nominal'
+        );
+
+        // 2. Query Pengajar
+        $q2 = DB::table('total_barokah_pengajar as tbp')
+            ->join('pengajar as p', 'tbp.id_pengajar', '=', 'p.id_pengajar')
+            ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
+            ->where('tbp.bulan', $bulan)
+            ->where(function ($q) use ($tahun, $cleanTahun) {
+                $q->where('tbp.tahun', $tahun)
+                  ->orWhere('tbp.tahun', $cleanTahun)
+                  ->orWhere('tbp.tahun', 'Tahun ' . $cleanTahun);
+            });
+
+        if ($idLembaga) {
+            $q2->where('p.id_lembaga', $idLembaga);
+        }
+
+        $q2->select(
+            'p.nik',
+            'l.id_lembaga',
+            'l.nama_lembaga',
+            DB::raw("'Pengajar' as kategori"),
+            DB::raw('0 as nominal_struktural'),
+            'tbp.diterima as nominal_pengajar',
+            DB::raw('0 as nominal_satpam'),
+            'tbp.diterima as nominal'
+        );
+
+        // 3. Query Satpam
+        $q3 = DB::table('total_barokah_satpam as tbs')
+            ->join('satpam as s', 'tbs.id_satpam', '=', 's.id_satpam')
+            ->leftJoin('kehadiran_lembaga as kl', 'kl.id_kehadiran_lembaga', '=', 'tbs.id_kehadiran_lembaga')
+            ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'kl.id_lembaga')
+            ->where('tbs.bulan', $bulan)
+            ->where(function ($q) use ($tahun, $cleanTahun) {
+                $q->where('tbs.tahun', $tahun)
+                  ->orWhere('tbs.tahun', $cleanTahun)
+                  ->orWhere('tbs.tahun', 'Tahun ' . $cleanTahun);
+            });
+
+        if ($idLembaga) {
+            $q3->where('l.id_lembaga', $idLembaga);
+        }
+
+        $q3->select(
+            's.nik',
+            DB::raw('COALESCE(l.id_lembaga, 0) as id_lembaga'),
+            DB::raw("COALESCE(l.nama_lembaga, 'Satpam') as nama_lembaga"),
+            DB::raw("'Satpam' as kategori"),
+            DB::raw('0 as nominal_struktural'),
+            DB::raw('0 as nominal_pengajar'),
+            'tbs.diterima as nominal_satpam',
+            'tbs.diterima as nominal'
+        );
+
+        $union = $q1->unionAll($q2)->unionAll($q3);
+
+        $mainQuery = DB::query()->fromSub($union, 'g')
+            ->join('umana as u', 'g.nik', '=', 'u.nik')
+            ->select(
+                'g.nik',
+                'u.nama_lengkap',
+                'u.gelar_depan',
+                'u.gelar_belakang',
+                'u.nomor_hp',
+                'u.alamat_domisili',
+                DB::raw('GROUP_CONCAT(DISTINCT g.nama_lembaga ORDER BY g.nama_lembaga SEPARATOR ", ") as daftar_lembaga'),
+                DB::raw('GROUP_CONCAT(DISTINCT g.kategori ORDER BY g.kategori SEPARATOR ", ") as daftar_kategori'),
+                DB::raw('SUM(g.nominal_struktural) as total_struktural'),
+                DB::raw('SUM(g.nominal_pengajar) as total_pengajar'),
+                DB::raw('SUM(g.nominal_satpam) as total_satpam'),
+                DB::raw('SUM(g.nominal) as grand_total')
+            )
+            ->groupBy('g.nik', 'u.nama_lengkap', 'u.gelar_depan', 'u.gelar_belakang', 'u.nomor_hp', 'u.alamat_domisili');
+
+        // Filter pencarian nama/nik
         if ($request->has('search') && !empty($request->input('search')['value'])) {
-            $search = $request->input('search')['value'];
-            $query->where(function ($q) use ($search) {
-                $q->where('umana.nama_lengkap', 'like', "%{$search}%")
-                  ->orWhere('umana.nomor_hp', 'like', "%{$search}%")
-                  ->orWhere('umana.alamat_domisili', 'like', "%{$search}%");
+            $search = trim($request->input('search')['value']);
+            $mainQuery->where(function ($q) use ($search) {
+                $q->where('u.nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('g.nik', 'like', "%{$search}%")
+                  ->orWhere('u.nomor_hp', 'like', "%{$search}%");
             });
         }
 
-        $list = $query->orderBy('umana.nama_lengkap', 'asc')->get();
+        $list = $mainQuery->orderBy('u.nama_lengkap', 'asc')->get();
+
+        $summary = [
+            'total_umana' => $list->count(),
+            'grand_total_rp' => 'Rp ' . number_format($list->sum('grand_total'), 0, ',', '.'),
+            'struktural_rp' => 'Rp ' . number_format($list->sum('total_struktural'), 0, ',', '.'),
+            'pengajar_rp' => 'Rp ' . number_format($list->sum('total_pengajar'), 0, ',', '.'),
+            'satpam_rp' => 'Rp ' . number_format($list->sum('total_satpam'), 0, ',', '.'),
+        ];
 
         $data = [];
         $no = 1;
 
         foreach ($list as $item) {
+            $nama = trim(($item->gelar_depan ? $item->gelar_depan . ' ' : '') . $item->nama_lengkap . ($item->gelar_belakang ? ', ' . $item->gelar_belakang : ''));
+
+            $badgesKategori = '';
+            $katArr = array_filter(array_map('trim', explode(',', $item->daftar_kategori)));
+            foreach ($katArr as $k) {
+                if ($k === 'Struktural') {
+                    $badgesKategori .= '<span class="badge bg-success-light text-success me-1">Struktural</span>';
+                } elseif ($k === 'Pengajar') {
+                    $badgesKategori .= '<span class="badge bg-info-light text-info me-1">Pengajar</span>';
+                } elseif ($k === 'Satpam') {
+                    $badgesKategori .= '<span class="badge bg-warning-light text-warning me-1">Satpam</span>';
+                }
+            }
+
             $data[] = [
                 'no' => $no++,
-                'nama_lengkap' => $item->nama_lengkap,
-                'nomor_hp' => $item->nomor_hp ?: '-',
-                'alamat_domisili' => $item->alamat_domisili ?: '-',
-                'aksi' => '<a href="' . url('/laporan/per-umana/rincian/' . $item->nik) . '" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm font-weight-bold" style="border-color: #ef4444; color: #ef4444;">
-                    <i class="fas fa-list-alt me-1"></i> Rincian
-                </a>'
+                'nama_lengkap' => '<div><strong class="text-dark">' . e($nama) . '</strong><br><small class="text-muted"><i class="fas fa-id-card me-1"></i>' . e($item->nik) . '</small></div>',
+                'lembaga' => '<span class="text-secondary fw-semibold">' . e($item->daftar_lembaga ?: '-') . '</span>',
+                'kategori' => $badgesKategori ?: '<span class="badge bg-light text-muted">-</span>',
+                'periode' => '<span class="badge bg-light text-dark border px-2 py-1">' . e($bulan . ' ' . $cleanTahun) . '</span>',
+                'grand_total' => '<span class="text-success fw-bold fs-14">Rp ' . number_format((float)$item->grand_total, 0, ',', '.') . '</span>',
+                'aksi' => '<div class="d-flex gap-1 justify-content-center">
+                    <a href="' . url('/laporan/per-umana/rincian/' . $item->nik) . '" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm font-weight-bold" title="Lihat Riwayat Lengkap">
+                        <i class="fas fa-list-alt me-1"></i> Rincian
+                    </a>
+                </div>'
             ];
         }
 
-        return response()->json(['data' => $data]);
+        return response()->json([
+            'data' => $data,
+            'summary' => $summary
+        ]);
+    }
+
+    /**
+     * Export Excel Daftar Barokah Per Umana (Berdasarkan Filter Periode & Lembaga)
+     */
+    public function exportExcel(Request $request)
+    {
+        $latest = DB::table('total_barokah')->orderBy('id_total_barokah', 'desc')->first(['bulan', 'tahun']);
+        $defaultBulan = $latest ? $latest->bulan : 'Oktober';
+        $defaultTahun = $latest ? $latest->tahun : date('Y');
+
+        $bulan = $request->input('bulan', $defaultBulan);
+        $tahun = $request->input('tahun', $defaultTahun);
+        $idLembaga = $request->input('id_lembaga');
+        $cleanTahun = trim(preg_replace('/tahun/i', '', (string)$tahun));
+
+        $namaLembagaTerpilih = 'Semua Lembaga';
+        if ($idLembaga) {
+            $lem = DB::table('lembaga')->where('id_lembaga', $idLembaga)->first();
+            if ($lem) {
+                $namaLembagaTerpilih = $lem->nama_lembaga;
+            }
+        }
+
+        // 1. Query Struktural
+        $q1 = DB::table('total_barokah as tb')
+            ->join('penempatan as p', 'tb.id_penempatan', '=', 'p.id_penempatan')
+            ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
+            ->where('tb.bulan', $bulan)
+            ->where(function ($q) use ($tahun, $cleanTahun) {
+                $q->where('tb.tahun', $tahun)
+                  ->orWhere('tb.tahun', $cleanTahun)
+                  ->orWhere('tb.tahun', 'Tahun ' . $cleanTahun);
+            });
+        if ($idLembaga) $q1->where('p.id_lembaga', $idLembaga);
+        $q1->select('p.nik', 'l.id_lembaga', 'l.nama_lembaga', DB::raw("'Struktural' as kategori"), 'tb.diterima as nominal_struktural', DB::raw('0 as nominal_pengajar'), DB::raw('0 as nominal_satpam'), 'tb.diterima as nominal');
+
+        // 2. Query Pengajar
+        $q2 = DB::table('total_barokah_pengajar as tbp')
+            ->join('pengajar as p', 'tbp.id_pengajar', '=', 'p.id_pengajar')
+            ->join('lembaga as l', 'p.id_lembaga', '=', 'l.id_lembaga')
+            ->where('tbp.bulan', $bulan)
+            ->where(function ($q) use ($tahun, $cleanTahun) {
+                $q->where('tbp.tahun', $tahun)
+                  ->orWhere('tbp.tahun', $cleanTahun)
+                  ->orWhere('tbp.tahun', 'Tahun ' . $cleanTahun);
+            });
+        if ($idLembaga) $q2->where('p.id_lembaga', $idLembaga);
+        $q2->select('p.nik', 'l.id_lembaga', 'l.nama_lembaga', DB::raw("'Pengajar' as kategori"), DB::raw('0 as nominal_struktural'), 'tbp.diterima as nominal_pengajar', DB::raw('0 as nominal_satpam'), 'tbp.diterima as nominal');
+
+        // 3. Query Satpam
+        $q3 = DB::table('total_barokah_satpam as tbs')
+            ->join('satpam as s', 'tbs.id_satpam', '=', 's.id_satpam')
+            ->leftJoin('kehadiran_lembaga as kl', 'kl.id_kehadiran_lembaga', '=', 'tbs.id_kehadiran_lembaga')
+            ->leftJoin('lembaga as l', 'l.id_lembaga', '=', 'kl.id_lembaga')
+            ->where('tbs.bulan', $bulan)
+            ->where(function ($q) use ($tahun, $cleanTahun) {
+                $q->where('tbs.tahun', $tahun)
+                  ->orWhere('tbs.tahun', $cleanTahun)
+                  ->orWhere('tbs.tahun', 'Tahun ' . $cleanTahun);
+            });
+        if ($idLembaga) $q3->where('l.id_lembaga', $idLembaga);
+        $q3->select('s.nik', DB::raw('COALESCE(l.id_lembaga, 0) as id_lembaga'), DB::raw("COALESCE(l.nama_lembaga, 'Satpam') as nama_lembaga"), DB::raw("'Satpam' as kategori"), DB::raw('0 as nominal_struktural'), DB::raw('0 as nominal_pengajar'), 'tbs.diterima as nominal_satpam', 'tbs.diterima as nominal');
+
+        $union = $q1->unionAll($q2)->unionAll($q3);
+
+        $mainQuery = DB::query()->fromSub($union, 'g')
+            ->join('umana as u', 'g.nik', '=', 'u.nik')
+            ->select(
+                'g.nik',
+                'u.nama_lengkap',
+                'u.gelar_depan',
+                'u.gelar_belakang',
+                'u.nomor_hp',
+                DB::raw('GROUP_CONCAT(DISTINCT g.nama_lembaga ORDER BY g.nama_lembaga SEPARATOR ", ") as daftar_lembaga'),
+                DB::raw('GROUP_CONCAT(DISTINCT g.kategori ORDER BY g.kategori SEPARATOR ", ") as daftar_kategori'),
+                DB::raw('SUM(g.nominal_struktural) as total_struktural'),
+                DB::raw('SUM(g.nominal_pengajar) as total_pengajar'),
+                DB::raw('SUM(g.nominal_satpam) as total_satpam'),
+                DB::raw('SUM(g.nominal) as grand_total')
+            )
+            ->groupBy('g.nik', 'u.nama_lengkap', 'u.gelar_depan', 'u.gelar_belakang', 'u.nomor_hp');
+
+        $list = $mainQuery->orderBy('u.nama_lengkap', 'asc')->get();
+
+        $periodeStr = $bulan . ' ' . $cleanTahun;
+        $cleanFilename = preg_replace('/[^a-zA-Z0-9_\-]/', '_', "Laporan_Barokah_Per_Umana_{$periodeStr}");
+
+        return response()->view('laporan.per-umana.excel', compact(
+            'list',
+            'bulan',
+            'cleanTahun',
+            'periodeStr',
+            'namaLembagaTerpilih'
+        ), 200, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Content-Disposition' => "attachment; filename=\"{$cleanFilename}.xls\"",
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ]);
     }
 
     /**

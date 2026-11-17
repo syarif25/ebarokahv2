@@ -248,6 +248,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/Laporan/per_umana', function() { return redirect('/laporan/per-umana'); });
         Route::get('/Laporan_v2/per_umana', function() { return redirect('/laporan/per-umana'); });
         Route::post('/laporan/per-umana/data', [App\Http\Controllers\LaporanPerUmanaController::class, 'data']);
+        Route::get('/laporan/per-umana/export-excel', [App\Http\Controllers\LaporanPerUmanaController::class, 'exportExcel']);
         Route::get('/laporan/per-umana/rincian/{nik}', [App\Http\Controllers\LaporanPerUmanaController::class, 'rincian']);
         Route::get('/laporan/per-umana/breakdown', [App\Http\Controllers\LaporanPerUmanaController::class, 'breakdown']);
 
